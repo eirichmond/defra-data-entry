@@ -1,0 +1,11 @@
+body.login {
+    background: #fff;
+}
+#login h1 a, .login h1 a {
+    background-image: url(/wp-content/plugins/defra-data-entry/public/images/defra-logo.gif);
+    height:128px;
+    width:250px;
+    background-size: 250px 128px;
+    background-repeat: no-repeat;
+    padding-bottom: 30px;
+}

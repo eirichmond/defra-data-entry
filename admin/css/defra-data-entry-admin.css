@@ -1,0 +1,73 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+/**
+dashboard widgets
+*/
+#defre_requests_widget .widefat {
+	margin-bottom: 10px;
+}
+
+.widefat thead tr th.text-white {
+	color: #fff;
+}
+
+.draft {
+	background-color: #0d47a1;
+}
+
+.awiating-review {
+	background-color: #1976d2;
+}
+
+.being-reviewed {
+	background-color: #2196f3;
+}
+
+.reviewer-rejected {
+	background-color: #c62828;
+}
+
+.submitted-to-da {
+	background-color: #004d40;
+}
+
+.assigned-to-da {
+	background-color: #00796b;
+}
+
+.approved-by-da {
+	background-color: #009688;
+}
+
+.rejected-by-da {
+	background-color: #c62828;
+}
+
+.awaiting-publication {
+	background-color: #689f38;
+}
+
+.published {
+	background-color: #33691e;
+}
+
+
+
+.misc-pub-section.misc-pub-post-status {
+	display: none;
+}
+
+#visibility {
+	display: none;
+}
+
+.misc-pub-section {
+	display: none;
+}
+
+.my-options {
+	padding: 6px 10px 8px;
+}

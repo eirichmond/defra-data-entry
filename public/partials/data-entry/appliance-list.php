@@ -1,0 +1,37 @@
+<tr>
+    <td style="width:5%"><?php echo get_post_meta(get_the_ID(), 'appliance_id', true ); ?></td>
+    <td style="width:20%"><?php the_title(); ?></td>
+    <td style="width:30%">
+        <strong>England:</strong> <?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_status', true))); ?><br>
+        <strong>Wales:</strong> <?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_status', true))); ?><br>
+        <strong>Scotland:</strong> <?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_status', true))); ?><br>
+        <strong>N. Ireland:</strong> <?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_status', true))); ?>
+    </td>
+    <td style="width:30%">
+        <?php if(get_post_meta(get_the_ID(), 'entry_user_id', true )) { ?>
+            <strong>Entry User</strong><br>
+            <?php echo $class->data_entry_username(get_post_meta(get_the_ID(), 'entry_user_id', true )); ?><br>
+        <?php } ?>
+
+        <?php if(get_post_meta(get_the_ID(), 'reviewer_user_id', true )) { ?>
+            <strong>Reviewer User</strong><br>
+            <?php echo $class->data_entry_username(get_post_meta(get_the_ID(), 'reviewer_user_id', true )); ?>
+        <?php } ?>
+    </td>
+    <td style="width:15%">
+        <ul class="list-unstyled icon-component">
+            <li>
+                <a href="<?php echo the_permalink(); ?>"><i class="gg-eye"></i></a>
+            </li>
+            <li>
+                <a href="#"><i class="gg-file-document"></i></a>
+            </li>
+            <li>
+                <a href="#"><i class="gg-folder"></i></a>
+            </li>
+            <li>
+                <a href="#"><i class="gg-attribution"></i></a>
+            </li>
+        </ul>
+    </td>
+</tr>

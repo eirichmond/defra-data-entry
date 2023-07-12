@@ -3,13 +3,13 @@
 $public_class = new Defra_Data_Entry_Public(DEFRA_DATA_ENTRY_NAME, DEFRA_DATA_ENTRY_VERSION);
 
 $args = array(
-	'post_id' => get_the_ID()
+	'post_id' => isset($post_id) ? $post_id : get_the_ID()
 );
 $comments = get_comments( $args );
 
 ?>
 
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped mb-4">
     <thead>
         <tr class="table-dark">
             <th scope="col">Comment Type</th>

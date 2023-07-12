@@ -45,7 +45,7 @@ function config_setup() {
 			array(
 				'title' => 'Dashboard',
 				'slug' => 'dashboard',
-				'template' => 'partials/dashboard.php'
+				'template' => 'partials/data-entry/dashboard.php'
 			),
 			array(
 				'title' => 'Appliances',
@@ -58,62 +58,72 @@ function config_setup() {
 						'template' => 'partials/data-entry/appliance-view.php',	
 					),
 					array(
+						'title' => 'Appliance Audit Log',
+						'slug' => 'appliance-audit-log',
+						'template' => 'partials/data-entry/appliance-audit-log.php',	
+					),
+					array(
+						'title' => 'Appliance Change Log',
+						'slug' => 'appliance-change-log',
+						'template' => 'partials/data-entry/appliance-change-log.php',	
+					),
+					array(
 						'title' => 'Create new appliance',
 						'slug' => 'create-new-appliance',
-						'template' => 'partials/create-new-appliance.php',	
+						'template' => 'partials/data-entry/create-new-appliance.php',	
 					)
 				) 
 			),
 			array(
 				'title' => 'Fuels',
 				'slug' => 'fuels',
-				'template' => 'partials/fuels.php',
+				'template' => 'partials/data-entry/fuels.php',
 				'child' => array(
 					array(
 						'title' => 'Create new fuel',
 						'slug' => 'create-new-fuel',
-						'template' => 'partials/create-new-fuel.php',
+						'template' => 'partials/data-entry/create-new-fuel.php',
 					)
 				)
 			),
 			array(
 				'title' => 'Manufacturers',
 				'slug' => 'manufacturers',
-				'template' => 'partials/manufacturers.php',
+				'template' => 'partials/data-entry/manufacturers.php',
 				'child' => array(
 					array(
 						'title' => 'Create new Manufacturer',
 						'slug' => 'create-new-manufacturer',
-						'template' => 'partials/create-new-manufacturer.php',
+						'template' => 'partials/data-entry/create-new-manufacturer.php',
 					)
 				)
 			),
 			array(
 				'title' => 'Statutory Instruments',
 				'slug' => 'si',
-				'template' => 'partials/si.php',
+				'template' => 'partials/data-entry/si.php',
 				'child' => array(
 					array(
 						'title' => 'Create new SI',
 						'slug' => 'create-new-si',
-						'template' => 'partials/create-new-si.php'
+						'template' => 'partials/data-entry/create-new-si.php'
 					),
 					array(
 						'title' => 'SI Appliance',
 						'slug' => 'si-appliance',
-						'template' => 'partials/si-appliance.php'
+						'template' => 'partials/data-entry/si-appliance.php'
 					),
 					array(
 						'title' => 'SI Fuel',
 						'slug' => 'si-fuel',
-						'template' => 'partials/si-fuel.php',	
+						'template' => 'partials/data-entry/si-fuel.php',	
 					)
 				)
 			),
 			array(
 				'title' => 'Permitted Fuels',
 				'slug' => 'permitted-fuels',
-				'template' => 'partials/permitted-fuels.php',
+				'template' => 'partials/data-entry/permitted-fuels.php',
 				'child' => array(
 					array(
 						'title' => 'Create new Permitted Fuel',
@@ -125,24 +135,24 @@ function config_setup() {
 			array(
 				'title' => 'Additional Conditions',
 				'slug' => 'additionalconditions',
-				'template' => 'partials/additionalconditions.php',
+				'template' => 'partials/data-entry/additionalconditions.php',
 				'child' => array(
 					array(
 						'title' => 'Create new Additional Condition',
 						'slug' => 'create-new-additional-condition',
-						'template' => 'partials/create-new-additional-condition.php'
+						'template' => 'partials/data-entry/create-new-additional-condition.php'
 					)
 				)
 			),
 			array(
 				'title' => 'Appliance Types',
 				'slug' => 'appliance-types',
-				'template' => 'partials/appliance-types.php',
+				'template' => 'partials/data-entry/appliance-types.php',
 				'child' => array(
 					array(
 						'title' => 'Create new Appliance Type',
 						'slug' => 'create-new-appliance-type',
-						'template' => 'partials/create-new-appliance-type.php'
+						'template' => 'partials/data-entry/create-new-appliance-type.php'
 					)
 				)
 
@@ -150,12 +160,12 @@ function config_setup() {
 			array(
 				'title' => 'Fuel Types',
 				'slug' => 'fuel-types',
-				'template' => 'partials/fuel-types.php',
+				'template' => 'partials/data-entry/fuel-types.php',
 				'child' => array(
 					array(
 						'title' => 'Create new Fuel Type',
 						'slug' => 'create-new-fuel-type',
-						'template' => 'partials/create-new-fuel-type.php'
+						'template' => 'partials/data-entry/create-new-fuel-type.php'
 					)
 				)
 
@@ -167,6 +177,20 @@ function config_setup() {
 			),
 
 		),
+		'menu_navigation' => array(
+			array(
+				'name' => 'Data Entry',
+				'location' => 'data-entry'
+			),
+			array(
+				'name' => 'Data Reviewer',
+				'location' => 'data-reviewer'
+			),
+			array(
+				'name' => 'Data Approver',
+				'location' => 'data-approver'
+			)
+		)
 	);
 
 	return $config;

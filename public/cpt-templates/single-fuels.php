@@ -7,11 +7,9 @@
  * @package Defra_Data
  */
 
+$public_class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
+$fuel_data_details = $public_class->fuel_data_details($post->ID);
 get_header();
-function manufacturer_by_id($manufacturer_id) {
-	$manufacturer = get_post($manufacturer_id);
-	return $manufacturer->post_title;
-}
 ?>
 
 	<main id="primary" class="site-main bg-white container pb-2">
@@ -25,16 +23,26 @@ function manufacturer_by_id($manufacturer_id) {
 
 				<p>Available information about this fuel is shown below:</p>
 
-				<div class="row">
+				<div class="row justify-content-end">
 
-					<div class="col">
-
-						<div class="text-end mb-2">
-							<button class="btn btn-outline-success" type="button">Download PDF</button>
-							<button class="btn btn-outline-success" type="button">Download CSV</button>
-						</div>
-
+					<div class="col-2 text-end">
+						<form action="/data-entry/form-process/" method="post">
+							<input type="hidden" name="data" value="<?php echo base64_encode(maybe_serialize( $fuel_data_details )) ; ?>">
+							<input type="hidden" name="process" value="pdf-fuel-download">
+							<?php wp_nonce_field( 'create_pdf_download', 'pdf_download_field' ); ?>
+							<button class="btn btn-outline-success" type="submit">Download PDF</button>
+						</form>
 					</div>
+
+					<div class="col-2 text-end">
+						<form action="/data-entry/form-process/" method="post">
+							<input type="hidden" name="data" value="<?php echo base64_encode(maybe_serialize( $fuel_data_details )) ; ?>">
+							<input type="hidden" name="process" value="csv-fuel-download">
+							<?php wp_nonce_field( 'create_csv_download', 'csv_download_field' ); ?>
+							<button class="btn btn-outline-success" type="submit">Download CSV</button>
+						</form>
+					</div>
+
 
 				</div>
 
@@ -42,31 +50,27 @@ function manufacturer_by_id($manufacturer_id) {
 				<div class="entry-content">
 					<?php the_content(); ?>
 
+
 					<table class="display dataTable no-footer" width="100%" cellspacing="0" cellpadding="0" border="0">
 						<tbody>
 							<tr>
 								<td width="25%"><strong>Fuel ID: (England)</strong></td>
-								<td width="25%"><?php echo esc_html( get_post_meta($post->ID, 'fuel_id', true) ); ?></td>
-								<td width="25%"><strong>Fuel ID: (Wal, Scot &amp; NI)</strong></td>
-								<td width="25%"><?php echo esc_html( get_post_meta($post->ID, 'fuel_id', true) ); ?></td>
+								<td><?php echo esc_html( get_post_meta($post->ID, 'fuel_id', true) ); ?></td>
 							</tr>
-						</tbody>
-					</table>
-
-
-
-
-
-					<table class="display dataTable no-footer" width="100%" cellspacing="0" cellpadding="0" border="0">
-						<tbody>
+							<tr>
+								<td width="25%"><strong>Fuel ID: (Wal, Scot &amp; NI)</strong></td>
+								<td><?php echo esc_html( get_post_meta($post->ID, 'fuel_id', true) ); ?></td>
+							</tr>
 							<tr>
 								<td width="25%"><strong>Fuel name</strong></td>
 								<td><?php the_title(); ?></td>
 							</tr>
 							<tr>
 								<td><strong>Manufacturer</strong></td>
-								<td><?php echo get_the_title(get_post_meta($post->ID, 'manufacturer', true)); ?></td>
+								<td><?php echo esc_html( $public_class->manufacturer_composite_address(get_post_meta($post->ID, 'manufacturer', true ))); ?></td>
 							</tr>
+
+
 						
 							<tr>
 								<td><strong>England Status<br>

@@ -12,20 +12,10 @@ function manufacturer_by_id($manufacturer_id) {
 	$manufacturer = get_post($manufacturer_id);
 	return $manufacturer->post_title;
 }
-function get_fuel_type($appliance_id) {
-	$fuel_types = get_the_terms( $appliance_id, 'fuel_types' );
-	if($fuel_types) {
-		$terms_string = join(', ', wp_list_pluck($fuel_types, 'name'));
-	}
-	return $terms_string;
-}
-function get_appliance_type($appliance_id) {
-	$appliance_types = get_the_terms( $appliance_id, 'appliance_types' );
-	if($appliance_types) {
-		$terms_string = join(', ', wp_list_pluck($appliance_types, 'name'));
-	}
-	return $terms_string;
-}
+
+$public_class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
+$appliance_data_details = $public_class->appliance_data_details($post->ID);
+
 
 ?>
 
@@ -41,16 +31,26 @@ function get_appliance_type($appliance_id) {
 				<p>The appliances listed below are exempt in the relevant country or countries when using the specified fuel(s), when operated in accordance with the instruction and installation manuals and when any conditions are met.</p>
 				<p>Available information about this fuel is shown below:</p>
 
-				<div class="row">
+				<div class="row justify-content-end">
 
-					<div class="col">
-
-						<div class="text-end mb-2">
-							<button class="btn btn-outline-success" type="button">Download PDF</button>
-							<button class="btn btn-outline-success" type="button">Download CSV</button>
-						</div>
-
+					<div class="col-2 text-end">
+						<form action="/data-entry/form-process/" method="post">
+							<input type="hidden" name="data" value="<?php echo base64_encode(maybe_serialize( $appliance_data_details )) ; ?>">
+							<input type="hidden" name="process" value="pdf-appliance-download">
+							<?php wp_nonce_field( 'create_pdf_download', 'pdf_download_field' ); ?>
+							<button class="btn btn-outline-success" type="submit">Download PDF</button>
+						</form>
 					</div>
+
+					<div class="col-2 text-end">
+						<form action="/data-entry/form-process/" method="post">
+							<input type="hidden" name="data" value="<?php echo base64_encode(maybe_serialize( $appliance_data_details )) ; ?>">
+							<input type="hidden" name="process" value="csv-appliance-download">
+							<?php wp_nonce_field( 'create_csv_download', 'csv_download_field' ); ?>
+							<button class="btn btn-outline-success" type="submit">Download CSV</button>
+						</form>
+					</div>
+
 
 				</div>
 
@@ -70,12 +70,12 @@ function get_appliance_type($appliance_id) {
 							</tr>
 							<tr>
 								<td><strong>Fuel Type</strong></td>
-								<td><?php echo esc_html(get_fuel_type($post->ID)); ?></td>
+								<td><?php echo esc_html($public_class->get_fuel_type($post->ID)); ?></td>
 							</tr>
 
 							<tr>
 								<td><strong>Appliance Type</strong></td>
-								<td><?php echo esc_html(get_appliance_type($post->ID)); ?></td>
+								<td><?php echo esc_html($public_class->get_appliance_type($post->ID)); ?></td>
 							</tr>
 
 							<tr>
@@ -114,28 +114,32 @@ function get_appliance_type($appliance_id) {
 
 							<tr>
 								<td><strong>England Status<br>
-								Date first authorised</strong></td>
-								<td>Authorised  (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)<br>See Footnotes or SI Link</td>
+								Date first exempt</strong></td>
+								<?php $eis_id = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true); ?>
+								<td>Exempt (<a href="<?php echo $public_class->get_the_defra_content_by_id($eis_id); ?>"><?php echo get_the_title($eis_id); ?></a>)<br>See Footnotes or SI Link</td>
 							</tr>
 						
 							<tr>
 								<td><strong>Wales Status<br>
-								Date first authorised</strong></td>
-								<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_wales_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_wales_si', true)); ?></a>)<br>See Footnotes or SI Link</td>
+								Date first exempt</strong></td>
+								<?php $wis_id = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_wales_si', true); ?>
+								<td>Exempt (<a href="<?php echo $public_class->get_the_defra_content_by_id($wis_id); ?>"><?php echo get_the_title($wis_id); ?></a>)<br>See Footnotes or SI Link</td>
 							</tr>
 
 						
 							<tr>
 								<td><strong>Scotland Status<br>
-									Date first authorised</strong></td>
-								<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true)); ?></a>)<br>See Footnotes or SI Link</td>
+									Date first exempt</strong></td>
+									<?php $sis_id = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true); ?>
+								<td>Exempt (<a href="<?php echo $public_class->get_the_defra_content_by_id($sis_id); ?>"><?php echo get_the_title($sis_id); ?></a>)<br>See Footnotes or SI Link</td>
 							</tr>
 
 						
 							<tr>
 								<td><strong>N. Ireland Status<br>
-									Date first authorised</strong></td>
-								<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true)); ?></a>)<br>See Footnotes or SI Link</td>
+									Date first exempt</strong></td>
+									<?php $niis_id = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true); ?>
+								<td>Exempt (<a href="<?php echo $public_class->get_the_defra_content_by_id($niis_id); ?>"><?php echo get_the_title($niis_id); ?></a>)<br>See Footnotes or SI Link</td>
 							</tr>
 
 						</tbody>
@@ -160,7 +164,7 @@ function get_appliance_type($appliance_id) {
 					
 				</footer><!-- .entry-footer -->
 
-			</article><!-- #post-<?php the_ID(); ?> -->
+			</article><!-- #post -->
 
 		<?php endwhile; // End of the loop. ?>
 

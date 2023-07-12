@@ -223,7 +223,10 @@ class Defra_Data_Entry {
 		$this->loader->add_action( 'init', $plugin_public, 'defra_register_menu_callback' );
 		$this->loader->add_action( 'init', $plugin_public, 'defra_register_cpts');
 		$this->loader->add_action( 'init', $plugin_public, 'defra_register_ctts');
+		
+
 		$this->loader->add_action( 'defra_table_list', $plugin_public, 'defra_table_list_callback', 10, 1 );
+		$this->loader->add_action( 'data_entry_navigation', $plugin_public, 'data_entry_navigation_callback', 10);
 
 		$this->loader->add_action( 'process_form', $plugin_public, 'process_form_callback' );
 
@@ -232,9 +235,7 @@ class Defra_Data_Entry {
 
 		$this->loader->add_action( 'pre_get_posts', $plugin_public, 'get_appliance_posts' );
 		$this->loader->add_action( 'pre_get_posts', $plugin_public, 'get_fuel_posts' );
-		$this->loader->add_filter( 'login_redirect', $plugin_public, 'defra_login_redirect', 10, 3 );
-
-
+		$this->loader->add_filter( 'login_redirect', $plugin_public, 'defra_login_redirect', 10, 3 );		
 		
 	}
 

@@ -30,14 +30,9 @@ class Defra_Data_Entry_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate($config) {
-		/**
-		* Detect plugin. For use in Admin area only.
-		*/
-		// if ( !is_plugin_active( 'hetas-dynamics-crm/hetas-dynamics-crm.php' ) ) {
-		// 	wp_die('Please ensure the Cantata Dynamics CRM Plugin is active!');
-		// }
 
 		$author_id = 1;
+
 
 		$data_entry_id = wp_insert_post(
 			array(
@@ -112,6 +107,68 @@ class Defra_Data_Entry_Activator {
 			}
 
 		}
+
+		// set menus and locations
+		// foreach($config["menu_navigation"] as $navmenu) {
+		// 	$menu_name = $navmenu['name'];
+		// 	$menu_location = $navmenu['location'];
+
+		// 	$menu_id = wp_create_nav_menu( $menu_name );
+
+		// 	if ( ! is_wp_error( $menu_id ) ) {
+		// 		// Menu created successfully, now assign it to the menu location
+		// 		$menu_location_id = get_term_by( 'slug', $menu_location, 'nav_menu' );
+		// 		if ( $menu_location_id ) {
+		// 			$locations = get_theme_mod( 'nav_menu_locations' );
+		// 			$locations[ $menu_location_id->slug ] = $menu_id;
+		// 			set_theme_mod( 'nav_menu_locations', $locations );
+		// 		}
+		// 	}
+
+		// 	// set pages up in menus
+		// 	foreach ($pages as $page) {
+		
+		// 		$title = $page['title'];
+		// 		$slug = $page['slug'];
+	
+		// 		// If the page doesn't already exist, then create it
+		// 		$page_object = get_page_by_title( $title );
+				
+		// 		$menu_item_data = array(
+		// 			'menu-item-object-id' => $page_object->ID,
+		// 			'menu-item-object' => 'page',
+		// 			'menu-item-type' => 'post_type',
+		// 			'menu-item-status' => 'publish',
+		// 		);
+				
+		// 		if($menu_location == 'data-entry') {
+		// 			wp_update_nav_menu_item( $menu_id, 0, $menu_item_data );
+		// 			if(!empty($page['child'])) {
+		// 				foreach($page['child'] as $child) {
+		// 					$subslug = $child['slug'];
+		// 					$subtitle = $child['title'];
+		// 					$subpage_object = get_page_by_title( $subtitle );
+
+		// 					$submenu_item_data = array(
+		// 						'menu-item-object-id' => $subpage_object->ID,
+		// 						'menu-item-object' => 'page',
+		// 						'menu-item-parent-id' => $page_object->ID,
+		// 						'menu-item-type' => 'post_type',
+		// 						'menu-item-title' => $subtitle,
+		// 						'menu-item-status' => 'publish',
+		// 						'menu-item-position' => 1
+		// 					);
+		// 					wp_update_nav_menu_item( $menu_id, 0, $submenu_item_data );
+			
+		// 				}
+		// 			}
+
+		// 		}
+
+		// 	}
+		// }
+
+		
 
 
 		// create array of caps per type
@@ -214,6 +271,7 @@ class Defra_Data_Entry_Activator {
 		}
 		foreach ($appliance_caps as $appliance_cap) {
 			$data_entry_role->add_cap($appliance_cap);
+			$data_reviewer_role->add_cap($appliance_cap);
 			$administrator->add_cap($appliance_cap);
 		}
 		foreach ($statutory_instrument_caps as $statutory_instrument_cap) {

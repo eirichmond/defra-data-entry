@@ -56,6 +56,18 @@ class Defra_Data_Entry_Deactivator {
 		// }
 		// wp_delete_post( $data_entry_id->ID, true );
 
+
+		// // unset menus and locations
+		// foreach($config["menu_navigation"] as $navmenu) {
+		// 	$menu_name = $navmenu['name'];
+		// 	$menu_location = $navmenu['location'];
+
+		// 	wp_delete_nav_menu( $menu_location );
+
+
+		// }
+		
+
 	}
 
 }

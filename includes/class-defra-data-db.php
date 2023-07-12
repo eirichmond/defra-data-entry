@@ -60,21 +60,108 @@ class Defra_Data_DB_Requests {
 	 * @param string $status
 	 * @return array $results
 	 */
-    public function get_appliance_country_status($status) {
+    public function get_appliance_country_status($status = null) {
         global $wpdb;
-        $results = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT DISTINCT pm.post_id
-				FROM wp_postmeta pm
-				LEFT JOIN wp_posts p ON pm.post_id = p.ID
-				WHERE pm.meta_key LIKE %s
-				AND pm.meta_value = %d
-				AND p.post_type = 'appliances'",
-				array('%_status',$status)
-			)
-        );
+		if(empty($status)) {
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT DISTINCT pm.post_id
+					FROM wp_postmeta pm
+					LEFT JOIN wp_posts p ON pm.post_id = p.ID
+					WHERE pm.meta_key LIKE %s
+					AND p.post_type = 'appliances'",
+					array('%_status')
+				)
+			);
+		} else {
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT DISTINCT pm.post_id
+					FROM wp_postmeta pm
+					LEFT JOIN wp_posts p ON pm.post_id = p.ID
+					WHERE pm.meta_key LIKE %s
+					AND pm.meta_value = %d
+					AND p.post_type = 'appliances'",
+					array('%_status',$status)
+				)
+			);
+		}
         return $results;
     }
+	
+	/**
+	 * Get fuels status
+	 *
+	 * @param string $status
+	 * @return array $results
+	 */
+    public function get_fuels_country_status($status = null) {
+        global $wpdb;
+		if(empty($status)) {
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT DISTINCT pm.post_id
+					FROM wp_postmeta pm
+					LEFT JOIN wp_posts p ON pm.post_id = p.ID
+					WHERE pm.meta_key LIKE %s
+					AND p.post_type = 'fuels'",
+					array('%_status')
+				)
+			);
+		} else {
+			$results = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT DISTINCT pm.post_id
+					FROM wp_postmeta pm
+					LEFT JOIN wp_posts p ON pm.post_id = p.ID
+					WHERE pm.meta_key LIKE %s
+					AND pm.meta_value = %d
+					AND p.post_type = 'fuels'",
+					array('%_status',$status)
+				)
+			);
+		}
+        return $results;
+    }
+
+	/**
+	 * Get the General Audit log by the appliance post id
+	 *
+	 * @param int $post_id
+	 * @return object $audit_logs
+	 */
+	public function get_general_audit_log($post_id){
+		global $wpdb;
+		$audit_logs = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT *
+				FROM wp_defra_audit_log_new al
+				WHERE al.related_id = %d
+				AND al.related_entity LIKE %s",
+				array($post_id, 'applianc%')
+			)
+		);
+		return $audit_logs;
+	}
+
+	/**
+	 * Get the General history log by the appliance post id
+	 *
+	 * @param int $post_id
+	 * @return object $audit_logs
+	 */
+	public function get_general_history_log($post_id){
+		global $wpdb;
+		$history_logs = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT *
+				FROM wp_defra_history_appliance_new hl
+				WHERE hl.appliance_id = %d",
+				array($post_id)
+			)
+		);
+		return $history_logs;
+	}
 	
 	/**
 	 * Get fuel comments
@@ -177,10 +264,10 @@ class Defra_Data_DB_Requests {
 	 */
 	public function list_permitted_fuels() {
 		$list_permitted_fuels = array();
-		$defra_permitted_fuels = $this->get_permitted_fuels();
-		foreach($defra_permitted_fuels as $k => $v) {
-			$list_permitted_fuels[$v->permitted_fuel_id]['permitted_fuel_id'] = $v->permitted_fuel_id;
-			$list_permitted_fuels[$v->permitted_fuel_id]['permitted_fuel_name'] = $v->permitted_fuel_name;
+		$permitted_fuels = get_terms( 'permitted_fuels' );
+		foreach($permitted_fuels as $k => $v) {
+			$list_permitted_fuels[$v->term_id]['permitted_fuel_id'] = $v->term_id;
+			$list_permitted_fuels[$v->term_id]['permitted_fuel_name'] = $v->description;
 		}
         return $list_permitted_fuels;
 
@@ -246,10 +333,10 @@ class Defra_Data_DB_Requests {
 		$list_manufacturers = array();
 		$defra_manufacturers = $this->get_manufacturers();
 		foreach($defra_manufacturers as $k => $v) {
-			$list_manufacturers[$v->id]['manufacturer_id'] = $v->id;
-			$list_manufacturers[$v->id]['manufacturer_name'] = $v->name;
-			$list_manufacturers[$v->id]['manufacturer_address'] = $this->composite_address($v);
-			$list_manufacturers[$v->id]['manufacturer_action'] = $v->format_type;
+			$list_manufacturers[$v->ID]['manufacturer_id'] = $v->ID;
+			$list_manufacturers[$v->ID]['manufacturer_name'] = $v->post_title;
+			$list_manufacturers[$v->ID]['manufacturer_address'] = $this->composite_address($v);
+			$list_manufacturers[$v->ID]['manufacturer_action'] = $v->format_type; // unknown what this is currently used for
 		}
         return $list_manufacturers;
 
@@ -258,13 +345,13 @@ class Defra_Data_DB_Requests {
 	public function composite_address($object) {
 
 		$address = array();
-		$address[] = $object->address_line_1;
-		$address[] = $object->address_line_2;
-		$address[] = $object->address_line_3;
-		$address[] = $object->address_line_4;
-		$address[] = $object->town;
-		$address[] = $object->county;
-		$address[] = $object->post_code;
+		$address[] = get_post_meta( $object->ID, 'address_1', true );
+		$address[] = get_post_meta( $object->ID, 'address_2', true );
+		$address[] = get_post_meta( $object->ID, 'address_3', true );
+		$address[] = get_post_meta( $object->ID, 'address_4', true );
+		$address[] = get_post_meta( $object->ID, 'town__city', true );
+		$address[] = get_post_meta( $object->ID, 'county', true );
+		$address[] = get_post_meta( $object->ID, 'postcode', true );
 
 		$address = array_filter($address);
 
@@ -347,12 +434,22 @@ class Defra_Data_DB_Requests {
 	 * @return array $results
 	 */
 	public function get_permitted_fuels() {
-		global $wpdb;
-        $results = $wpdb->get_results(
-            "SELECT *
-            FROM `wp_defra_permitted_fuels`
-			"
-        );
+		// redundant if using WP data and schema
+		// global $wpdb;
+        // $results = $wpdb->get_results(
+        //     "SELECT *
+        //     FROM `wp_defra_permitted_fuels`
+		// 	"
+        // );
+
+		$args = array(
+			'numberposts' => -1,
+			'post_type' => 'permitted_fuels',
+			'post_status' => 'publish'
+		);
+		$results = get_posts( $args );
+		
+		
 		return $results;
 
 	}
@@ -416,13 +513,21 @@ class Defra_Data_DB_Requests {
 	 * @return array $results
 	 */
 	public function get_manufacturers() {
-		global $wpdb;
-        $results = $wpdb->get_results(
-            "SELECT *
-            FROM `wp_defra_manufacturers`
-			ORDER BY name
-			"
-        );
+		// reduntant if using WP data 
+		// global $wpdb;
+        // $results = $wpdb->get_results(
+        //     "SELECT *
+        //     FROM `wp_defra_manufacturers`
+		// 	ORDER BY name
+		// 	"
+        // );
+
+		$args = array(
+			'numberposts' => -1,
+			'post_type' => 'manufacturers',
+			'post_status' => 'publish'
+		);
+		$results = get_posts( $args );
 		return $results;
 
 	}
@@ -808,8 +913,7 @@ class Defra_Data_DB_Requests {
 	 */
 	public function count_appliance_published() {
 		$count = $this->get_appliance_country_status('600');
-		$uniqe_appliance = $this->refine_appliances_by_id($count);
-		return count($uniqe_appliance);
+		return count($count);
 	}
 
 	/**
@@ -962,8 +1066,8 @@ class Defra_Data_DB_Requests {
 	 */
 	public function count_fuel_published() {
 		$count = $this->get_fuel_country_status('600');
-		$uniqe_appliance = $this->refine_fuels_by_id($count);
-		return count($uniqe_appliance);
+		// $uniqe_appliance = $this->refine_fuels_by_id($count);
+		return count($count);
 	}
 
 	/**
@@ -1038,6 +1142,104 @@ class Defra_Data_DB_Requests {
 		$time_stamp = $now->format('Y-m-d H:i:s');
 		return $time_stamp;
 	}
+
+	/**
+	 * 
+	 * Any inserts to the db should no longer update the legacy data,
+	 * all create, updates and delete should use native WP functions
+	 * 
+	 */
+
+	/**
+	 * Insert a new application
+	 *
+	 * @param [type] $postdata
+	 * @return void
+	 */
+	public function insert_new_appliance($postdata) {
+		$current_user = wp_get_current_user();
+		
+		$new_appliance = $this->set_appliance_post_array($postdata);
+		$post_id = wp_insert_post( $new_appliance );
+
+		$metas = $this->set_appliance_meta_array($postdata);
+		foreach($metas as $k => $v){
+			update_post_meta( $post_id, $k, $v );
+		}
+
+		wp_set_post_terms( $post_id, $postdata["permitted_fuel_id"], 'permitted_fuels' );
+
+		$app_type_terms = get_term_by( 'slug', $postdata["type_terms"], 'appliance_types' );
+		wp_set_post_terms( $post_id, $app_type_terms->name, 'appliance_types' );
+
+		$fuel_type_terms = get_term_by( 'slug', $postdata["fuel_types"], 'fuel_types' );
+		wp_set_post_terms( $post_id, $fuel_type_terms->name, 'fuel_types' );
+
+		return $post_id;
+
+	}
+	
+	/**
+	 * Setup appliance post meta
+	 *
+	 * @param array $postdata
+	 * @return array $metas
+	 */
+	public function set_appliance_meta_array($postdata) {
+		$current_user = wp_get_current_user();
+		$metas = array(
+			'entry_user_id' => $current_user->ID,
+			'manufacturer' => $postdata["manufacturer_id"],
+			'output_unit_output_unit_id' => $postdata["output_unit_output_unit_id"],
+			'output_unit_output_value' => $postdata["output_unit_output_value"],
+			'instructions_instruction_manual_title' => $postdata["instructions_instruction_manual_date"],
+			'instructions_instruction_manual_reference' => $postdata["instructions_instruction_manual_reference"],
+			'instructions_instruction_manual_date' => $postdata["instructions_instruction_manual_date"],
+			'servicing_and_installation_servicing_install_manual_date' => $postdata["servicing_and_installation_servicing_install_manual_date"],
+			'servicing_and_installation_servicing_install_manual_title' => $postdata["servicing_and_installation_servicing_install_manual_title"],
+			'additional_conditions_additional_condition_id' => $postdata["additional_conditions_additional_condition_id"],
+			'additional_conditions_additional_condition_comment' => $postdata["additional_conditions_additional_condition_comment"],
+			'appliance_additional_details_application_number' => $postdata["appliance_additional_details_application_number"],
+			'appliance_additional_details_linked_applications' => $postdata["appliance_additional_details_linked_applications"],
+			'appliance_additional_details_comments' => $postdata["appliance_additional_details_comments"],
+
+			'exempt-in_country_and_statutory_instrument_england_enabled' => $postdata["exempt-in_country_and_statutory_instrument_england_enabled"] = 'on' ? '1' : '',
+			'exempt-in_country_and_statutory_instrument_england_si' => $postdata["exempt-in_country_and_statutory_instrument_england_si"],
+			'exempt-in_country_and_statutory_instrument_england_status' => $postdata["submit-type"] = 'save-draft' ? '10' : '20',
+			
+			'exempt-in_country_and_statutory_instrument_wales_enabled' => $postdata["exempt-in_country_and_statutory_instrument_wales_enabled"] = 'on' ? '1' : '',
+			'exempt-in_country_and_statutory_instrument_wales_si' => $postdata["exempt-in_country_and_statutory_instrument_wales_si"],
+			'exempt-in_country_and_statutory_instrument_wales_status' => $postdata["submit-type"] = 'save-draft' ? '10' : '20',
+			
+			'exempt-in_country_and_statutory_instrument_scotland_enabled' => $postdata["exempt-in_country_and_statutory_instrument_scotland_enabled"] = 'on' ? '1' : '',
+			'exempt-in_country_and_statutory_instrument_scotland_si' => $postdata["exempt-in_country_and_statutory_instrument_scotland_si"],
+			'exempt-in_country_and_statutory_instrument_scotland_status' => $postdata["submit-type"] = 'save-draft' ? '10' : '20',
+			
+			'exempt-in_country_and_statutory_instrument_n_ireland_enabled' => $postdata["exempt-in_country_and_statutory_instrument_n_ireland_enabled"] = 'on' ? '1' : '',
+			'exempt-in_country_and_statutory_instrument_n_ireland_si' => $postdata["exempt-in_country_and_statutory_instrument_n_ireland_si"],
+			'exempt-in_country_and_statutory_instrument_n_ireland_status' => $postdata["submit-type"] = 'save-draft' ? '10' : '20',
+
+		);
+		return $metas;
+	}
+
+	/**
+	 * Setup appliance post array
+	 *
+	 * @return array 
+	 */
+	public function set_appliance_post_array($postdata) {
+		$current_user = wp_get_current_user();
+		$new_appliance = array(
+			'post_title'   => $postdata["appliance_name"],
+			'post_status'  => 'draft',
+			'post_author'  => $current_user->ID,
+			'post_type' => 'appliances'
+		);
+		return $new_appliance;
+	}
+
+
 
 	/**
 	 * Insert a new manufacturer

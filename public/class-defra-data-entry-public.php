@@ -1,5 +1,12 @@
 <?php
 
+require WP_PLUGIN_DIR . '/defra-data-entry/vendor/autoload.php';
+// reference the Dompdf namespace
+use Spipu\Html2Pdf\Html2Pdf;
+// reference the Dompdf namespace
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 /**
  * The public-facing functionality of the plugin.
  *
@@ -125,6 +132,17 @@ class Defra_Data_Entry_Public {
 	public function defra_login_redirect($redirect_to, $requested_redirect_to, $user) {
 		$redirect_to = home_url( '/data-entry/dashboard/' );
 		return $redirect_to;
+	}
+
+	/**
+	 * Return the post id
+	 *
+	 * @param array $global of the super global $_GET
+	 * @param string $string
+	 * @return void
+	 */
+	public function resolve_id($global, $string) {
+		return $global[$string];
 	}
 
 	/**
@@ -437,80 +455,6 @@ class Defra_Data_Entry_Public {
 	
 		register_post_type( "statutory_instrument", $args );
 	
-		/**
-		 * Post Type: Permitted Fuels.
-		 */
-	
-		$labels = [
-			"name" => __( "Permitted Fuels", "defra-data" ),
-			"singular_name" => __( "Permitted Fuel", "defra-data" ),
-			"menu_name" => __( "Permitted Fuels", "defra-data" ),
-			"all_items" => __( "All Permitted Fuels", "defra-data" ),
-			"add_new" => __( "Add new", "defra-data" ),
-			"add_new_item" => __( "Add new Permitted Fuel", "defra-data" ),
-			"edit_item" => __( "Edit Permitted Fuel", "defra-data" ),
-			"new_item" => __( "New Permitted Fuel", "defra-data" ),
-			"view_item" => __( "View Permitted Fuel", "defra-data" ),
-			"view_items" => __( "View Permitted Fuels", "defra-data" ),
-			"search_items" => __( "Search Permitted Fuels", "defra-data" ),
-			"not_found" => __( "No Permitted Fuels found", "defra-data" ),
-			"not_found_in_trash" => __( "No Permitted Fuels found in bin", "defra-data" ),
-			"parent" => __( "Parent Permitted Fuel:", "defra-data" ),
-			"featured_image" => __( "Featured image for this Permitted Fuel", "defra-data" ),
-			"set_featured_image" => __( "Set featured image for this Permitted Fuel", "defra-data" ),
-			"remove_featured_image" => __( "Remove featured image for this Permitted Fuel", "defra-data" ),
-			"use_featured_image" => __( "Use as featured image for this Permitted Fuel", "defra-data" ),
-			"archives" => __( "Permitted Fuel archives", "defra-data" ),
-			"insert_into_item" => __( "Insert into Permitted Fuel", "defra-data" ),
-			"uploaded_to_this_item" => __( "Upload to this Permitted Fuel", "defra-data" ),
-			"filter_items_list" => __( "Filter Permitted Fuels list", "defra-data" ),
-			"items_list_navigation" => __( "Permitted Fuels list navigation", "defra-data" ),
-			"items_list" => __( "Permitted Fuels list", "defra-data" ),
-			"attributes" => __( "Permitted Fuels attributes", "defra-data" ),
-			"name_admin_bar" => __( "Permitted Fuel", "defra-data" ),
-			"item_published" => __( "Permitted Fuel published", "defra-data" ),
-			"item_published_privately" => __( "Permitted Fuel published privately.", "defra-data" ),
-			"item_reverted_to_draft" => __( "Permitted Fuel reverted to draft.", "defra-data" ),
-			"item_scheduled" => __( "Permitted Fuel scheduled", "defra-data" ),
-			"item_updated" => __( "Permitted Fuel updated.", "defra-data" ),
-			"parent_item_colon" => __( "Parent Permitted Fuel:", "defra-data" ),
-		];
-	
-		$args = [
-			"label" => __( "Permitted Fuels", "defra-data" ),
-			"labels" => $labels,
-			"description" => "",
-			"public" => true,
-			"publicly_queryable" => true,
-			"show_ui" => true,
-			"show_in_rest" => true,
-			"rest_base" => "",
-			"rest_controller_class" => "WP_REST_Posts_Controller",
-			"has_archive" => false,
-			"show_in_menu" => true,
-			"show_in_nav_menus" => true,
-			"delete_with_user" => false,
-			"exclude_from_search" => false,
-			"capability_type" => "post",
-			"capabilities" => [
-				'edit_post' => 'edit_permitted_fuel',
-				'edit_posts' => 'edit_permitted_fuels',
-				'edit_others_posts' => 'edit_others_permitted_fuels',
-				'publish_posts' => 'publish_permitted_fuels',
-				'read_post' => 'read_permitted_fuels',
-				'read_private_posts' => 'read_private_permitted_fuels',
-				'delete_post' => 'delete_permitted_fuel'
-			],
-			"map_meta_cap" => false,
-			"hierarchical" => false,
-			"rewrite" => [ "slug" => "permitted_fuels", "with_front" => true ],
-			"query_var" => true,
-			"menu_position" => 8,
-			"supports" => [ "title", "editor" ],
-			"show_in_graphql" => false,
-		];
-	
-		register_post_type( "permitted_fuels", $args );
 	}
 
 	/**
@@ -670,6 +614,56 @@ class Defra_Data_Entry_Public {
 			"show_in_graphql" => false,
 		];
 		register_taxonomy( "appliance_types", [ "appliances" ], $args );
+
+		/**
+		 * Taxonomy: Appliance Types.
+		 */
+	
+		$labels = [
+			"name" => __( "Permitted Fuels", "defra-data" ),
+			"singular_name" => __( "Permitted Fuel", "defra-data" ),
+			"menu_name" => __( "Permitted Fuels", "defra-data" ),
+			"all_items" => __( "All Permitted Fuels", "defra-data" ),
+			"edit_item" => __( "Edit Permitted Fuel", "defra-data" ),
+			"view_item" => __( "View Permitted Fuel", "defra-data" ),
+			"update_item" => __( "Update Permitted Fuel name", "defra-data" ),
+			"add_new_item" => __( "Add new Permitted Fuel", "defra-data" ),
+			"new_item_name" => __( "New Permitted Fuel name", "defra-data" ),
+			"parent_item" => __( "Parent Permitted Fuel", "defra-data" ),
+			"parent_item_colon" => __( "Parent Permitted Fuel:", "defra-data" ),
+			"search_items" => __( "Search Permitted Fuels", "defra-data" ),
+			"popular_items" => __( "Popular Permitted Fuels", "defra-data" ),
+			"separate_items_with_commas" => __( "Separate Permitted Fuels with commas", "defra-data" ),
+			"add_or_remove_items" => __( "Add or remove Permitted Fuels", "defra-data" ),
+			"choose_from_most_used" => __( "Choose from the most used Permitted Fuels", "defra-data" ),
+			"not_found" => __( "No Permitted Fuels found", "defra-data" ),
+			"no_terms" => __( "No Permitted Fuels", "defra-data" ),
+			"items_list_navigation" => __( "Permitted Fuels list navigation", "defra-data" ),
+			"items_list" => __( "Permitted Fuels list", "defra-data" ),
+			"back_to_items" => __( "Back to Permitted Fuels", "defra-data" ),
+		];
+	
+		
+		$args = [
+			"label" => __( "Permitted Fuels", "defra-data" ),
+			"labels" => $labels,
+			"public" => true,
+			"publicly_queryable" => true,
+			"hierarchical" => false,
+			"show_ui" => true,
+			"show_in_menu" => true,
+			"show_in_nav_menus" => true,
+			"query_var" => true,
+			"rewrite" => [ 'slug' => 'permitted_fuels', 'with_front' => true, ],
+			"show_admin_column" => false,
+			"show_in_rest" => true,
+			"show_tagcloud" => false,
+			"rest_base" => "permitted_fuels",
+			"rest_controller_class" => "WP_REST_Terms_Controller",
+			"show_in_quick_edit" => false,
+			"show_in_graphql" => false,
+		];
+		register_taxonomy( "permitted_fuels", [ "appliances" ], $args );
 	
 		/**
 		 * Taxonomy: Types.
@@ -720,7 +714,59 @@ class Defra_Data_Entry_Public {
 			"show_in_graphql" => false,
 		];
 		register_taxonomy( "si_types", [ "statutory_instrument" ], $args );
+
+		/**
+		 * Taxonomy: Statutory Instruments Countries.
+		 */
+	
+		$labels = [
+			"name" => __( "Countries", "defra-data" ),
+			"singular_name" => __( "Country", "defra-data" ),
+			"menu_name" => __( "Countries", "defra-data" ),
+			"all_items" => __( "All Countries", "defra-data" ),
+			"edit_item" => __( "Edit Country", "defra-data" ),
+			"view_item" => __( "View Country", "defra-data" ),
+			"update_item" => __( "Update Country name", "defra-data" ),
+			"add_new_item" => __( "Add new Country", "defra-data" ),
+			"new_item_name" => __( "New Country name", "defra-data" ),
+			"parent_item" => __( "Parent Country", "defra-data" ),
+			"parent_item_colon" => __( "Parent Country:", "defra-data" ),
+			"search_items" => __( "Search Countries", "defra-data" ),
+			"popular_items" => __( "Popular Countries", "defra-data" ),
+			"separate_items_with_commas" => __( "Separate Countries with commas", "defra-data" ),
+			"add_or_remove_items" => __( "Add or remove Countries", "defra-data" ),
+			"choose_from_most_used" => __( "Choose from the most used Countries", "defra-data" ),
+			"not_found" => __( "No Countries found", "defra-data" ),
+			"no_terms" => __( "No Countries", "defra-data" ),
+			"items_list_navigation" => __( "Countries list navigation", "defra-data" ),
+			"items_list" => __( "Countries list", "defra-data" ),
+			"back_to_items" => __( "Back to Countries", "defra-data" ),
+		];
+	
+		
+		$args = [
+			"label" => __( "Countries", "defra-data" ),
+			"labels" => $labels,
+			"public" => true,
+			"publicly_queryable" => true,
+			"hierarchical" => false,
+			"show_ui" => true,
+			"show_in_menu" => true,
+			"show_in_nav_menus" => true,
+			"query_var" => true,
+			"rewrite" => [ 'slug' => 'si_countries', 'with_front' => true, ],
+			"show_admin_column" => false,
+			"show_in_rest" => true,
+			"show_tagcloud" => false,
+			"rest_base" => "si_countries",
+			"rest_controller_class" => "WP_REST_Terms_Controller",
+			"show_in_quick_edit" => false,
+			"show_in_graphql" => false,
+		];
+		register_taxonomy( "si_countries", [ "statutory_instrument" ], $args );
 	}
+
+
 	
 	
 
@@ -738,7 +784,7 @@ class Defra_Data_Entry_Public {
 			'update_additional_condition',
 			'delete_additional_condition',
 			'update_permitted_fuel',
-			'delete_permitted_fuel'
+			'delete_permitted_fuel',
 		);
 
 		return $ajaxevents;
@@ -775,47 +821,49 @@ class Defra_Data_Entry_Public {
 	 * @return $located
 	 */
 	public function defra_get_header($name, $args = array()) {
+		
+		// return get_header();
 
-		$require_once = true;
-		$templates = array();
+		// $require_once = true;
+		// $templates = array();
 	
-		$name = (string) $name;
-		if ('' !== $name) {
-			$templates[] = "header-{$name}.php";
-		} else {
-			return false;
-		}
+		// $name = (string) $name;
+		// if ('' !== $name) {
+		// 	$templates[] = "header-{$name}.php";
+		// } else {
+		// 	return false;
+		// }
 	
-		$templates[] = 'header.php';
+		// $templates[] = 'header.php';
 	
-		$located = '';
-		foreach ($templates as $template_name) {
+		// $located = '';
+		// foreach ($templates as $template_name) {
 	
-			if (!$template_name) {
-				continue;
-			}
+		// 	if (!$template_name) {
+		// 		continue;
+		// 	}
 	
-			if (file_exists(plugin_dir_path( __FILE__ ) . 'partials/' . $template_name)) {
+		// 	if (file_exists(plugin_dir_path( __FILE__ ) . 'partials/' . $template_name)) {
 	
-				$located = plugin_dir_path( __FILE__ ) . 'partials/' . $template_name;
-				break;
-			} elseif (file_exists(STYLESHEETPATH . '/' . $template_name)) {
-				$located = STYLESHEETPATH . '/' . $template_name;
-				break;
-			} elseif (file_exists(TEMPLATEPATH . '/' . $template_name)) {
-				$located = TEMPLATEPATH . '/' . $template_name;
-				break;
-			} elseif (file_exists(ABSPATH . WPINC . '/theme-compat/' . $template_name)) {
-				$located = ABSPATH . WPINC . '/theme-compat/' . $template_name;
-				break;
-			}
-		}
+		// 		$located = plugin_dir_path( __FILE__ ) . 'partials/' . $template_name;
+		// 		break;
+		// 	} elseif (file_exists(STYLESHEETPATH . '/' . $template_name)) {
+		// 		$located = STYLESHEETPATH . '/' . $template_name;
+		// 		break;
+		// 	} elseif (file_exists(TEMPLATEPATH . '/' . $template_name)) {
+		// 		$located = TEMPLATEPATH . '/' . $template_name;
+		// 		break;
+		// 	} elseif (file_exists(ABSPATH . WPINC . '/theme-compat/' . $template_name)) {
+		// 		$located = ABSPATH . WPINC . '/theme-compat/' . $template_name;
+		// 		break;
+		// 	}
+		// }
 	
-		if ('' !== $located) {
-			load_template($located, $require_once, $args);
-		}
+		// if ('' !== $located) {
+		// 	load_template($located, $require_once, $args);
+		// }
 	
-		return $located;
+		// return $located;
 	}
 
 	/**
@@ -827,6 +875,8 @@ class Defra_Data_Entry_Public {
 		register_nav_menus(
 			array(
 				'data-entry' => esc_html__( 'Data Entry', 'defra-data' ),
+				'data-reviewer' => esc_html__( 'Data Reviewer', 'defra-data' ),
+				'data-approver' => esc_html__( 'Data Approver', 'defra-data' ),
 			)
 		);	
 	}
@@ -857,7 +907,7 @@ class Defra_Data_Entry_Public {
 
 
 			if ( is_page( $data_entry_page['slug'] ) ) {
-				if (is_user_logged_in()) {
+				if (is_user_logged_in() || $data_entry_page['slug'] == 'form-process') {
 					$original_template = plugin_dir_path( __FILE__ ) . $data_entry_page['template'];
 				} else {
 					$original_template = plugin_dir_path( __FILE__ ) . 'partials/not-logged-in.php';
@@ -879,21 +929,21 @@ class Defra_Data_Entry_Public {
 			}
 		}
 
-		if ( is_post_type_archive('appliances') ) {
-			if (is_user_logged_in()) {
-				$original_template = plugin_dir_path( __FILE__ ) . 'partials/appliances.php';
-			} else {
-				$original_template = plugin_dir_path( __FILE__ ) . 'partials/not-logged-in.php';
-			}
-		}
+		// if ( is_post_type_archive('appliances') ) {
+		// 	if (is_user_logged_in()) {
+		// 		$original_template = plugin_dir_path( __FILE__ ) . 'partials/appliances.php';
+		// 	} else {
+		// 		$original_template = plugin_dir_path( __FILE__ ) . 'partials/not-logged-in.php';
+		// 	}
+		// }
 
-		if ( is_post_type_archive('fuels') ) {
-			if (is_user_logged_in()) {
-				$original_template = plugin_dir_path( __FILE__ ) . 'partials/fuels.php';
-			} else {
-				$original_template = plugin_dir_path( __FILE__ ) . 'partials/not-logged-in.php';
-			}
-		}
+		// if ( is_post_type_archive('fuels') ) {
+		// 	if (is_user_logged_in()) {
+		// 		$original_template = plugin_dir_path( __FILE__ ) . 'partials/fuels.php';
+		// 	} else {
+		// 		$original_template = plugin_dir_path( __FILE__ ) . 'partials/not-logged-in.php';
+		// 	}
+		// }
 
 
 		return $original_template;
@@ -901,12 +951,19 @@ class Defra_Data_Entry_Public {
 
 	/**
 	 * Generic function to process forms
+	 * @TODO Check all methods are converted to WP db interactions
 	 *
 	 * @return void
 	 */
 	public function process_form_callback() {
 		if(empty($_POST)) {
 			return;
+		}
+		if($_POST['process'] == 'create-appliance') {
+			$this->process_create_appliance();
+		}
+		if($_POST['process'] == 'create-statutory-instrument') {
+			$this->process_create_statutory_instrument();
 		}
 		if($_POST['process'] == 'create-permitted-fuel') {
 			$this->process_create_permitted_fuel();
@@ -923,7 +980,66 @@ class Defra_Data_Entry_Public {
 		if($_POST['process'] == 'create-manufacturer') {
 			$this->process_create_manufacturer();
 		}
+		if($_POST['process'] == 'download-recommendation-letter') {
+			$this->download_recommendation_letter($_POST['appliance_id']);
+		}
+		if($_POST['process'] == 'pdf-fuel-download') {
+			$this->pdf_fuel_download($_POST);
+		}
+		if($_POST['process'] == 'csv-fuel-download') {
+			$this->csv_fuel_download($_POST);
+		}
+		if($_POST['process'] == 'pdf-appliance-download') {
+			$this->pdf_appliance_download($_POST);
+		}
+		if($_POST['process'] == 'csv-appliance-download') {
+			$this->csv_appliance_download($_POST);
+		}
 
+	}
+
+	/**
+	 * Create a new appliance WP
+	 *
+	 * @return void
+	 */
+	public function process_create_appliance() {
+
+		if ( ! isset( $_POST['create_nonce_field'] ) || ! wp_verify_nonce( $_POST['create_nonce_field'], 'create_nonce' ) ) {
+			wp_die('Sorry, security did not verify.');
+		} else {
+			// process form data
+			$db = new Defra_Data_DB_Requests();
+			$post_id = $db->insert_new_appliance($_POST);
+			// redirect with success
+			$url = home_url().'/data-entry/appliances/create-new-appliance/?post=success&id='.$post_id;
+			wp_redirect( $url );
+			exit;
+
+		}
+	}
+
+	/**
+	 * Create a new statutory instrument
+	 *
+	 * @return void
+	 */
+	public function process_create_statutory_instrument() {
+
+		wp_die('This needs recoding for wp post type.');
+
+		if ( ! isset( $_POST['create_nonce_field'] ) || ! wp_verify_nonce( $_POST['create_nonce_field'], 'create_nonce' ) ) {
+			wp_die('Sorry, security did not verify.');
+		} else {
+			// process form data
+			$db = new Defra_Data_DB_Requests();
+			$db->insert_new_permitted_fuel($_POST);
+			// redirect with success
+			$url = home_url().'/data-entry/permitted-fuels/create-new-permitted-fuel/?post=success';
+			wp_redirect( $url );
+			exit;
+
+		}
 	}
 
 	/**
@@ -931,7 +1047,6 @@ class Defra_Data_Entry_Public {
 	 *
 	 * @return void
 	 */
-
 	public function process_create_permitted_fuel() {
 		if ( ! isset( $_POST['create_nonce_field'] ) || ! wp_verify_nonce( $_POST['create_nonce_field'], 'create_nonce' ) ) {
 			wp_die('Sorry, security did not verify.');
@@ -1137,14 +1252,14 @@ class Defra_Data_Entry_Public {
 			 */
 
 
-			// if (is_user_logged_in()) {
-			// 	$template = plugin_dir_path( __FILE__ ) . 'partials/fuel-view.php';
-			// } else {
-			// 	$template = plugin_dir_path( __FILE__ ) . 'cpt-templates/single-fuels.php';
-			// }
+			if (is_user_logged_in()) {
+				$template = plugin_dir_path( __FILE__ ) . 'partials/data-entry/fuel-view.php';
+			} else {
+				$template = plugin_dir_path( __FILE__ ) . 'cpt-templates/single-fuels.php';
+			}
 
 
-			$template = plugin_dir_path( __FILE__ ) . 'cpt-templates/single-fuels.php';
+			// $template = plugin_dir_path( __FILE__ ) . 'cpt-templates/single-fuels.php';
 		}
 
 		if ( 'appliances' === $post->post_type && locate_template( array( 'single-appliances.php' ) ) !== $template ) {
@@ -1257,20 +1372,29 @@ class Defra_Data_Entry_Public {
 		return join(',',$term_list);
 	}
 
-	public function output_units($key) {
+	/**
+	 * Setup or set output units
+	 *
+	 * @param string $key
+	 * @return void
+	 */
+	public function output_units($key = null) {
 		$units = array(
 			'1' => 'kW',
 			'2' => 'MW',
 			'3' => 'n/a'
 		);
-		return $units[$key];
+		if($key) {
+			$units = $units[$key];
+		}
+		return $units;
 	}
 
 	public function get_appliance_output_unit($output_key) {
 		return $this->output_units($output_key);
 	}
 
-	public function appliance_conditions($key) {
+	public function appliance_conditions($key = null) {
 		$conditions = array(
 			'1' => 'Permanent Stop',
 			'2' => 'Cyclone',
@@ -1278,7 +1402,10 @@ class Defra_Data_Entry_Public {
 			'4' => 'None',
 			'5' => 'Not applicable'
 		);
-		return $conditions[$key];
+		if($key) {
+			$conditions = $conditions[$key];
+		}
+		return $conditions;
 
 	}
 
@@ -1444,6 +1571,332 @@ class Defra_Data_Entry_Public {
 
 	}
 
+	/**
+	 * Trigger recommended download letter
+	 *
+	 * @return void
+	 */
+	public function download_recommendation_letter($id) {
+		$now = new DateTime('now', new DateTimeZone('Europe/London'));
+		$date = $now->format('d/m/Y');
+		$appliance = get_post($id);
+		$user = get_user_by('id', get_post_meta($appliance->ID,'entry_user_id', true));
+		$data_entry = $user->first_name .' '. $user->last_name;
+		$manufacturer = get_post(get_post_meta($appliance->ID,'manufacturer', true));
+		$application_number = get_post_meta($appliance->ID,'appliance_additional_details_application_number', true);
+		$permitted_fuel = get_post(get_post_meta($appliance->ID,'appliance_fuels_permitted_fuel_id', true));
+		$instructions = get_post_meta($appliance->ID,'instructions_instruction_manual_title', true) . ' ' . get_post_meta($appliance->ID,'instructions_instruction_manual_date', true) . ' ' . get_post_meta($appliance->ID,'instructions_instruction_manual_reference', true);
+
+		$templateFile = plugin_dir_url( __FILE__ ) . 'file-templates/Appliance-Letter.docx';
+		$phpWord = new \PhpOffice\PhpWord\TemplateProcessor($templateFile);
+
+		$phpWord->setValue('TodayDate',$date);
+		$phpWord->setValue('ApplicationNumber',$application_number);
+		$phpWord->setValue('Manufacturer',$manufacturer->post_title);
+		$phpWord->setValue('ApplianceName',$appliance->post_title);
+		$phpWord->setValue('PermittedFuels',$permitted_fuel->post_title);
+		$phpWord->setValue('ManufacturerContact',$manufacturer->post_title);
+		$phpWord->setValue('DataEntryUser',$data_entry);
+		$phpWord->setValue('Instructions',$instructions);
+
+		$filepath = $phpWord->save();
+
+		$file = 'Appliance-Letter.docx';
+		header("Content-Description: File Transfer");
+		header('Content-Disposition: attachment; filename="' . $file . '"');
+		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+		header('Content-Transfer-Encoding: binary');
+		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+		header('Expires: 0');
+		readfile($filepath);
+	}
+
+	/**
+	 * Generate a pdf download
+	 *
+	 * @param array $post
+	 * @return void
+	 */
+	public function pdf_fuel_download($post) {
+		$data = base64_decode(maybe_unserialize($post["data"]));
+		$data = maybe_unserialize($data);
+		if ($data) {
+
+			$html = require plugin_dir_path( dirname( __FILE__ ) ) . 'public/file-templates/fuel-pdf-html.php';
+			$html2pdf = new Html2Pdf('P','A4','en', false, 'UTF-8', array(30, 15, 30, 15));
+			$html2pdf->writeHTML($html);
+			$html2pdf->output('fuel.pdf', 'D');
+	
+		} else {
+			// Error handling if the request fails
+			error_log('Failed to retrieve the HTML content.');
+		}
+
+	}
+
+	/**
+	 * Generate a pdf download
+	 *
+	 * @param array $post
+	 * @return void
+	 */
+	public function pdf_appliance_download($post) {
+		$data = base64_decode(maybe_unserialize($post["data"]));
+		$data = maybe_unserialize($data);
+		if ($data) {
+
+			$html = require plugin_dir_path( dirname( __FILE__ ) ) . 'public/file-templates/appliance-pdf-html.php';
+			$html2pdf = new Html2Pdf('P','A4','en', false, 'UTF-8', array(30, 15, 30, 15));
+			$html2pdf->writeHTML($html);
+			$html2pdf->output('appliance.pdf', 'D');
+	
+		} else {
+			// Error handling if the request fails
+			error_log('Failed to retrieve the HTML content.');
+		}
+
+	}
+
+	/**
+	 * Generate a csv download
+	 *
+	 * @param array $post
+	 * @return void
+	 */
+	public function csv_fuel_download($post) {
+		$data = base64_decode(maybe_unserialize($post["data"]));
+		$data = maybe_unserialize($data);
+		if ($data) {
+
+			$html = require plugin_dir_path( dirname( __FILE__ ) ) . 'public/file-templates/fuel-csv.php';
+	
+		} else {
+			// Error handling if the request fails
+			error_log('Failed to retrieve the HTML content.');
+		}
+
+	}
+
+	/**
+	 * Generate a csv download
+	 *
+	 * @param array $post
+	 * @return void
+	 */
+	public function csv_appliance_download($post) {
+		$data = base64_decode(maybe_unserialize($post["data"]));
+		$data = maybe_unserialize($data);
+		if ($data) {
+
+			$html = require plugin_dir_path( dirname( __FILE__ ) ) . 'public/file-templates/appliance-csv.php';
+	
+		} else {
+			// Error handling if the request fails
+			error_log('Failed to retrieve the HTML content.');
+		}
+
+	}
+
+	/**
+	 * Get desired post meta for fuel data view and download
+	 *
+	 * @param [type] $post_id
+	 * @return array $fuel_data_details
+	 */
+	public function fuel_data_details($post_id) {
+		$fuel_data_details = array();
+		$fuel_meta = $this->defra_merge_postmeta($post_id);
+		$manufacturer_meta = $this->defra_merge_postmeta($fuel_meta["manufacturer"]);
+
+		$fuel_data_details['fuel_id'] = $fuel_meta["fuel_id"];
+		$fuel_data_details['fuel_name'] = get_the_title($post_id);
+		$fuel_data_details['manufacturer'] = $this->manufacturer_composite_address($fuel_meta["manufacturer"]);
+		$fuel_data_details['a'] = $fuel_meta["point_a"];
+		$fuel_data_details['b'] = $fuel_meta["point_b"];
+		$fuel_data_details['c'] = $fuel_meta["point_c"];
+		$fuel_data_details['d'] = $fuel_meta["point_d"];
+		$fuel_data_details['e'] = $fuel_meta["point_e"];
+		$fuel_data_details['f'] = $fuel_meta["point_f"];
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_england_si_content'] = $this->get_the_defra_content_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_england_si"]) ? $this->get_the_defra_content_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_england_si"]) : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_england_si_title'] = $this->get_the_defra_title_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_england_si"]) ? $this->get_the_defra_title_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_england_si"]) : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_england_si_authorised'] = $fuel_meta["exempt-in_country_and_statutory_instrument_england_publish_date"] ? $fuel_meta["exempt-in_country_and_statutory_instrument_england_publish_date"] : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_wales_si_content'] = $this->get_the_defra_content_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_wales_si"]) ? $this->get_the_defra_content_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_wales_si"]) : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_wales_si_title'] = $this->get_the_defra_title_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_wales_si"]) ? $this->get_the_defra_title_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_wales_si"]) : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_wales_si_authorised'] = $fuel_meta["exempt-in_country_and_statutory_instrument_wales_publish_date"] ? $fuel_meta["exempt-in_country_and_statutory_instrument_wales_publish_date"] : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_scotland_si_content'] = $this->get_the_defra_content_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_scotland_si"]) ? $this->get_the_defra_content_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_scotland_si"]) : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_scotland_si_title'] = $this->get_the_defra_title_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_scotland_si"]) ? $this->get_the_defra_title_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_scotland_si"]) : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_scotland_si_authorised'] = $fuel_meta["exempt-in_country_and_statutory_instrument_scotland_publish_date"] ? $fuel_meta["exempt-in_country_and_statutory_instrument_scotland_publish_date"] : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_n_ireland_si_content'] = $this->get_the_defra_content_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_n_ireland_si"]) ? $this->get_the_defra_content_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_n_ireland_si"]) : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_n_ireland_si_title'] = $this->get_the_defra_title_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_n_ireland_si"]) ? $this->get_the_defra_title_by_id($fuel_meta["exempt-in_country_and_statutory_instrument_n_ireland_si"]) : NULL;
+		$fuel_data_details['exempt-in_country_and_statutory_instrument_n_ireland_si_authorised'] = $fuel_meta["exempt-in_country_and_statutory_instrument_n_ireland_publish_date"] ? $fuel_meta["exempt-in_country_and_statutory_instrument_n_ireland_publish_date"] : NULL;
+		return $fuel_data_details;
+
+	}
+
+	/**
+	 * Get desired post meta for fuel data view and download
+	 *
+	 * @param [type] $post_id
+	 * @return array $appliance_data_details
+	 */
+	public function appliance_data_details($post_id) {
+		$appliance_data_details = array();
+		$appliance_meta = $this->defra_merge_postmeta($post_id);
+		$manufacturer_meta = $this->defra_merge_postmeta($appliance_meta["manufacturer"]);
+
+		$appliance_data_details['appliance_id'] = $appliance_meta["appliance_id"];
+		$appliance_data_details['appliance_name'] = get_the_title($post_id);
+		$appliance_data_details['output'] = $appliance_meta["output_unit_output_unit_id"] == '3' ? 'n/a' : $appliance_meta["output_unit_output_value"] . $this->output_units($appliance_meta["output_unit_output_unit_id"]);
+		$appliance_data_details['fuel_types'] = $this->get_fuel_type($post_id);
+		$appliance_data_details['appliance_type'] = $this->get_appliance_type($post_id);
+		$appliance_data_details['manufacturer'] = $this->manufacturer_composite_address($appliance_meta["manufacturer"]);
+		$appliance_data_details['instructions_instruction_manual_title'] = $appliance_meta["instructions_instruction_manual_title"] ? $appliance_meta["instructions_instruction_manual_title"] : 'See conditions if applicable';
+		$appliance_data_details['instructions_instruction_manual_date'] = $appliance_meta["instructions_instruction_manual_date"] ? $appliance_meta["instructions_instruction_manual_date"] : 'See conditions if applicable';
+		$appliance_data_details['instructions_instruction_manual_reference'] = $appliance_meta["instructions_instruction_manual_reference"] ? $appliance_meta["instructions_instruction_manual_reference"] : 'See conditions if applicable';
+		$appliance_data_details['servicing_and_installation_servicing_install_manual_title'] = $appliance_meta["servicing_and_installation_servicing_install_manual_title"] ? $appliance_meta["servicing_and_installation_servicing_install_manual_title"] : 'See conditions if applicable';
+		$appliance_data_details['servicing_and_installation_servicing_install_manual_date'] = $appliance_meta["servicing_and_installation_servicing_install_manual_date"] ? $appliance_meta["servicing_and_installation_servicing_install_manual_date"] : 'See conditions if applicable';
+		$appliance_data_details['servicing_and_installation_servicing_install_manual_reference'] = $appliance_meta["servicing_and_installation_servicing_install_manual_reference"] ? $appliance_meta["servicing_and_installation_servicing_install_manual_reference"] : 'See conditions if applicable';
+		$appliance_data_details['additional_conditions_additional_condition_comment'] = $appliance_meta["additional_conditions_additional_condition_comment"] ? $appliance_meta["additional_conditions_additional_condition_comment"] : 'n/a';
+		$appliance_data_details['appliance_fuels_permitted_fuel_id'] = $appliance_meta["appliance_fuels_permitted_fuel_id"] ? get_the_title($appliance_meta["appliance_fuels_permitted_fuel_id"]) : NULL;
+
+		$appliance_data_details['exempt-in_country_and_statutory_instrument_england_si_id'] = $appliance_meta["exempt-in_country_and_statutory_instrument_england_si"];
+		$appliance_data_details['exempt-in_country_and_statutory_instrument_england_si'] = $appliance_meta["exempt-in_country_and_statutory_instrument_england_si"] ? get_the_title($appliance_meta["exempt-in_country_and_statutory_instrument_england_si"]) : NULL;
+
+		$appliance_data_details['exempt-in_country_and_statutory_instrument_wales_si_id'] = $appliance_meta["exempt-in_country_and_statutory_instrument_wales_si"];
+		$appliance_data_details['exempt-in_country_and_statutory_instrument_wales_si'] = $appliance_meta["exempt-in_country_and_statutory_instrument_wales_si"] ? get_the_title($appliance_meta["exempt-in_country_and_statutory_instrument_wales_si"]) : NULL;
+
+		$appliance_data_details['exempt-in_country_and_statutory_instrument_scotland_si_id'] = $appliance_meta["exempt-in_country_and_statutory_instrument_scotland_si"];
+		$appliance_data_details['exempt-in_country_and_statutory_instrument_scotland_si'] = $appliance_meta["exempt-in_country_and_statutory_instrument_scotland_si"] ? get_the_title($appliance_meta["exempt-in_country_and_statutory_instrument_scotland_si"]) : NULL;
+
+		$appliance_data_details['exempt-in_country_and_statutory_instrument_n_ireland_si_id'] = $appliance_meta["exempt-in_country_and_statutory_instrument_n_ireland_si"];
+		$appliance_data_details['exempt-in_country_and_statutory_instrument_n_ireland_si'] = $appliance_meta["exempt-in_country_and_statutory_instrument_n_ireland_si"] ? get_the_title($appliance_meta["exempt-in_country_and_statutory_instrument_n_ireland_si"]) : NULL;
+
+		return $appliance_data_details;
+
+	}
+
+	/**
+	 * Get Appliance fuel types
+	 *
+	 * @param [type] $appliance_id
+	 * @return void
+	 */
+	public function get_fuel_type($appliance_id) {
+		$fuel_types = get_the_terms( $appliance_id, 'fuel_types' );
+		if($fuel_types) {
+			$terms_string = join(', ', wp_list_pluck($fuel_types, 'name'));
+		}
+		return $terms_string;
+	}
+
+	/**
+	 * Get terms of a given custom taxonomy
+	 *
+	 * @param string $taxonomy
+	 * @return object $terms
+	 */
+	public function get_appliance_taxonomy_terms($taxonomy) {
+		$args = array(
+			'taxonomy' => $taxonomy,
+			'hide_empty' => false, // Set to true if you want to hide empty terms
+		);
+		$terms = get_terms($args);
+		return $terms;
+	}
+
+	/**
+	 * Get Appliance appliance types
+	 *
+	 * @param [type] $appliance_id
+	 * @return void
+	 */
+	public function get_appliance_type($appliance_id) {
+		$appliance_types = get_the_terms( $appliance_id, 'appliance_types' );
+		if($appliance_types) {
+			$terms_string = join(', ', wp_list_pluck($appliance_types, 'name'));
+		}
+		return $terms_string;
+	}
+	
+	
+
+	/**
+	 * Get the post title by id
+	 *
+	 * @param int $post_id
+	 * @return string
+	 */
+	public function get_the_defra_title_by_id($post_id) {
+		if(empty($post_id)) {
+			return;
+		}
+		$post = get_post( $post_id );
+		return $post->post_title;
+	}
+
+	/**
+	 * Get the post content by id
+	 *
+	 * @param int $post_id
+	 * @return string
+	 */
+	public function get_the_defra_content_by_id($post_id) {
+		if(empty($post_id)) {
+			return;
+		}
+		$post = get_post( $post_id );
+		return $post->post_content;
+	}
+
+	/**
+	 * Get country name for country id
+	 *
+	 * @param [type] $country_id
+	 * @return void
+	 */
+	public function set_country_str($country_id) {
+		global $wpdb;
+		$country = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT *
+				FROM wp_defra_countries c
+				WHERE c.id = %d",
+				array($country_id)
+			)
+		);
+		return $country[0]->country;
+
+	}
+
+	/**
+	 * Create a composite Manufacturers address
+	 *
+	 * @param int $manufacturer_post_id
+	 * @return string
+	 */
+	public function manufacturer_composite_address($manufacturer_post_id) {
+		$meta_array = $this->defra_merge_postmeta($manufacturer_post_id);
+		$meta_array = array_filter($meta_array);
+		unset($meta_array["id"]);
+		$meta_array["country"] = $this->set_country_str($meta_array["country"]);
+		$manufacturer_composite_address = join(', ',$meta_array);
+		if(empty($manufacturer_composite_address)) {
+			$manufacturer_composite_address = get_the_title( $manufacturer_post_id );
+		}
+		return $manufacturer_composite_address;
+	}
+
+	/**
+	 * Helper to wrap all postmeta into a single array
+	 *
+	 * @param int $post_id
+	 * @return array
+	 */
+	public function defra_merge_postmeta($post_id) {
+		$meta_array = array_map( function( $a ){ return $a[0]; }, get_post_meta($post_id) );
+		return $meta_array;
+	}
+	
 	public function do_users_update_callback() {
 
 		$roles = array(
@@ -1530,5 +1983,14 @@ class Defra_Data_Entry_Public {
         // return $results;
 
 	}
+
+	public function data_entry_navigation_callback() {
+		$user = wp_get_current_user();
+		$allowed_roles = array( 'administrator','data_entry');
+		if(is_user_logged_in() && array_intersect( $allowed_roles, $user->roles )) {
+			require_once plugin_dir_path( __FILE__ ) . 'partials/data-entry/navigation-data-entry-logged-in.php';
+		}
+	}
+
 
 }

@@ -1,14 +1,12 @@
 <?php 
 $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
-$class->defra_get_header('data-entry');
 // $db = new Defra_Data_DB_Requests();
 // $appliances = $db->get_appliance_country_status($_GET['status']);
 // defra_data_query_by_appliance_id($appliances);
+get_header();
 ?>
 
 <?php do_action('before_main_content'); ?>
-
-<div class="px-4 sm:px-6 lg:px-8">
 
 	<h1 class="entry-title">Appliances</h1>
 
@@ -103,8 +101,6 @@ $class->defra_get_header('data-entry');
 		<?php } ?> -->
 	</tbody>
 	</table>
-
-</div>
 
 <?php do_action('after_main_content'); ?>
 

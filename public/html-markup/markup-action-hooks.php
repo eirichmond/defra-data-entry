@@ -5,7 +5,7 @@
 add_action('before_main_content', 'before_main_content_callback', 10);
 function before_main_content_callback(){
 
-    echo '<main id="primary"><div class="py-6">';
+    echo '<main class="section bg-white pb-3"><div class="container">';
     
 }
 

@@ -1,6 +1,6 @@
 <?php 
 $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
-$class->defra_get_header('data-entry');
+get_header();
 ?>
 
 <?php do_action('before_main_content'); ?>

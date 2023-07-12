@@ -130,81 +130,9 @@ class Defra_Data_Entry_Admin {
 		unset($wp_meta_boxes['dashboard']['normal']['core']['dashboard_activity']);
 		unset($wp_meta_boxes['dashboard']['side']['core']['dashboard_primary']);
 	 
-		wp_add_dashboard_widget(
-			'defre_requests_widget',                          // Widget slug.
-			esc_html__( 'Appliance Requests', 'defra-data-entry' ), // Title.
-			array($this,'defre_requests_widget_render')                    // Display function.
-		); 
 	}
 
-	/**
-	 * include appliance requests dashboard widgets file
-	 *
-	 * @return void
-	 */
-	public function defre_requests_widget_render() {
-		$draft_appliances = $this->get_draft_appliances();
-		$draft_appliances_count = count($draft_appliances);
-		$pending_appliances = $this->get_pending_appliances();
-		$pending_appliances_count = count($pending_appliances);
-		$reveiwer_rejected_appliances = $this->get_reveiwer_rejected_appliances();
-		$reveiwer_rejected_appliances_count = count($reveiwer_rejected_appliances);
-		$reveiwer_approved_appliances = $this->get_reveiwer_approved_appliances();
-		$reveiwer_approved_appliances_count = count($reveiwer_approved_appliances);
-		$published_appliances = $this->get_published_appliances();
-		$published_appliances_count = count($published_appliances);
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/dashboard/appliance-requests-widget.php';
-	}
-	
-	public function get_published_appliances() {
-		$args = array(
-			'post_type' => 'appliances',
-			'post_status' => 'publish',
-			'posts_per_page' => -1
-		);
-		$published_appliances = get_posts($args);
-		return $published_appliances;
 
-	}
-
-	public function get_reveiwer_approved_appliances() {
-		$args = array(
-			'post_type' => 'appliances',
-			'post_status' => 'approved',
-		);
-		$reveiwer_approved_appliances = get_posts($args);
-		return $reveiwer_approved_appliances;
-
-	}
-
-	public function get_reveiwer_rejected_appliances() {
-		$args = array(
-			'post_type' => 'appliances',
-			'post_status' => 'rejected',
-		);
-		$reveiwer_rejected_appliances = get_posts($args);
-		return $reveiwer_rejected_appliances;
-
-	}
-
-	public function get_pending_appliances() {
-		$args = array(
-			'post_type' => 'appliances',
-			'post_status' => 'pending',
-		);
-		$pending_appliances = get_posts($args);
-		return $pending_appliances;
-
-	}
-
-	public function get_draft_appliances() {
-		$args = array(
-			'post_type' => 'appliances',
-			'post_status' => 'draft',
-		);
-		$draft_appliances = get_posts($args);
-		return $draft_appliances;
-	}
 
 	/**
 	 * get all data reviewers

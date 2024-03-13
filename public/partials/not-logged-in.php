@@ -2,7 +2,10 @@
 
     <?php do_action('before_main_content'); ?>
 
-    <h1 class="entry-title">User is not logged in!</h1>
+    <div class="alert alert-danger" role="alert">
+        Unauthorised, you need to login to view this page!
+    </div>
+
     
     <?php do_action('after_main_content'); ?>
 

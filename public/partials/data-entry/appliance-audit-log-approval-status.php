@@ -26,7 +26,7 @@ $approved_statuses = data_setup_approval_status($post_id);
 
             <?php if($approved_status['exempt-in_country_and_statutory_instrument_'.$key.'_is_published'] == '1') { ?>
                 <tr>
-                    <td><?php echo esc_html( str_replace('_', '. ', ucwords($key)) ); ?></td>
+                    <td><?php echo esc_html( ucwords(str_replace('_', '. ', $key)) ); ?></td>
                     <td><?php echo esc_html( $approved_status["exempt-in_country_and_statutory_instrument_{$key}_user"] ); ?></td>
                     <td><?php echo esc_html( $approved_status["exempt-in_country_and_statutory_instrument_{$key}_assigned_date"] ); ?></td>
                     <td><?php echo esc_html( $approved_status["exempt-in_country_and_statutory_instrument_{$key}_approve_date"] ); ?></td>

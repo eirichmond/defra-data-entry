@@ -16,6 +16,10 @@ function manufacturer_by_id($manufacturer_id) {
 $public_class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
 $appliance_data_details = $public_class->appliance_data_details($post->ID);
 
+$exempt_england = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true);
+$exempt_wales = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_wales_si', true);
+$exempt_scotland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true);
+$exempt_ireland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true);
 
 ?>
 
@@ -113,33 +117,33 @@ $appliance_data_details = $public_class->appliance_data_details($post->ID);
 							</tr>
 
 							<tr>
-								<td><strong>England Status<br>
-								Date first exempt</strong></td>
-								<?php $eis_id = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true); ?>
-								<td>Exempt (<a href="<?php echo $public_class->get_the_defra_content_by_id($eis_id); ?>"><?php echo get_the_title($eis_id); ?></a>)<br>See Footnotes or SI Link</td>
+								<td><strong>England Status<br>Date first exempt</strong></td>
+								<td>
+									<?php echo $exempt_england ? 'Exempt ('.var_dump($public_class->statutory_instrument_assignment( $post->ID,'england' )).')' : 'No'; ?>
+								</td>
 							</tr>
 						
 							<tr>
-								<td><strong>Wales Status<br>
-								Date first exempt</strong></td>
-								<?php $wis_id = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_wales_si', true); ?>
-								<td>Exempt (<a href="<?php echo $public_class->get_the_defra_content_by_id($wis_id); ?>"><?php echo get_the_title($wis_id); ?></a>)<br>See Footnotes or SI Link</td>
-							</tr>
-
-						
-							<tr>
-								<td><strong>Scotland Status<br>
-									Date first exempt</strong></td>
-									<?php $sis_id = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true); ?>
-								<td>Exempt (<a href="<?php echo $public_class->get_the_defra_content_by_id($sis_id); ?>"><?php echo get_the_title($sis_id); ?></a>)<br>See Footnotes or SI Link</td>
+								<td><strong>Wales Status<br>Date first exempt</strong></td>
+								<td>
+									<?php echo $exempt_england ? 'Exempt ('.var_dump($public_class->statutory_instrument_assignment( $post->ID,'wales' )).')' : 'No'; ?>	
+								</td>
 							</tr>
 
 						
 							<tr>
-								<td><strong>N. Ireland Status<br>
-									Date first exempt</strong></td>
-									<?php $niis_id = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true); ?>
-								<td>Exempt (<a href="<?php echo $public_class->get_the_defra_content_by_id($niis_id); ?>"><?php echo get_the_title($niis_id); ?></a>)<br>See Footnotes or SI Link</td>
+								<td><strong>Scotland Status<br>Date first exempt</strong></td>
+								<td>
+									<?php echo $exempt_england ? 'Exempt ('.var_dump($public_class->statutory_instrument_assignment( $post->ID,'scotland' )).')' : 'No'; ?>	
+								</td>
+							</tr>
+
+						
+							<tr>
+								<td><strong>N. Ireland Status<br>Date first exempt</strong></td>
+								<td>
+									<?php echo $exempt_england ? 'Exempt ('.var_dump($public_class->statutory_instrument_assignment( $post->ID,'n_ireland' )).')' : 'No'; ?>	
+								</td>
 							</tr>
 
 						</tbody>

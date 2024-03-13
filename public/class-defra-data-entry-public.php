@@ -2380,7 +2380,9 @@ class Defra_Data_Entry_Public {
 		$meta_array = $this->defra_merge_postmeta($manufacturer_post_id);
 		$meta_array = array_filter($meta_array);
 		unset($meta_array["id"]);
-		$meta_array["country"] = $this->set_country_str($meta_array["country"]);
+		if(isset($meta_array["country"]) & !empty($meta_array["country"])) {
+			$meta_array["country"] = $this->set_country_str($meta_array["country"]);
+		}
 		$manufacturer_composite_address = join(', ',$meta_array);
 		if(empty($manufacturer_composite_address)) {
 			$manufacturer_composite_address = get_the_title( $manufacturer_post_id );
@@ -2580,6 +2582,30 @@ class Defra_Data_Entry_Public {
 				include plugin_dir_path( __FILE__ ) . 'partials/template-part/approver-approve-reject.php';
 			}
 		}
+	}
+
+	/**
+	 * statutory instrument assignment
+	 *
+	 * @param [type] $post_id
+	 * @param [type] $country
+	 * @return void
+	 */
+	public function statutory_instrument_assignment( $post_id, $country ) {
+		$count = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si', true );
+		$statutory_instruments = array();
+		for ($i=0; $i < $count; $i++) { 
+			$si_id = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si_'.$i.'_si_id', true );
+			$statutory_instruments[$i]['id'] = $si_id;
+			$statutory_instruments[$i]['title'] = get_the_title($si_id);
+			if(strpos(get_the_title($si_id), 'Footnote') !== false) {
+				$statutory_instruments[$i]['url'] = get_permalink($si_id);
+			} else {
+				$statutory_instruments[$i]['url'] = get_post_field('post_content', $si_id);
+			}
+			
+		}
+		return $statutory_instruments;
 	}
 
 	/**

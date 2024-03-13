@@ -71,46 +71,51 @@ function get_user_login($user_id) {
     return $userdata->user_login;
 }
 
-function approval_status_metas() {
+function approval_status_metas($post_type) {
+    if($post_type == 'fuels') {
+        $si_status = 'authorised';
+    } else {
+        $si_status = 'exempt-in';
+    }
     $meta_keys = array(
         'england' => array(
-            'exempt-in_country_and_statutory_instrument_england_is_published',
-            'exempt-in_country_and_statutory_instrument_england_status',
-            'exempt-in_country_and_statutory_instrument_england_user',
-            'exempt-in_country_and_statutory_instrument_england_assigned_date',
-            'exempt-in_country_and_statutory_instrument_england_approve_date',
-            'exempt-in_country_and_statutory_instrument_england_publish_date'
+            $si_status . '_country_and_statutory_instrument_england_is_published',
+            $si_status . '_country_and_statutory_instrument_england_status',
+            $si_status . '_country_and_statutory_instrument_england_user',
+            $si_status . '_country_and_statutory_instrument_england_assigned_date',
+            $si_status . '_country_and_statutory_instrument_england_approve_date',
+            $si_status . '_country_and_statutory_instrument_england_publish_date'
         ),
         'scotland' => array(
-            'exempt-in_country_and_statutory_instrument_scotland_is_published',
-            'exempt-in_country_and_statutory_instrument_scotland_status',
-            'exempt-in_country_and_statutory_instrument_scotland_user',
-            'exempt-in_country_and_statutory_instrument_scotland_assigned_date',
-            'exempt-in_country_and_statutory_instrument_scotland_approve_date',
-            'exempt-in_country_and_statutory_instrument_scotland_publish_date'
+            $si_status . '_country_and_statutory_instrument_scotland_is_published',
+            $si_status . '_country_and_statutory_instrument_scotland_status',
+            $si_status . '_country_and_statutory_instrument_scotland_user',
+            $si_status . '_country_and_statutory_instrument_scotland_assigned_date',
+            $si_status . '_country_and_statutory_instrument_scotland_approve_date',
+            $si_status . '_country_and_statutory_instrument_scotland_publish_date'
         ),
         'wales' => array(
-            'exempt-in_country_and_statutory_instrument_wales_is_published',
-            'exempt-in_country_and_statutory_instrument_wales_status',
-            'exempt-in_country_and_statutory_instrument_wales_user',
-            'exempt-in_country_and_statutory_instrument_wales_assigned_date',
-            'exempt-in_country_and_statutory_instrument_wales_approve_date',
+            $si_status . '_country_and_statutory_instrument_wales_is_published',
+            $si_status . '_country_and_statutory_instrument_wales_status',
+            $si_status . '_country_and_statutory_instrument_wales_user',
+            $si_status . '_country_and_statutory_instrument_wales_assigned_date',
+            $si_status . '_country_and_statutory_instrument_wales_approve_date',
             'exempt-in_country_and_statutory_instrument_wales_publish_date'
         ),
         'n_ireland' => array(
-            'exempt-in_country_and_statutory_instrument_n_ireland_is_published',
-            'exempt-in_country_and_statutory_instrument_n_ireland_status',
-            'exempt-in_country_and_statutory_instrument_n_ireland_user',
-            'exempt-in_country_and_statutory_instrument_n_ireland_assigned_date',
-            'exempt-in_country_and_statutory_instrument_n_ireland_approve_date',
-            'exempt-in_country_and_statutory_instrument_n_ireland_publish_date'
+            $si_status . '_country_and_statutory_instrument_n_ireland_is_published',
+            $si_status . '_country_and_statutory_instrument_n_ireland_status',
+            $si_status . '_country_and_statutory_instrument_n_ireland_user',
+            $si_status . '_country_and_statutory_instrument_n_ireland_assigned_date',
+            $si_status . '_country_and_statutory_instrument_n_ireland_approve_date',
+            $si_status . '_country_and_statutory_instrument_n_ireland_publish_date'
         )
     );
     return $meta_keys;
 }
 
 function data_setup_approval_status($post_id) {
-    $meta_keys = approval_status_metas();
+    $meta_keys = approval_status_metas(get_post_type($post_id));
     $approved_statuses = array();
     foreach ($meta_keys as $k => $metas) { 
         foreach($metas as $meta_key) {

@@ -146,9 +146,6 @@ class Defra_Data_Entry_Admin {
 			)
 		));
 		$emails_as_array = wp_list_pluck( $data_reviewers, 'user_email' );
-		if(defined('LOCAL_DEV')) {
-			$emails_as_array = array(LOCAL_DEV);
-		}
 		return $emails_as_array;
 
 	}
@@ -165,9 +162,6 @@ class Defra_Data_Entry_Admin {
 			)
 		));
 		$emails_as_array = wp_list_pluck( $data_entry, 'user_email' );
-		if(defined('LOCAL_DEV')) {
-			$emails_as_array = array(LOCAL_DEV);
-		}
 		return $emails_as_array;
 
 	}
@@ -185,9 +179,23 @@ class Defra_Data_Entry_Admin {
 			)
 		));
 		$emails_as_array = wp_list_pluck( $data_approvers, 'user_email' );
-		if(defined('LOCAL_DEV')) {
-			$emails_as_array = array(LOCAL_DEV);
-		}
+		return $emails_as_array;
+
+	}
+
+	/**
+	 * get all administrators
+	 *
+	 * @return array $emails_as_array
+	 */
+
+	public function get_administrator_email_addresses() {
+		$administrator = get_users(array(
+			'role__in' => array(
+				'administrator'
+			)
+		));
+		$emails_as_array = wp_list_pluck( $administrator, 'user_email' );
 		return $emails_as_array;
 
 	}

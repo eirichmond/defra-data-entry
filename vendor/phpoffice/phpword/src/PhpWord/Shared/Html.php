@@ -44,6 +44,11 @@ class Html
     protected static $options;
 
     /**
+     * @var Css
+     */
+    protected static $css;
+
+    /**
      * Add HTML parts.
      *
      * Note: $stylesheet parameter is removed to avoid PHPMD error for unused parameter
@@ -61,7 +66,7 @@ class Html
          * @todo parse $stylesheet for default styles.  Should result in an array based on id, class and element,
          * which could be applied when such an element occurs in the parseNode function.
          */
-        self::$options = $options;
+        static::$options = $options;
 
         // Preprocess: remove all line ends, decode HTML entity,
         // fix ampersand and angle brackets and add body tag for HTML fragments
@@ -82,10 +87,10 @@ class Html
         $dom = new DOMDocument();
         $dom->preserveWhiteSpace = $preserveWhiteSpace;
         $dom->loadXML($html);
-        self::$xpath = new DOMXPath($dom);
+        static::$xpath = new DOMXPath($dom);
         $node = $dom->getElementsByTagName('body');
 
-        self::parseNode($node->item(0), $element);
+        static::parseNode($node->item(0), $element);
         if (\PHP_VERSION_ID < 80000) {
             libxml_disable_entity_loader($orignalLibEntityLoader);
         }
@@ -104,11 +109,12 @@ class Html
         if (XML_ELEMENT_NODE == $node->nodeType) {
             $attributes = $node->attributes; // get all the attributes(eg: id, class)
 
+            $bidi = ($attributes['dir'] ?? '') === 'rtl';
             foreach ($attributes as $attribute) {
                 $val = $attribute->value;
                 switch (strtolower($attribute->name)) {
                     case 'align':
-                        $styles['alignment'] = self::mapAlign(trim($val));
+                        $styles['alignment'] = self::mapAlign(trim($val), $bidi);
 
                         break;
                     case 'lang':
@@ -149,6 +155,19 @@ class Html
                 }
             }
 
+            $attributeIdentifier = $attributes->getNamedItem('id');
+            if ($attributeIdentifier && self::$css) {
+                $styles = self::parseStyleDeclarations(self::$css->getStyle('#' . $attributeIdentifier->value), $styles);
+            }
+
+            $attributeClass = $attributes->getNamedItem('class');
+            if ($attributeClass) {
+                if (self::$css) {
+                    $styles = self::parseStyleDeclarations(self::$css->getStyle('.' . $attributeClass->value), $styles);
+                }
+                $styles['className'] = $attributeClass->value;
+            }
+
             $attributeStyle = $attributes->getNamedItem('style');
             if ($attributeStyle) {
                 $styles = self::parseStyle($attributeStyle, $styles);
@@ -168,6 +187,13 @@ class Html
      */
     protected static function parseNode($node, $element, $styles = [], $data = []): void
     {
+        if ($node->nodeName == 'style') {
+            self::$css = new Css($node->textContent);
+            self::$css->process();
+
+            return;
+        }
+
         // Populate styles array
         $styleTypes = ['font', 'paragraph', 'list', 'table', 'row', 'cell'];
         foreach ($styleTypes as $styleType) {
@@ -246,7 +272,7 @@ class Html
      * Parse child nodes.
      *
      * @param DOMNode $node
-     * @param \PhpOffice\PhpWord\Element\AbstractContainer $element
+     * @param \PhpOffice\PhpWord\Element\AbstractContainer|Row|Table $element
      * @param array $styles
      * @param array $data
      */
@@ -389,6 +415,11 @@ class Html
 
         $newElement = $element->addTable($elementStyles);
 
+        // Add style name from CSS Class
+        if (isset($elementStyles['className'])) {
+            $newElement->getStyle()->setStyleName($elementStyles['className']);
+        }
+
         $attributes = $node->attributes;
         if ($attributes->getNamedItem('border') !== null) {
             $border = (int) $attributes->getNamedItem('border')->value;
@@ -414,7 +445,11 @@ class Html
             $rowStyles['tblHeader'] = true;
         }
 
-        return $element->addRow(null, $rowStyles);
+        // set cell height to control row heights
+        $height = $rowStyles['height'] ?? null;
+        unset($rowStyles['height']); // would not apply
+
+        return $element->addRow($height, $rowStyles);
     }
 
     /**
@@ -635,13 +670,22 @@ class Html
     {
         $properties = explode(';', trim($attribute->value, " \t\n\r\0\x0B;"));
 
+        $selectors = [];
         foreach ($properties as $property) {
             [$cKey, $cValue] = array_pad(explode(':', $property, 2), 2, null);
-            $cValue = trim($cValue ?? '');
-            $cKey = strtolower(trim($cKey));
-            switch ($cKey) {
+            $selectors[strtolower(trim($cKey))] = trim($cValue ?? '');
+        }
+
+        return self::parseStyleDeclarations($selectors, $styles);
+    }
+
+    protected static function parseStyleDeclarations(array $selectors, array $styles)
+    {
+        $bidi = ($selectors['direction'] ?? '') === 'rtl';
+        foreach ($selectors as $property => $value) {
+            switch ($property) {
                 case 'text-decoration':
-                    switch ($cValue) {
+                    switch ($value) {
                         case 'underline':
                             $styles['underline'] = 'single';
 
@@ -654,44 +698,45 @@ class Html
 
                     break;
                 case 'text-align':
-                    $styles['alignment'] = self::mapAlign($cValue);
+                    $styles['alignment'] = self::mapAlign($value, $bidi);
 
                     break;
                 case 'display':
-                    $styles['hidden'] = $cValue === 'none' || $cValue === 'hidden';
+                    $styles['hidden'] = $value === 'none' || $value === 'hidden';
 
                     break;
                 case 'direction':
-                    $styles['rtl'] = $cValue === 'rtl';
+                    $styles['rtl'] = $value === 'rtl';
+                    $styles['bidi'] = $value === 'rtl';
 
                     break;
                 case 'font-size':
-                    $styles['size'] = Converter::cssToPoint($cValue);
+                    $styles['size'] = Converter::cssToPoint($value);
 
                     break;
                 case 'font-family':
-                    $cValue = array_map('trim', explode(',', $cValue));
-                    $styles['name'] = ucwords($cValue[0]);
+                    $value = array_map('trim', explode(',', $value));
+                    $styles['name'] = ucwords($value[0]);
 
                     break;
                 case 'color':
-                    $styles['color'] = trim($cValue, '#');
+                    $styles['color'] = trim($value, '#');
 
                     break;
                 case 'background-color':
-                    $styles['bgColor'] = trim($cValue, '#');
+                    $styles['bgColor'] = trim($value, '#');
 
                     break;
                 case 'line-height':
                     $matches = [];
-                    if ($cValue === 'normal') {
+                    if ($value === 'normal') {
                         $spacingLineRule = \PhpOffice\PhpWord\SimpleType\LineSpacingRule::AUTO;
                         $spacing = 0;
-                    } elseif (preg_match('/([0-9]+\.?[0-9]*[a-z]+)/', $cValue, $matches)) {
+                    } elseif (preg_match('/([0-9]+\.?[0-9]*[a-z]+)/', $value, $matches)) {
                         //matches number with a unit, e.g. 12px, 15pt, 20mm, ...
                         $spacingLineRule = \PhpOffice\PhpWord\SimpleType\LineSpacingRule::EXACT;
                         $spacing = Converter::cssToTwip($matches[1]);
-                    } elseif (preg_match('/([0-9]+)%/', $cValue, $matches)) {
+                    } elseif (preg_match('/([0-9]+)%/', $value, $matches)) {
                         //matches percentages
                         $spacingLineRule = \PhpOffice\PhpWord\SimpleType\LineSpacingRule::AUTO;
                         //we are subtracting 1 line height because the Spacing writer is adding one line
@@ -700,23 +745,23 @@ class Html
                         //any other, wich is a multiplier. E.g. 1.2
                         $spacingLineRule = \PhpOffice\PhpWord\SimpleType\LineSpacingRule::AUTO;
                         //we are subtracting 1 line height because the Spacing writer is adding one line
-                        $spacing = ($cValue * Paragraph::LINE_HEIGHT) - Paragraph::LINE_HEIGHT;
+                        $spacing = ($value * Paragraph::LINE_HEIGHT) - Paragraph::LINE_HEIGHT;
                     }
                     $styles['spacingLineRule'] = $spacingLineRule;
                     $styles['line-spacing'] = $spacing;
 
                     break;
                 case 'letter-spacing':
-                    $styles['letter-spacing'] = Converter::cssToTwip($cValue);
+                    $styles['letter-spacing'] = Converter::cssToTwip($value);
 
                     break;
                 case 'text-indent':
-                    $styles['indentation']['firstLine'] = Converter::cssToTwip($cValue);
+                    $styles['indentation']['firstLine'] = Converter::cssToTwip($value);
 
                     break;
                 case 'font-weight':
                     $tValue = false;
-                    if (preg_match('#bold#', $cValue)) {
+                    if (preg_match('#bold#', $value)) {
                         $tValue = true; // also match bolder
                     }
                     $styles['bold'] = $tValue;
@@ -724,51 +769,64 @@ class Html
                     break;
                 case 'font-style':
                     $tValue = false;
-                    if (preg_match('#(?:italic|oblique)#', $cValue)) {
+                    if (preg_match('#(?:italic|oblique)#', $value)) {
                         $tValue = true;
                     }
                     $styles['italic'] = $tValue;
 
                     break;
+                case 'font-variant':
+                    $tValue = false;
+                    if (preg_match('#small-caps#', $value)) {
+                        $tValue = true;
+                    }
+                    $styles['smallCaps'] = $tValue;
+
+                    break;
                 case 'margin':
-                    $cValue = Converter::cssToTwip($cValue);
-                    $styles['spaceBefore'] = $cValue;
-                    $styles['spaceAfter'] = $cValue;
+                    $value = Converter::cssToTwip($value);
+                    $styles['spaceBefore'] = $value;
+                    $styles['spaceAfter'] = $value;
 
                     break;
                 case 'margin-top':
-                    // BC change: up to ver. 0.17.0 incorrectly converted to points - Converter::cssToPoint($cValue)
-                    $styles['spaceBefore'] = Converter::cssToTwip($cValue);
+                    // BC change: up to ver. 0.17.0 incorrectly converted to points - Converter::cssToPoint($value)
+                    $styles['spaceBefore'] = Converter::cssToTwip($value);
 
                     break;
                 case 'margin-bottom':
-                    // BC change: up to ver. 0.17.0 incorrectly converted to points - Converter::cssToPoint($cValue)
-                    $styles['spaceAfter'] = Converter::cssToTwip($cValue);
+                    // BC change: up to ver. 0.17.0 incorrectly converted to points - Converter::cssToPoint($value)
+                    $styles['spaceAfter'] = Converter::cssToTwip($value);
 
                     break;
                 case 'border-color':
-                    self::mapBorderColor($styles, $cValue);
+                    self::mapBorderColor($styles, $value);
 
                     break;
                 case 'border-width':
-                    $styles['borderSize'] = Converter::cssToPoint($cValue);
+                    $styles['borderSize'] = Converter::cssToPoint($value);
 
                     break;
                 case 'border-style':
-                    $styles['borderStyle'] = self::mapBorderStyle($cValue);
+                    $styles['borderStyle'] = self::mapBorderStyle($value);
 
                     break;
                 case 'width':
-                    if (preg_match('/([0-9]+[a-z]+)/', $cValue, $matches)) {
+                    if (preg_match('/([0-9]+[a-z]+)/', $value, $matches)) {
                         $styles['width'] = Converter::cssToTwip($matches[1]);
                         $styles['unit'] = \PhpOffice\PhpWord\SimpleType\TblWidth::TWIP;
-                    } elseif (preg_match('/([0-9]+)%/', $cValue, $matches)) {
+                    } elseif (preg_match('/([0-9]+)%/', $value, $matches)) {
                         $styles['width'] = $matches[1] * 50;
                         $styles['unit'] = \PhpOffice\PhpWord\SimpleType\TblWidth::PERCENT;
-                    } elseif (preg_match('/([0-9]+)/', $cValue, $matches)) {
+                    } elseif (preg_match('/([0-9]+)/', $value, $matches)) {
                         $styles['width'] = $matches[1];
                         $styles['unit'] = \PhpOffice\PhpWord\SimpleType\TblWidth::AUTO;
                     }
+
+                    break;
+                case 'height':
+                    $styles['height'] = Converter::cssToTwip($value);
+                    $styles['exactHeight'] = true;
 
                     break;
                 case 'border':
@@ -778,9 +836,9 @@ class Html
                 case 'border-left':
                     // must have exact order [width color style], e.g. "1px #0011CC solid" or "2pt green solid"
                     // Word does not accept shortened hex colors e.g. #CCC, only full e.g. #CCCCCC
-                    if (preg_match('/([0-9]+[^0-9]*)\s+(\#[a-fA-F0-9]+|[a-zA-Z]+)\s+([a-z]+)/', $cValue, $matches)) {
-                        if (false !== strpos($cKey, '-')) {
-                            $tmp = explode('-', $cKey);
+                    if (preg_match('/([0-9]+[^0-9]*)\s+(\#[a-fA-F0-9]+|[a-zA-Z]+)\s+([a-z]+)/', $value, $matches)) {
+                        if (false !== strpos($property, '-')) {
+                            $tmp = explode('-', $property);
                             $which = $tmp[1];
                             $which = ucfirst($which); // e.g. bottom -> Bottom
                         } else {
@@ -803,13 +861,13 @@ class Html
                     break;
                 case 'vertical-align':
                     // https://developer.mozilla.org/en-US/docs/Web/CSS/vertical-align
-                    if (preg_match('#(?:top|bottom|middle|sub|baseline)#i', $cValue, $matches)) {
+                    if (preg_match('#(?:top|bottom|middle|sub|baseline)#i', $value, $matches)) {
                         $styles['valign'] = self::mapAlignVertical($matches[0]);
                     }
 
                     break;
                 case 'page-break-after':
-                    if ($cValue == 'always') {
+                    if ($value == 'always') {
                         $styles['isPageBreak'] = true;
                     }
 
@@ -910,7 +968,10 @@ class Html
                 $tmpDir = Settings::getTempDir() . '/';
                 $match = [];
                 preg_match('/.+\.(\w+)$/', $src, $match);
-                $src = $tmpDir . uniqid() . '.' . $match[1];
+                $src = $tmpDir . uniqid();
+                if (isset($match[1])) {
+                    $src .= '.' . $match[1];
+                }
 
                 $ifp = fopen($src, 'wb');
 
@@ -968,20 +1029,21 @@ class Html
      * Transforms a HTML/CSS alignment into a \PhpOffice\PhpWord\SimpleType\Jc.
      *
      * @param string $cssAlignment
+     * @param bool $bidi
      *
      * @return null|string
      */
-    protected static function mapAlign($cssAlignment)
+    protected static function mapAlign($cssAlignment, $bidi)
     {
         switch ($cssAlignment) {
             case 'right':
-                return Jc::END;
+                return $bidi ? Jc::START : Jc::END;
             case 'center':
                 return Jc::CENTER;
             case 'justify':
                 return Jc::BOTH;
             default:
-                return Jc::START;
+                return $bidi ? Jc::END : Jc::START;
         }
     }
 

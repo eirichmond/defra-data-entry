@@ -44,7 +44,7 @@ get_header();
 						<?php } ?>
 					</td>
 					<td style="width:15%">
-						<ul class="icon-component">
+						<ul class="icon-component list-unstyled">
 							<li>
 								<a href="<?php echo the_permalink(); ?>"><i class="gg-eye"></i></a>
 							</li>
@@ -81,7 +81,7 @@ get_header();
 					<?php } ?>
 				</td>
 				<td style="width:15%">
-					<ul class="icon-component">
+					<ul class="icon-component list-unstyled">
 						<li>
 							<a href="/appliance-view/?appliance-id=<?php echo esc_html( $v['appliance_id'] ); ?>"><i class="gg-eye"></i></a>
 						</li>

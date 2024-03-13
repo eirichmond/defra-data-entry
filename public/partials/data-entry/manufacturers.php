@@ -42,9 +42,9 @@ get_header();
 						<?php echo esc_html( $v['manufacturer_action'] ); ?>
 					
 					
-						<ul class="icon-component">
+						<ul class="icon-component list-unstyled">
 							<li>
-								<a class="edit" href="#" data-id="<?php echo esc_html( $v['manufacturer_id'] ); ?>"><i class="gg-pen"></i></a>
+								<a class="edit" href="/wp-admin/post.php?post=<?php echo esc_html( $v['manufacturer_id'] ); ?>&action=edit" data-id="<?php echo esc_html( $v['manufacturer_id'] ); ?>"><i class="gg-pen"></i></a>
 							</li>
 							<li class="delete" data-id="<?php echo esc_html( $v['manufacturer_id'] ); ?>" data-type="defra_defra_manufacturers" data-action="delete_defra_manufacturer">
 								<a href="#"><i class="gg-trash"></i></a>

@@ -71,6 +71,11 @@ function config_setup() {
 						'title' => 'Create new appliance',
 						'slug' => 'create-new-appliance',
 						'template' => 'partials/data-entry/create-new-appliance.php',	
+					),
+					array(
+						'title' => 'Update appliance',
+						'slug' => 'update-appliance',
+						'template' => 'partials/data-entry/update-appliance.php',	
 					)
 				) 
 			),
@@ -79,6 +84,21 @@ function config_setup() {
 				'slug' => 'fuels',
 				'template' => 'partials/data-entry/fuels.php',
 				'child' => array(
+					array(
+						'title' => 'Fuel View',
+						'slug' => 'fuel-view',
+						'template' => 'partials/data-entry/fuel-view.php',	
+					),
+					array(
+						'title' => 'Fuel Audit Log',
+						'slug' => 'fuel-audit-log',
+						'template' => 'partials/data-entry/fuel-audit-log.php',	
+					),
+					array(
+						'title' => 'Fuel Change Log',
+						'slug' => 'fuel-change-log',
+						'template' => 'partials/data-entry/fuel-change-log.php',	
+					),
 					array(
 						'title' => 'Create new fuel',
 						'slug' => 'create-new-fuel',

@@ -22,7 +22,7 @@
     <form action="/data-entry/form-process/" method="post">
         <ul class="list-unstyled icon-component">
             <li>
-                <a href="<?php echo the_permalink(); ?>"><i class="gg-eye"></i></a>
+                <?php echo do_action('defra_view_assign_link'); ?>
             </li>
             <li>
                 <button type="submit"><i class="gg-file-document"></i></button>

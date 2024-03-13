@@ -70,32 +70,115 @@ get_header();
 								<td><?php echo esc_html( $public_class->manufacturer_composite_address(get_post_meta($post->ID, 'manufacturer', true ))); ?></td>
 							</tr>
 
+							<?php if( !empty( get_post_meta($post->ID, 'point_a', true ) ) ) { ?>
+								<tr>
+									<td><strong>(a)</strong></td>
+									<td><?php echo esc_html(get_post_meta($post->ID, 'point_a', true )); ?></td>
+								</tr>
+							<?php } ?>
+
+							<?php if( !empty( get_post_meta($post->ID, 'point_b', true ) ) ) { ?>
+								<tr>
+									<td><strong>(b)</strong></td>
+									<td><?php echo esc_html(get_post_meta($post->ID, 'point_b', true )); ?></td>
+								</tr>
+							<?php } ?>
+
+							<?php if( !empty( get_post_meta($post->ID, 'point_c', true ) ) ) { ?>
+								<tr>
+									<td><strong>(c)</strong></td>
+									<td><?php echo esc_html(get_post_meta($post->ID, 'point_c', true )); ?></td>
+								</tr>
+							<?php } ?>
+
+							<?php if( !empty( get_post_meta($post->ID, 'point_d', true ) ) ) { ?>
+								<tr>
+									<td><strong>(d)</strong></td>
+									<td><?php echo esc_html(get_post_meta($post->ID, 'point_d', true )); ?></td>
+								</tr>
+							<?php } ?>
+
+							<?php if( !empty( get_post_meta($post->ID, 'point_e', true ) ) ) { ?>
+								<tr>
+									<td><strong>(e)</strong></td>
+									<td><?php echo esc_html(get_post_meta($post->ID, 'point_e', true )); ?></td>
+								</tr>
+							<?php } ?>
+
+							<?php if( !empty( get_post_meta($post->ID, 'point_f', true ) ) ) { ?>
+								<tr>
+									<td><strong>(f)</strong></td>
+									<td><?php echo esc_html(get_post_meta($post->ID, 'point_f', true )); ?></td>
+								</tr>
+							<?php } ?>
+
 
 						
 							<tr>
 								<td><strong>England Status<br>
 								Date first authorised</strong></td>
-								<td>Authorised  (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)<br>See Footnotes or SI Link</td>
+
+								<?php if(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_enabled', true ) == '1') { ?>
+									<td>Authorised  (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)
+										<br><?php echo esc_html( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_publish_date', true) ); ?>
+									</td>
+								<?php } else { ?>
+									<td>No</td>
+									<td>n/a</td>
+								<?php }?>
+
+
 							</tr>
 						
 							<tr>
 								<td><strong>Wales Status<br>
 								Date first authorised</strong></td>
-								<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_wales_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_wales_si', true)); ?></a>)<br>See Footnotes or SI Link</td>
+								<?php if(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_enabled', true ) == '1') { ?>
+									<td>Authorised  (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)
+										<br><?php echo esc_html( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_publish_date', true) ); ?>
+									</td>
+								<?php } else { ?>
+									<td>
+										No
+											<br>
+											n/a
+									</td>
+								<?php }?>
+
 							</tr>
 
 						
 							<tr>
 								<td><strong>Scotland Status<br>
 									Date first authorised</strong></td>
-								<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true)); ?></a>)<br>See Footnotes or SI Link</td>
+									<?php if(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_scotland_enabled', true ) == '1') { ?>
+									<td>Authorised  (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)
+										<br><?php echo esc_html( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_publish_date', true) ); ?>
+									</td>
+									<?php } else { ?>
+										<td>
+											No
+												<br>
+												n/a
+										</td>
+									<?php }?>
 							</tr>
 
 						
 							<tr>
 								<td><strong>N. Ireland Status<br>
 									Date first authorised</strong></td>
-								<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true)); ?></a>)<br>See Footnotes or SI Link</td>
+								<?php if(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_enabled', true ) == '1') { ?>
+								<td>Authorised  (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)
+									<br><?php echo esc_html( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_publish_date', true) ); ?>
+								</td>
+								<?php } else { ?>
+									<td>
+										No
+											<br>
+											n/a
+									</td>
+								<?php }?>
 							</tr>
 
 						</tbody>

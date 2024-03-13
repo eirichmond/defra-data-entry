@@ -1,5 +1,11 @@
 <?php 
 $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
+$user = wp_get_current_user();
+$roles = $user->roles;
+
+$taxonomy = 'permitted_fuels'; // Replace with the taxonomy you want to retrieve terms from
+$permitted_fuels = wp_get_post_terms(get_the_ID(), $taxonomy);
+
 get_header();
 ?>
 
@@ -11,7 +17,7 @@ get_header();
 	
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Manufacturer</h2>
-		<?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'manufacturer', true))); ?>
+		<?php echo esc_html($class->get_manufacturer_title_by_id(get_the_ID())); ?>
 	</figure>
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
@@ -22,7 +28,9 @@ get_header();
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Appliance Fuels</h2>
 		<small>Permitted Fuels (other than authorised fuels)</small><br>
-		<?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'appliance_fuels_permitted_fuel_id', true))); ?>
+		<?php foreach ($permitted_fuels as $term) { ?>
+			<div><?php echo esc_html( $term->description ); ?></div>
+		<?php } ?>
 	</figure>
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
@@ -30,46 +38,46 @@ get_header();
 		<p>Appliance categorisation is for web search functionality only</p>
 
 		<div class="flex space-x-4">
-			<span>
+			<div>
 				<strong>Fuel: </strong>
-				<?php echo esc_html( $class->get_term_titles(get_the_ID(),'fuel_types') ); ?><br>
-			</span>
-			<span>
+				<?php echo esc_html( $class->get_term_titles(get_the_ID(),'fuel_types') ); ?>
+			</div>
+			<div>
 				<strong>Appliance: </strong>
-				<?php echo esc_html( $class->get_term_titles(get_the_ID(),'appliance_types') ); ?><br>
-			</span>
+				<?php echo esc_html( $class->get_term_titles(get_the_ID(),'appliance_types') ); ?>
+			</div>
 		</div>
 	</figure>
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Appliance Output</h2>
 		<div class="flex space-x-4">
-			<span>
+			<div>
 				<strong>Unit: </strong>
 				<?php echo esc_html( $class->get_appliance_output_unit(get_post_meta(get_the_ID(), 'output_unit_output_unit_id', true))); ?>
-			</span>
-			<span>
+			</div>
+			<div>
 				<strong>Value: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'output_unit_output_value', true )); ?>
-			</span>
+			</div>
 		</div>
 	</figure>
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Instructions</h2>
 		<div class="flex space-x-4">
-			<span>
+			<div>
 				<strong>Manual Date: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'instructions_instruction_manual_date', true)); ?>
-			</span>
-			<span>
+			</div>
+			<div>
 				<strong>Manual Title: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'instructions_instruction_manual_title', true)); ?>
-			</span>
-			<span>
+			</div>
+			<div>
 				<strong>Manual Reference: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'instructions_instruction_manual_reference', true )); ?>
-			</span>
+			</div>
 		</div>
 	</figure>
 
@@ -77,99 +85,175 @@ get_header();
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Servicing and Installation</h2>
 		<div class="flex space-x-4">
-			<span>
+			<div>
 				<strong>Manual Date: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'servicing_and_installation_servicing_install_manual_date', true)); ?>
-			</span>
-			<span>
+			</div>
+			<div>
 				<strong>Manual Title: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'servicing_and_installation_servicing_install_manual_title', true)); ?>
-			</span>
-			<span>
+			</div>
+			<div>
 				<strong>Manual Reference: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'servicing_and_installation_servicing_install_manual_reference', true )); ?>
-			</span>
+			</div>
 		</div>
 	</figure>
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Additional Conditions</h2>
 		<div class="flex space-x-4">
-			<span>
+			<div>
 				<strong>Condition: </strong>
 				<?php echo esc_html( $class->get_appliance_condition(get_post_meta(get_the_ID(), 'additional_conditions_additional_condition_id', true))); ?>
-			</span>
-			<span>
+			</div>
+			<div>
 				<strong>Condition Comments: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'additional_conditions_additional_condition_comment', true)); ?>
-			</span>
+			</div>
 		</div>
 	</figure>
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Appliance Additional Details</h2>
 		<div class="flex space-x-4">
-			<span>
+			<div>
 				<strong>Application Number: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'appliance_additional_details_application_number', true)); ?>
-			</span>
-			<span>
+			</div>
+			<div>
 				<strong>Linked Applications: </strong>
-				<p><?php echo esc_html( get_post_meta(get_the_ID(), 'appliance_additional_details_linked_applications', true)); ?>
-			</span>
+				<?php echo esc_html( get_post_meta(get_the_ID(), 'appliance_additional_details_linked_applications', true)); ?>
+			</div>
 		</div>
 
 		<strong>Comments: </strong>
 		<?php echo esc_html( get_post_meta(get_the_ID(), 'appliance_additional_details_comments', true )); ?>
 	</figure>
 
-	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-		<h2>Exempt-In Country and Statutory Instrument</h2>
-		<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-			<div class="flex space-x-4">
-				<span class="flex-grow"><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
-				<span class="flex-grow">England</span>
-				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_si', true))); ?></span>
-				<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_status', true))); ?></span>
-			</div>
-		</figure>
+	<?php if ( !in_array('data_approver', $roles) ) { ?>
 
 		<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-			<div class="flex space-x-4">
-				<span class="flex-grow"><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_enabled', true )) ? '<i class="gg-check-o"></i>' : '<i class="gg-radio-check"></i>' ;?></span>
-				<span class="flex-grow">Wales</span>
-				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_si', true))); ?></span>
-				<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_status', true))); ?></span>
-			</div>
-		</figure>
-
-		<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-			<div class="flex space-x-4">
-				<span class="flex-grow"><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
-				<span class="flex-grow">Scotland</span>
-				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_si', true))); ?></span>
-				<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_status', true))); ?></span>
-			</div>
-		</figure>
-
-		<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-			<div class="flex space-x-4">
-				<span class="flex-grow"><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
-				<span class="flex-grow">N.Ireland</span>
-				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_si', true))); ?></span>
-				<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_status', true))); ?></span>
-			</div>
-		</figure>
-
-	</figure>
+			<h2>Exempt-In Country and Statutory Instrument</h2>
 	
-	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-		<h2>Comments to DEFRA / Devolved Administrations</h2>
-	</figure>
+			<figure class="border p-4 mb-4">
+				<div class="row align-items-start">
+	
+					<div class="col">
+						<span><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
+					</div>
+					
+					<div class="col">
+						<span>England</span>
+					</div>
+					
+					<div class="col">
+						<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_si_0_si_id', true))); ?></span>
+					</div>
+	
+					<div class="col">
+						<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_status', true))); ?></span>
+					</div>
+				</div>
+	
+			</figure>
+	
+			<figure class="border p-4 mb-4">
+				<div class="row align-items-start">
+	
+					<div class="col">
+						<span><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
+					</div>
+					
+					<div class="col">
+						<span>Wales</span>
+					</div>
+					
+					<div class="col">
+						<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_si_0_si_id', true))); ?></span>
+					</div>
+	
+					<div class="col">
+						<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_status', true))); ?></span>
+					</div>
+				</div>
+	
+			</figure>
+	
+			<figure class="border p-4 mb-4">
+				<div class="row align-items-start">
+	
+					<div class="col">
+						<span><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
+					</div>
+					
+					<div class="col">
+						<span>Scotland</span>
+					</div>
+					
+					<div class="col">
+						<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_si_0_si_id', true))); ?></span>
+					</div>
+	
+					<div class="col">
+						<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_status', true))); ?></span>
+					</div>
+				</div>
+	
+			</figure>
+	
+			<figure class="border p-4 mb-4">
+				<div class="row align-items-start">
+	
+					<div class="col">
+						<span><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
+					</div>
+					
+					<div class="col">
+						<span>N_ireland</span>
+					</div>
+					
+					<div class="col">
+						<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_si_0_si_id', true))); ?></span>
+					</div>
+	
+					<div class="col">
+						<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_status', true))); ?></span>
+					</div>
+				</div>
+	
+			</figure>
+	
+	
+	
+		</figure>
+		
+	<?php } ?>
 
-	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-		<h2>User Comments</h2>
-	</figure>
+
+	<form method="post" action="/data-entry/form-process/">
+	
+		<?php if ( !in_array('data_approver', $roles) ) { ?>
+			<div class="mb-3">
+				<label class="form-label" for="comments_to_defra_da">Comments to DEFRA / Devolved Administrations</label>
+				<textarea class="form-control" id="comments_to_defra_da" name="comments_to_defra_da"></textarea>
+			</div>
+		<?php } ?>
+
+		<div class="mb-3">
+			<label class="form-label" for="user_comments">User Comments</label>
+    		<textarea class="form-control" id="user_comments" name="user_comments"></textarea>
+		</div>
+
+		<input type="hidden" name="process" value="status-change">
+		<input type="hidden" name="post_type" value="appliance">
+		<input type="hidden" name="post_id" value="<?php echo esc_attr( get_the_ID() ); ?>">
+		<input type="hidden" name="submit_nonce" value="<?php echo wp_create_nonce('submit_form'); ?>">
+
+		<?php do_action('reviewer_approve_reject', get_the_ID()); ?>
+
+	</form>
+
 
 	<?php include(plugin_dir_path( __FILE__ ) . 'appliance-comments.php'); ?>
 

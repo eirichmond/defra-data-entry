@@ -28,7 +28,7 @@ get_header();
 					</td>
 					<td style="width:20%; text-align:right;">
 				
-						<ul class="icon-component">
+						<ul class="icon-component list-unstyled">
 							<li>
 								<a class="edit" href="#" data-id="<?php echo esc_html( $v['additional_condition_id'] ); ?>"><i class="gg-pen"></i></a>
 							</li>

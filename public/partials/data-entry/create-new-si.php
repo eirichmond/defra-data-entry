@@ -8,7 +8,9 @@ get_header();
 <h1 class="entry-title"><?php the_title(); ?></h1>
 
     <?php if(isset($_GET['post']) && 'success' == $_GET['post']) { ?>
-        <div class="bg-green-700 text-white font-bold py-2 px-4 rounded">New Statutory Instrument Successfully Added!</div>
+        <div class="alert alert-success" role="alert">
+            New Statutory Instrument Successfully Added!
+        </div>
     <?php } else { ?>
 
         <form class="row" action="/data-entry/form-process/" method="post">
@@ -54,10 +56,9 @@ get_header();
                     <label for="si_countries" class="col-sm-2 col-form-label">Country</label>
 
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="si_countries" name="si_countries">
 
-                        <select class="form-select" multiple aria-label="select" >
-                            <option selected disabled value="">Select Country</option>
+                        <select class="form-select" multiple aria-label="select" id="si_countries" name="si_countries[]">
+                            <option selected disabled>Select Country</option>
                             <option value="england">England</option>
                             <option value="n-ireland">N. Ireland</option>
                             <option value="scotland">Scotland</option>

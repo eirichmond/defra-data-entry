@@ -35,7 +35,7 @@
         var del = $('.delete');
 
         edit.on('click', function (e) {
-            e.preventDefault();
+            //e.preventDefault();
             do_toggles($(this));
         });
 

@@ -1,7 +1,7 @@
 <?php
 $public_class = new Defra_Data_Entry_Public(DEFRA_DATA_ENTRY_NAME, DEFRA_DATA_ENTRY_VERSION);
 $db = new Defra_Data_DB_Requests;
-$audit_logs = $db->get_general_audit_log($post_id);
+$audit_logs = $db->get_general_audit_log($post_id, 'appliance');
 ?>
 
 <table class="table table-bordered table-striped">

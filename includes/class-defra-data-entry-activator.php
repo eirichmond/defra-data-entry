@@ -258,6 +258,7 @@ class Defra_Data_Entry_Activator {
 		// get the role
 		$data_entry_role = get_role('data_entry');
 		$data_reviewer_role = get_role('data_reviewer');
+		$data_approver_role = get_role('data_approver');
 
 		// add the caps to the role
 		foreach ($manufacturer_caps as $manufacturer_cap) {
@@ -272,6 +273,7 @@ class Defra_Data_Entry_Activator {
 		foreach ($appliance_caps as $appliance_cap) {
 			$data_entry_role->add_cap($appliance_cap);
 			$data_reviewer_role->add_cap($appliance_cap);
+			$data_approver_role->add_cap($appliance_cap);
 			$administrator->add_cap($appliance_cap);
 		}
 		foreach ($statutory_instrument_caps as $statutory_instrument_cap) {

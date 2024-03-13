@@ -23,17 +23,25 @@ $appliances = $public_class->get_table_list($args);
     <tbody>
 		<?php foreach($appliances as $k => $v) {
 			$app_types = get_the_terms( $v->ID, 'appliance_types' );
+			$permitted_fuels = wp_get_post_terms( $v->ID, 'permitted_fuels' );
 			if($app_types) {
 				$terms_string = join(', ', wp_list_pluck($app_types, 'name'));
+			}
+			if($permitted_fuels) {
+				$fuels_array = array();
+				foreach ( $permitted_fuels as $permitted_fuel ) {
+					$fuels_array[] = $permitted_fuel->description;
+				}
+				$permitted_fuels = join( ', ', $fuels_array  );
 			}
 			
 			?>
 			<tr>
 				<td style="width:30%"><?php echo esc_html( $v->post_title ); ?></td>
 				<td style="width:30%"><?php echo esc_html( $v->manufacturer_name ); ?></td>
-				<td style="width:20%"><?php echo get_the_title( $v->fuel_id ); ?></td>
+				<td style="width:20%"><?php echo esc_html( $permitted_fuels ); ?></td>
 				<td style="width:20%"><?php echo esc_html($terms_string); ?></td>
-				<td style="width:20%"><a href="<?php echo esc_url( get_permalink($v) ); ?>">Veiw details information</a></td>
+				<td style="width:20%"><a href="<?php echo esc_url( get_permalink($v) ); ?>">View details  information</a></td>
 			</tr>
 
 		<?php } ?>

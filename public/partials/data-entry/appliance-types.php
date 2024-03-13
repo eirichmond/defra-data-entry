@@ -32,7 +32,7 @@ get_header();
 					<td style="width:20%; text-align:right;">
 				
 				
-						<ul class="icon-component">
+						<ul class="icon-component list-unstyled">
 							<li>
 								<a class="edit" href="#" data-id="<?php echo esc_html( $v['appliance_type_id'] ); ?>"><i class="gg-pen"></i></a>
 							</li>

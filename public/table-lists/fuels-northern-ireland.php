@@ -2,7 +2,7 @@
 $public_class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY_NAME', 'DEFRA_DATA_ENTRY_VERSION');
 $args = array(
 	'post_type' => 'fuels',
-	'post_meta_key' => 'exempt-in_country_and_statutory_instrument_n_ireland_enabled',
+	'post_meta_key' => 'authorised_country_and_statutory_instrument_n_ireland_enabled',
 	'fuel_meta_key' => 'fuel_id',
 	'manufacturer_meta_key' => 'manufacturer',
 );

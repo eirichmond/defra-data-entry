@@ -1,1 +1,2 @@
-<?php do_action('process_form'); ?>
+<?php
+do_action('process_form'); ?>

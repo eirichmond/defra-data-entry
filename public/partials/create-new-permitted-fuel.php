@@ -8,12 +8,14 @@ get_header();
 <h1 class="entry-title"><?php the_title(); ?></h1>
 
 <?php if(isset($_GET['post']) && 'success' == $_GET['post']) { ?>
-	<div class="bg-green-700 text-white font-bold py-2 px-4 rounded">New Permitted Fuels Successfully Added!</div>
+	<div class="alert alert-success" role="alert">
+	New Permitted Fuels Successfully Added!
+	</div>
 <?php } else { ?>
 
 	<form class="row" action="/data-entry/form-process/" method="post">
 
-		<div class="col-4">
+		<div class="col-12">
 			<label for="permitted-fuel" class="form-label">Permitted Fuel</label>
 			<input type="text" class="form-control" name="permitted-fuel" id="permitted-fuel" value="" required>
 			<input type="hidden" name="entry" value="defra_permitted_fuels">

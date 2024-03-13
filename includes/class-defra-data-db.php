@@ -55,34 +55,102 @@ class Defra_Data_DB_Requests {
 	}
 
 	/**
+	 * Get appliance revoked
+	 *
+	 * @param string $status
+	 * @return array $results
+	 */
+
+	public function get_appliance_is_revoked_is_published() {
+		global $wpdb;
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT pm.post_id
+				FROM wp_postmeta pm
+				LEFT JOIN wp_posts p ON pm.post_id = p.ID
+				WHERE p.post_type = %s
+				AND pm.meta_key LIKE %s AND pm.meta_value = %s
+				GROUP BY pm.post_id",
+				array('appliances', '%_is_revoked', '1')
+			)
+		);
+		return $results;
+	}
+
+	/**
+	 * Get appliance cancel status by cancel status id
+	 *
+	 * @param [type] $cancel_status
+	 * @return void
+	 */
+	public function get_appliance_cancel_status($cancel_status) {
+		global $wpdb;
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT pm.post_id
+				FROM wp_postmeta pm
+				LEFT JOIN wp_posts p ON pm.post_id = p.ID
+				WHERE p.post_type = %s
+				AND pm.meta_key LIKE %s AND pm.meta_value = %s
+				GROUP BY pm.post_id",
+				array('appliances', '%_cancel_status_id', $cancel_status)
+			)
+		);
+		return $results;
+
+	}
+
+	/**
 	 * Get appliance status
 	 *
 	 * @param string $status
 	 * @return array $results
 	 */
-    public function get_appliance_country_status($status = null) {
+    public function get_appliance_country_status($status = null, $country = null) {
+
+		$countries = array(
+			'1' => 'exempt-in_country_and_statutory_instrument_england_enabled',
+			'2' => 'exempt-in_country_and_statutory_instrument_wales_enabled',
+			'3' => 'exempt-in_country_and_statutory_instrument_scotland_enabled',
+			'4' => 'exempt-in_country_and_statutory_instrument_n_ireland_enabled',
+		);
+		$statuses = array(
+			'1' => 'exempt-in_country_and_statutory_instrument_england_status',
+			'2' => 'exempt-in_country_and_statutory_instrument_wales_status',
+			'3' => 'exempt-in_country_and_statutory_instrument_scotland_status',
+			'4' => 'exempt-in_country_and_statutory_instrument_n_ireland_status',
+		);
+
         global $wpdb;
-		if(empty($status)) {
+		if(empty($country) && !empty($status)) {
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT DISTINCT pm.post_id
 					FROM wp_postmeta pm
 					LEFT JOIN wp_posts p ON pm.post_id = p.ID
 					WHERE pm.meta_key LIKE %s
+					AND pm.meta_value LIKE %s
 					AND p.post_type = 'appliances'",
-					array('%_status')
+					array('%_status', $status)
 				)
 			);
 		} else {
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT DISTINCT pm.post_id
-					FROM wp_postmeta pm
-					LEFT JOIN wp_posts p ON pm.post_id = p.ID
-					WHERE pm.meta_key LIKE %s
-					AND pm.meta_value = %d
-					AND p.post_type = 'appliances'",
-					array('%_status',$status)
+					"SELECT
+						p.ID AS post_id,
+						p.post_title
+					FROM
+						wp_posts p
+					INNER JOIN
+						wp_postmeta m1 ON (p.ID = m1.post_id AND m1.meta_key = %s AND m1.meta_value = '1')
+					INNER JOIN
+						wp_postmeta m2 ON (p.ID = m2.post_id AND m2.meta_key = %s AND m2.meta_value = %s)
+					WHERE
+						p.post_type = 'appliances'
+					ORDER BY
+						p.ID DESC;",
+					array($countries[$country],$statuses[$country],$status)
 				)
 			);
 		}
@@ -130,7 +198,7 @@ class Defra_Data_DB_Requests {
 	 * @param int $post_id
 	 * @return object $audit_logs
 	 */
-	public function get_general_audit_log($post_id){
+	public function get_general_audit_log($post_id, $related){
 		global $wpdb;
 		$audit_logs = $wpdb->get_results(
 			$wpdb->prepare(
@@ -138,7 +206,7 @@ class Defra_Data_DB_Requests {
 				FROM wp_defra_audit_log_new al
 				WHERE al.related_id = %d
 				AND al.related_entity LIKE %s",
-				array($post_id, 'applianc%')
+				array($post_id, $related.'%')
 			)
 		);
 		return $audit_logs;
@@ -808,8 +876,8 @@ class Defra_Data_DB_Requests {
 	 *
 	 * @return string $count
 	 */
-	public function count_appliance_submitted_to_da() {
-		$count = $this->get_appliance_country_status('50');
+	public function count_appliance_submitted_to_da($country) {
+		$count = $this->get_appliance_country_status('50', $country);
 		return count($count);
 	}
 	
@@ -819,8 +887,8 @@ class Defra_Data_DB_Requests {
 	 *
 	 * @return string $count
 	 */
-	public function count_appliance_assigned_to_da() {
-		$count = $this->get_appliance_country_status('60');
+	public function count_appliance_assigned_to_da($country) {
+		$count = $this->get_appliance_country_status('60', $country);
 		return count($count);
 	}
 
@@ -829,8 +897,8 @@ class Defra_Data_DB_Requests {
 	 *
 	 * @return string $count
 	 */
-	public function count_appliance_approved_by_da() {
-		$count = $this->get_appliance_country_status('70');
+	public function count_appliance_approved_by_da($country) {
+		$count = $this->get_appliance_country_status('70', $country);
 		return count($count);
 	}
 
@@ -839,8 +907,8 @@ class Defra_Data_DB_Requests {
 	 *
 	 * @return string $count
 	 */
-	public function count_appliance_rejected_by_da() {
-		$count = $this->get_appliance_country_status('80');
+	public function count_appliance_rejected_by_da($country) {
+		$count = $this->get_appliance_country_status('80', $country);
 		return count($count);
 	}
 
@@ -901,8 +969,8 @@ class Defra_Data_DB_Requests {
 	 *
 	 * @return string $count
 	 */
-	public function count_appliance_awaiting_publication() {
-		$count = $this->get_appliance_country_status('500');
+	public function count_appliance_awaiting_publication($country) {
+		$count = $this->get_appliance_country_status('500', $country);
 		return count($count);
 	}
 
@@ -911,8 +979,118 @@ class Defra_Data_DB_Requests {
 	 *
 	 * @return string $count
 	 */
-	public function count_appliance_published() {
-		$count = $this->get_appliance_country_status('600');
+	public function count_appliance_published($country) {
+		$count = $this->get_appliance_country_status('600', $country);
+		return count($count);
+	}
+
+	/**
+	 * Count appliance revoked and is published
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_is_revoked_is_published($country) {
+		$count = $this->get_appliance_is_revoked_is_published();
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_draft() {
+		$count = $this->get_appliance_cancel_status('10');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_awaiting_review() {
+		$count = $this->get_appliance_cancel_status('20');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_being_reviewed() {
+		$count = $this->get_appliance_cancel_status('30');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_reviewer_rejected() {
+		$count = $this->get_appliance_cancel_status('40');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_submitted_to_da() {
+		$count = $this->get_appliance_cancel_status('50');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_assigned_to_da() {
+		$count = $this->get_appliance_cancel_status('60');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_approved_by_da() {
+		$count = $this->get_appliance_cancel_status('70');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_rejected_by_da() {
+		$count = $this->get_appliance_cancel_status('80');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_awaiting_publication() {
+		$count = $this->get_appliance_cancel_status('500');
+		return count($count);
+	}
+
+	/**
+	 * Count appliance canelled status
+	 *
+	 * @return string $count
+	 */
+	public function count_appliance_cancel_published() {
+		$count = $this->get_appliance_cancel_status('600');
 		return count($count);
 	}
 
@@ -1151,18 +1329,18 @@ class Defra_Data_DB_Requests {
 	 */
 
 	/**
-	 * Insert a new application
+	 * Insert a new fuel
 	 *
 	 * @param [type] $postdata
 	 * @return void
 	 */
-	public function insert_new_appliance($postdata) {
+	public function insert_new_fuel($postdata) {
 		$current_user = wp_get_current_user();
 		
-		$new_appliance = $this->set_appliance_post_array($postdata);
-		$post_id = wp_insert_post( $new_appliance );
+		$new_fuel = $this->set_fuel_post_array($postdata);
+		$post_id = wp_insert_post( $new_fuel );
 
-		$metas = $this->set_appliance_meta_array($postdata);
+		$metas = $this->set_fuel_meta_array($post_id, $postdata);
 		foreach($metas as $k => $v){
 			update_post_meta( $post_id, $k, $v );
 		}
@@ -1178,6 +1356,183 @@ class Defra_Data_DB_Requests {
 		return $post_id;
 
 	}
+
+		/**
+	 * Setup appliance metas
+	 *
+	 * @return void
+	 */
+	public function fuel_metas() {
+		$fuel_metas = array(
+			'manufacturer_id',
+			'point_a',
+			'point_b',
+			'point_c',
+			'point_d',
+			'point_e',
+			'point_f',
+			'fuel_additional_details_application_number',
+			'fuel_additional_details_linked_applications',
+			'fuel_additional_details_comments',
+
+			'authorised_country_and_statutory_instrument_england_enabled',
+			'authorised_country_and_statutory_instrument_england_si',
+			'authorised_country_and_statutory_instrument_england_status',
+			
+			'authorised_country_and_statutory_instrument_wales_enabled',
+			'authorised_country_and_statutory_instrument_wales_si',
+			'authorised_country_and_statutory_instrument_wales_status',
+			
+			'authorised_country_and_statutory_instrument_scotland_enabled',
+			'authorised_country_and_statutory_instrument_scotland_si',
+			'authorised_country_and_statutory_instrument_scotland_status',
+			
+			'authorised_country_and_statutory_instrument_n_ireland_enabled',
+			'authorised_country_and_statutory_instrument_n_ireland_si',
+			'authorised_country_and_statutory_instrument_n_ireland_status',
+
+			'fuel_id',
+			'entry_user_id'
+		);
+		return $fuel_metas;
+	}
+
+
+	/**
+	 * Setup fuel post meta
+	 *
+	 * @param array $postdata
+	 * @return array $metas
+	 */
+	public function set_fuel_meta_array($post_id, $postdata) {
+		// setup meta keys
+		$fuel_metas = $this->fuel_metas();
+		$current_user = wp_get_current_user();
+
+		// add user id to the metas
+		$metas = array(
+			'entry_user_id' => $current_user->ID,
+			'fuel_id' => $post_id
+		);
+
+		foreach($fuel_metas as $k) {
+			if($k === 'authorised_country_and_statutory_instrument_england_enabled'
+			|| $k === 'authorised_country_and_statutory_instrument_wales_enabled'
+			|| $k === 'authorised_country_and_statutory_instrument_scotland_enabled'
+			|| $k === 'authorised_country_and_statutory_instrument_n_ireland_enabled') {
+				$metas[$k] = $postdata[$k] === 'on' ? '1' : '';
+			} else if($k === 'authorised_country_and_statutory_instrument_england_si') {
+				$metas[$k] = count($postdata[$k]);
+				for($i = 0; $i < count($postdata[$k]); $i++) {
+					$metas['authorised_country_and_statutory_instrument_england_si_'.$i .'_si_id'] = $postdata[$k][$i];
+				}
+			} else if($k === 'authorised_country_and_statutory_instrument_wales_si') {
+				$metas[$k] = count($postdata[$k]);
+				for($i = 0; $i < count($postdata[$k]); $i++) {
+					$metas['authorised_country_and_statutory_instrument_wales_si_'.$i .'_si_id'] = $postdata[$k][$i];
+				}
+			} else if($k === 'authorised_country_and_statutory_instrument_scotland_si') {
+				$metas[$k] = count($postdata[$k]);
+				for($i = 0; $i < count($postdata[$k]); $i++) {
+					$metas['authorised_country_and_statutory_instrument_scotland_si_'.$i .'_si_id'] = $postdata[$k][$i];
+				}
+			} else if($k === 'authorised_country_and_statutory_instrument_n_ireland_si') {
+				$metas[$k] = count($postdata[$k]);
+				for($i = 0; $i < count($postdata[$k]); $i++) {
+					$metas['authorised_country_and_statutory_instrument_n_ireland_si_'.$i .'_si_id'] = $postdata[$k][$i];
+				}
+			} else if($k === 'authorised_country_and_statutory_instrument_england_status') {
+				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
+			} else if($k === 'authorised_country_and_statutory_instrument_wales_status') {
+				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
+			} else if($k === 'authorised_country_and_statutory_instrument_scotland_status') {
+				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
+			} else if($k === 'authorised_country_and_statutory_instrument_n_ireland_status') {
+				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
+			} else {
+				$metas[$k] = $postdata[$k];
+			}
+		}
+
+		return $metas;
+	}
+
+
+	/**
+	 * Insert a new application
+	 *
+	 * @param [type] $postdata
+	 * @return void
+	 */
+	public function insert_new_appliance($postdata) {
+		$current_user = wp_get_current_user();
+		
+		$new_appliance = $this->set_appliance_post_array($postdata);
+		if(isset($postdata["post_id"]) && !empty($postdata["post_id"])) {
+			$post_id = $postdata["post_id"];
+			$new_appliance['ID'] = $post_id;
+			wp_update_post( $new_appliance );
+		} else {
+			$post_id = wp_insert_post( $new_appliance );
+		}
+
+		$metas = $this->set_appliance_meta_array($post_id, $postdata);
+		foreach($metas as $k => $v){
+			update_post_meta( $post_id, $k, $v );
+		}
+
+		wp_set_post_terms( $post_id, array_map('intval', $postdata["permitted_fuel_id"]), 'permitted_fuels' );
+
+		$app_type_terms = get_term_by( 'slug', $postdata["type_terms"], 'appliance_types' );
+		wp_set_post_terms( $post_id, $app_type_terms->name, 'appliance_types' );
+
+		$fuel_type_terms = get_term_by( 'slug', $postdata["fuel_types"], 'fuel_types' );
+		wp_set_post_terms( $post_id, $fuel_type_terms->name, 'fuel_types' );
+
+		return $post_id;
+
+	}
+
+	/**
+	 * Setup appliance metas
+	 *
+	 * @return void
+	 */
+	public function appliance_metas() {
+		$appliance_metas = array(
+			'manufacturer_id',
+			'output_unit_output_unit_id',
+			'output_unit_output_value',
+			'instructions_instruction_manual_title',
+			'instructions_instruction_manual_reference',
+			'instructions_instruction_manual_date',
+			'servicing_and_installation_servicing_install_manual_date',
+			'servicing_and_installation_servicing_install_manual_title',
+			'servicing_and_installation_servicing_install_manual_reference',
+			'additional_conditions_additional_condition_id',
+			'additional_conditions_additional_condition_comment',
+			'appliance_additional_details_application_number',
+			'appliance_additional_details_linked_applications',
+			'appliance_additional_details_comments',
+
+			'exempt-in_country_and_statutory_instrument_england_enabled',
+			'exempt-in_country_and_statutory_instrument_england_si',
+			'exempt-in_country_and_statutory_instrument_england_status',
+			
+			'exempt-in_country_and_statutory_instrument_wales_enabled',
+			'exempt-in_country_and_statutory_instrument_wales_si',
+			'exempt-in_country_and_statutory_instrument_wales_status',
+			
+			'exempt-in_country_and_statutory_instrument_scotland_enabled',
+			'exempt-in_country_and_statutory_instrument_scotland_si',
+			'exempt-in_country_and_statutory_instrument_scotland_status',
+			
+			'exempt-in_country_and_statutory_instrument_n_ireland_enabled',
+			'exempt-in_country_and_statutory_instrument_n_ireland_si',
+			'exempt-in_country_and_statutory_instrument_n_ireland_status',	
+		);
+		return $appliance_metas;
+	}
 	
 	/**
 	 * Setup appliance post meta
@@ -1185,41 +1540,67 @@ class Defra_Data_DB_Requests {
 	 * @param array $postdata
 	 * @return array $metas
 	 */
-	public function set_appliance_meta_array($postdata) {
+	public function set_appliance_meta_array($post_id, $postdata) {
+		// setup meta keys
+		$appliance_metas = $this->appliance_metas();
+		if(isset($postdata["post_author"])) {
+			$user_id = $postdata["post_author"];
+		} else {
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+		}
+
 		$current_user = wp_get_current_user();
+
+		// add user id to the metas
 		$metas = array(
-			'entry_user_id' => $current_user->ID,
-			'manufacturer' => $postdata["manufacturer_id"],
-			'output_unit_output_unit_id' => $postdata["output_unit_output_unit_id"],
-			'output_unit_output_value' => $postdata["output_unit_output_value"],
-			'instructions_instruction_manual_title' => $postdata["instructions_instruction_manual_date"],
-			'instructions_instruction_manual_reference' => $postdata["instructions_instruction_manual_reference"],
-			'instructions_instruction_manual_date' => $postdata["instructions_instruction_manual_date"],
-			'servicing_and_installation_servicing_install_manual_date' => $postdata["servicing_and_installation_servicing_install_manual_date"],
-			'servicing_and_installation_servicing_install_manual_title' => $postdata["servicing_and_installation_servicing_install_manual_title"],
-			'additional_conditions_additional_condition_id' => $postdata["additional_conditions_additional_condition_id"],
-			'additional_conditions_additional_condition_comment' => $postdata["additional_conditions_additional_condition_comment"],
-			'appliance_additional_details_application_number' => $postdata["appliance_additional_details_application_number"],
-			'appliance_additional_details_linked_applications' => $postdata["appliance_additional_details_linked_applications"],
-			'appliance_additional_details_comments' => $postdata["appliance_additional_details_comments"],
-
-			'exempt-in_country_and_statutory_instrument_england_enabled' => $postdata["exempt-in_country_and_statutory_instrument_england_enabled"] = 'on' ? '1' : '',
-			'exempt-in_country_and_statutory_instrument_england_si' => $postdata["exempt-in_country_and_statutory_instrument_england_si"],
-			'exempt-in_country_and_statutory_instrument_england_status' => $postdata["submit-type"] = 'save-draft' ? '10' : '20',
-			
-			'exempt-in_country_and_statutory_instrument_wales_enabled' => $postdata["exempt-in_country_and_statutory_instrument_wales_enabled"] = 'on' ? '1' : '',
-			'exempt-in_country_and_statutory_instrument_wales_si' => $postdata["exempt-in_country_and_statutory_instrument_wales_si"],
-			'exempt-in_country_and_statutory_instrument_wales_status' => $postdata["submit-type"] = 'save-draft' ? '10' : '20',
-			
-			'exempt-in_country_and_statutory_instrument_scotland_enabled' => $postdata["exempt-in_country_and_statutory_instrument_scotland_enabled"] = 'on' ? '1' : '',
-			'exempt-in_country_and_statutory_instrument_scotland_si' => $postdata["exempt-in_country_and_statutory_instrument_scotland_si"],
-			'exempt-in_country_and_statutory_instrument_scotland_status' => $postdata["submit-type"] = 'save-draft' ? '10' : '20',
-			
-			'exempt-in_country_and_statutory_instrument_n_ireland_enabled' => $postdata["exempt-in_country_and_statutory_instrument_n_ireland_enabled"] = 'on' ? '1' : '',
-			'exempt-in_country_and_statutory_instrument_n_ireland_si' => $postdata["exempt-in_country_and_statutory_instrument_n_ireland_si"],
-			'exempt-in_country_and_statutory_instrument_n_ireland_status' => $postdata["submit-type"] = 'save-draft' ? '10' : '20',
-
+			'entry_user_id' => $user_id,
+			'appliance_id' => $post_id
 		);
+
+		foreach($appliance_metas as $k) {
+			if($k === 'exempt-in_country_and_statutory_instrument_england_enabled'
+			|| $k === 'exempt-in_country_and_statutory_instrument_wales_enabled'
+			|| $k === 'exempt-in_country_and_statutory_instrument_scotland_enabled'
+			|| $k === 'exempt-in_country_and_statutory_instrument_n_ireland_enabled') {
+				$metas[$k] = $postdata[$k] === 'on' ? '1' : '';
+			} else if($k === 'exempt-in_country_and_statutory_instrument_england_si') {
+				$n = $postdata[$k] ? count($postdata[$k]) : 0;
+				for($i = 0; $i < $n; $i++) {
+					$metas['exempt-in_country_and_statutory_instrument_england_si_'.$i .'_si_id'] = $postdata[$k][$i];
+				}
+				$metas[$k] = $n;
+			} else if($k === 'exempt-in_country_and_statutory_instrument_wales_si') {
+				$n = $postdata[$k] ? count($postdata[$k]) : 0;
+				for($i = 0; $i < $n; $i++) {
+					$metas['exempt-in_country_and_statutory_instrument_wales_si_'.$i .'_si_id'] = $postdata[$k][$i];
+				}
+				$metas[$k] = $n;
+			} else if($k === 'exempt-in_country_and_statutory_instrument_scotland_si') {
+				$n = $postdata[$k] ? count($postdata[$k]) : 0;
+				for($i = 0; $i < $n; $i++) {
+					$metas['exempt-in_country_and_statutory_instrument_scotland_si_'.$i .'_si_id'] = $postdata[$k][$i];
+				}
+				$metas[$k] = $n;
+			} else if($k === 'exempt-in_country_and_statutory_instrument_n_ireland_si') {
+				$n = $postdata[$k] ? count($postdata[$k]) : 0;
+				for($i = 0; $i < $n; $i++) {
+					$metas['exempt-in_country_and_statutory_instrument_n_ireland_si_'.$i .'_si_id'] = $postdata[$k][$i];
+				}
+				$metas[$k] = $n;
+			} else if($k === 'exempt-in_country_and_statutory_instrument_england_status') {
+				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
+			} else if($k === 'exempt-in_country_and_statutory_instrument_wales_status') {
+				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
+			} else if($k === 'exempt-in_country_and_statutory_instrument_scotland_status') {
+				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
+			} else if($k === 'exempt-in_country_and_statutory_instrument_n_ireland_status') {
+				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
+			} else {
+				$metas[$k] = $postdata[$k];
+			}
+		}
+
 		return $metas;
 	}
 
@@ -1229,17 +1610,82 @@ class Defra_Data_DB_Requests {
 	 * @return array 
 	 */
 	public function set_appliance_post_array($postdata) {
-		$current_user = wp_get_current_user();
+		if(isset($postdata["post_author"])) {
+			$user_id = $postdata["post_author"];
+		} else {
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+		}
 		$new_appliance = array(
 			'post_title'   => $postdata["appliance_name"],
 			'post_status'  => 'draft',
-			'post_author'  => $current_user->ID,
+			'post_author'  => $user_id,
 			'post_type' => 'appliances'
 		);
 		return $new_appliance;
 	}
 
+	/**
+	 * Setup appliance post array
+	 *
+	 * @return array 
+	 */
+	public function set_fuel_post_array($postdata) {
+		$current_user = wp_get_current_user();
+		$new_fuel = array(
+			'post_title'   => $postdata["fuel_name"],
+			'post_status'  => 'draft',
+			'post_author'  => $current_user->ID,
+			'post_type' => 'fuels'
+		);
+		return $new_fuel;
+	}
 
+
+	public function set_manufacturer_post_array($postdata) {
+		$current_user = wp_get_current_user();
+		$new_manufacturer = array(
+			'post_title'   => $postdata["manufacturers_name"],
+			'post_status'  => 'publish',
+			'post_author'  => $current_user->ID,
+			'post_type' => 'manufacturers'
+		);
+		return $new_manufacturer;
+
+	}
+
+	public function set_statutory_instrument_post_array($postdata) {
+		$current_user = wp_get_current_user();
+		$new_statutory_instrument = array(
+			'post_title'   => $postdata["post_title"],
+			'post_status'  => 'publish',
+			'post_author'  => $current_user->ID,
+			'post_type' => 'statutory_instrument'
+		);
+		return $new_statutory_instrument;
+
+	}
+
+	/**
+	 * Setup post manufacturers metas array
+	 *
+	 * @param [type] $post_id
+	 * @param [type] $postdata
+	 * @return void
+	 */
+	public function set_manufacturer_meta_array($post_id, $postdata) {
+		$metas = array(
+			'address_1',
+			'address_2',
+			'address_3',
+			'address_4',
+			'town__city',
+			'county',
+			'postcode',
+			'country'
+		);
+		return $metas;
+	}
 
 	/**
 	 * Insert a new manufacturer
@@ -1249,44 +1695,16 @@ class Defra_Data_DB_Requests {
 	 */
 	public function insert_new_manufacturer($postdata) {
 		$current_user = wp_get_current_user();
-		$table = $this->wpdb->prefix.'defra_manufacturers';
-		$data = array(
-			'name' => $postdata['manufacturers_name'],
-			'address_line_1' => $postdata['address_line_1'],
-			'address_line_2' => $postdata['address_line_2'],
-			'address_line_3' => $postdata['address_line_3'],
-			'address_line_4' => $postdata['address_line_4'],
-			'town' => $postdata['town'],
-			'county' => $postdata['county'],
-			'post_code' => $postdata['post_code'],
-			'country_id' => $postdata['country_id'],
-			'created_on' => date('Y-m-d H:i:s'),
-			'created_by' => $current_user->ID,
-			'updated_on' => date('Y-m-d H:i:s'),
-			'updated_by' => $current_user->ID,
-			'type' => $postdata['manufacturer_type'],
-			'format_type' => 0,
-		);
-		$format = array(
-			'%s',
-			'%s',
-			'%s',
-			'%s',
-			'%s',
-			'%s',
-			'%s',
-			'%s',
-			'%d',
-			'%s',
-			'%d',
-			'%s',
-			'%d',
-			'%d',
-			'%d'
-		);
-		$this->wpdb->insert($table,$data,$format);
-		$manufacturer_id = $this->wpdb->insert_id;
-
+		$new_manufacturer = $this->set_manufacturer_post_array($postdata);
+		$post_id = wp_insert_post( $new_manufacturer );
+		
+		$metas = $this->set_manufacturer_meta_array($post_id, $postdata);
+		foreach($metas as $k => $v){
+			update_post_meta( $post_id, $v, $postdata[$v] );
+		}
+		update_post_meta($post_id, 'id', $post_id);
+		$term = $postdata["manufacturer_type"] == '1' ? 'appliance' : 'fuel';
+		wp_set_post_terms( $post_id, $term, 'manufacturer_types' );
 	}
 
 	
@@ -1296,23 +1714,39 @@ class Defra_Data_DB_Requests {
 	 * @param array $postdata
 	 * @return void
 	 */
-	public function insert_new_permitted_fuel($postdata) {
+	public function insert_new_statutory_instrument($postdata) {
 		$now = $this->create_timestamp();
 		$current_user = wp_get_current_user();
-		$table = $this->wpdb->prefix.$postdata['entry'];
-		$data = array(
-			'permitted_fuel_name' => $postdata['permitted-fuel'],
-			'created_by_user_id' => $current_user->ID,
-			'date_added' => $now,
-			'date_updated' => $now,
+		$new_statutory_instrument = $this->set_statutory_instrument_post_array($postdata);
+		$post_id = wp_insert_post( $new_statutory_instrument );
+
+		wp_set_post_terms( $post_id, $postdata["si_type"], 'si_types' );
+		wp_set_post_terms( $post_id, $postdata["si_countries"], 'si_countries' );
+
+	}
+
+	/**
+	 * insert a new permitted fuel in to the database
+	 *
+	 * @param array $postdata
+	 * @return void
+	 */
+	public function insert_new_permitted_fuel($postdata) {
+		$current_user = wp_get_current_user();
+
+		$term_name = $postdata['permitted-fuel'];
+		$term_slug = sanitize_title($term_name);
+		$taxonomy = 'permitted_fuels';
+		
+		$args = array(
+			'description' => $postdata['permitted-fuel'],
+			'slug' => $term_slug,
 		);
-		$format = array(
-			'%s',
-			'%s',
-			'%s',
-			'%s'
-		);
-		$this->wpdb->insert($table,$data,$format);
+		
+		// Insert the term
+		$term = wp_insert_term($term_name, $taxonomy, $args);
+		return $term;
+
 	}
 
 	/**

@@ -2,7 +2,12 @@
 $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
 $db = new Defra_Data_DB_Requests();
 
-$fuels = $db->get_fuels_country_status($_GET['status']);
+if(isset($_GET['status'])) {
+	$status = $_GET['status'];
+} else {
+	$status = NULL;
+}
+$fuels = $db->get_fuels_country_status($status);
 $fuels = defra_data_query_by_fuels_id($fuels);
 
 get_header();
@@ -54,7 +59,7 @@ get_header();
 									<a href="#"><i class="gg-file-document"></i></a>
 								</li>
 								<li>
-									<a href="#"><i class="gg-folder"></i></a>
+									<a href="<?php echo esc_html( '/fuel-audit-log/?fuel='.get_the_ID() ); ?>"><i class="gg-folder"></i></a>
 								</li>
 								<li>
 									<a href="#"><i class="gg-attribution"></i></a>

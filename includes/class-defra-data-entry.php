@@ -125,6 +125,11 @@ class Defra_Data_Entry {
 		 * of the plugin.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-defra-data-db.php';
+		
+		/**
+		 * The class responsible for audits
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-defra-audit-log.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
@@ -217,16 +222,25 @@ class Defra_Data_Entry {
 		$this->loader->add_filter( 'template_include', $plugin_public, 'defra_page_includes', 10, 1 );
 		$this->loader->add_filter( 'single_template', $plugin_public, 'defra_single_template_callback', 10, 1 );
 		
+		$this->loader->add_filter( 'wp_mail_from', $plugin_public, 'defra_mail_from', 10, 1 );
+		$this->loader->add_filter( 'wp_mail_from_name', $plugin_public, 'defra_mail_from_name', 10, 1 );
+		$this->loader->add_filter( 'wp_mail', $plugin_public, 'defra_check_mail_env', 10, 1 );
+
+		
 		$this->loader->add_filter( 'nav_menu_link_attributes', $plugin_public, 'defra_nav_menu_link_attributes_callback', 10, 3 );
 
 		$this->loader->add_action( 'init', $plugin_public, 'html_markup_components_callback' );
 		$this->loader->add_action( 'init', $plugin_public, 'defra_register_menu_callback' );
 		$this->loader->add_action( 'init', $plugin_public, 'defra_register_cpts');
 		$this->loader->add_action( 'init', $plugin_public, 'defra_register_ctts');
-		
+		$this->loader->add_action( 'defra_public_navigation', $plugin_public, 'defra_public_navigation_callback');
+		$this->loader->add_action( 'defra_public_data_entry_opening_container', $plugin_public, 'defra_public_data_entry_opening_container_callback');
+		$this->loader->add_action( 'defra_view_assign_link', $plugin_public, 'defra_view_assign_link_callback');
+		$this->loader->add_action( 'wp_ajax_defra_assign_link', $plugin_public, 'defra_assign_link');
 
 		$this->loader->add_action( 'defra_table_list', $plugin_public, 'defra_table_list_callback', 10, 1 );
 		$this->loader->add_action( 'data_entry_navigation', $plugin_public, 'data_entry_navigation_callback', 10);
+		$this->loader->add_action( 'reviewer_approve_reject', $plugin_public, 'reviewer_approve_reject_callback', 10, 1);
 
 		$this->loader->add_action( 'process_form', $plugin_public, 'process_form_callback' );
 
@@ -235,7 +249,16 @@ class Defra_Data_Entry {
 
 		$this->loader->add_action( 'pre_get_posts', $plugin_public, 'get_appliance_posts' );
 		$this->loader->add_action( 'pre_get_posts', $plugin_public, 'get_fuel_posts' );
-		$this->loader->add_filter( 'login_redirect', $plugin_public, 'defra_login_redirect', 10, 3 );		
+		$this->loader->add_filter( 'login_redirect', $plugin_public, 'defra_login_redirect', 10, 3 );
+		
+		$this->loader->add_filter( 'wp_nav_menu_objects', $plugin_public, 'defra_wp_nav_menu_objects', 10, 2 );
+
+
+		/**
+		 * cURL form tests
+		 */
+		$this->loader->add_action( 'test_post_new_appliance', $plugin_public, 'test_post_new_appliance_callback' );
+		
 		
 	}
 

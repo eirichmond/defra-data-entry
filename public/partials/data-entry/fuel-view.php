@@ -11,7 +11,7 @@ get_header();
 	
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Manufacturer</h2>
-		<?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'manufacturer', true))); ?>
+		<?php echo esc_html($class->get_manufacturer_title_by_id(get_the_ID())); ?>
 	</figure>
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
@@ -31,14 +31,14 @@ get_header();
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Fuel Additional Details</h2>
 		<div class="flex space-x-4">
-			<span>
+			<div>
 				<strong>Application Number: </strong>
 				<?php echo esc_html( get_post_meta(get_the_ID(), 'fuel_additional_details_application_number', true)); ?>
-			</span>
-			<span>
+			</div>
+			<div>
 				<strong>Linked Applications: </strong>
-				<p><?php echo esc_html( get_post_meta(get_the_ID(), 'fuel_additional_details_linked_applications', true)); ?>
-			</span>
+				<?php echo esc_html( get_post_meta(get_the_ID(), 'fuel_additional_details_linked_applications', true)); ?>
+			</div>
 		</div>
 
 		<strong>Comments: </strong>
@@ -46,48 +46,101 @@ get_header();
 	</figure>
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-		<h2>Exempt-In Country and Statutory Instrument</h2>
-		<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-			<div class="flex space-x-4">
-				<span class="flex-grow"><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
-				<span class="flex-grow">England</span>
-				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_si', true))); ?></span>
-				<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_status', true))); ?></span>
+		<h2>Authorised Country and Statutory Instrument</h2>
+
+		<figure class="border p-4 mb-4">
+			<div class="row align-items-start">
+
+				<div class="col">
+					<span><?php echo esc_html(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_england_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
+				</div>
+				
+				<div class="col">
+					<span>England</span>
+				</div>
+				
+				<div class="col">
+					<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_england_si_0_si_id', true))); ?></span>
+				</div>
+
+				<div class="col">
+					<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_england_status', true))); ?></span>
+				</div>
 			</div>
+
+		</figure>
+		
+		<figure class="border p-4 mb-4">
+			<div class="row align-items-start">
+
+				<div class="col">
+					<span><?php echo esc_html(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_wales_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
+				</div>
+				
+				<div class="col">
+					<span>Wales</span>
+				</div>
+				
+				<div class="col">
+					<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_wales_si_0_si_id', true))); ?></span>
+				</div>
+
+				<div class="col">
+					<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_wales_status', true))); ?></span>
+				</div>
+			</div>
+
 		</figure>
 
-		<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-			<div class="flex space-x-4">
-				<span class="flex-grow"><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_enabled', true )) ? '<i class="gg-check-o"></i>' : '<i class="gg-radio-check"></i>' ;?></span>
-				<span class="flex-grow">Wales</span>
-				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_si', true))); ?></span>
-				<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_status', true))); ?></span>
-			</div>
-		</figure>
+		<figure class="border p-4 mb-4">
+			<div class="row align-items-start">
 
-		<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-			<div class="flex space-x-4">
-				<span class="flex-grow"><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
-				<span class="flex-grow">Scotland</span>
-				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_si', true))); ?></span>
-				<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_status', true))); ?></span>
-			</div>
-		</figure>
+				<div class="col">
+					<span><?php echo esc_html(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_scotland_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
+				</div>
+				
+				<div class="col">
+					<span>Scotland</span>
+				</div>
+				
+				<div class="col">
+					<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_scotland_si_0_si_id', true))); ?></span>
+				</div>
 
-		<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
-			<div class="flex space-x-4">
-				<span class="flex-grow"><?php echo esc_html(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
-				<span class="flex-grow">N.Ireland</span>
-				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_si', true))); ?></span>
-				<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_status', true))); ?></span>
+				<div class="col">
+					<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_scotland_status', true))); ?></span>
+				</div>
 			</div>
+
+		</figure>
+		
+		<figure class="border p-4 mb-4">
+			<div class="row align-items-start">
+
+				<div class="col">
+					<span><?php echo esc_html(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_n_ireland_enabled', true )) ? '<i class="gg-check-o"></i>' : '' ;?></span>
+				</div>
+				
+				<div class="col">
+					<span>N. Ireland</span>
+				</div>
+				
+				<div class="col">
+					<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_n_ireland_si_0_si_id', true))); ?></span>
+				</div>
+
+				<div class="col">
+					<span class="flex-grow"><?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'authorised_country_and_statutory_instrument_n_ireland_status', true))); ?></span>
+				</div>
+			</div>
+
 		</figure>
 
 	</figure>
 	
-	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
+	<!-- <figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Comments to DEFRA / Devolved Administrations</h2>
-	</figure>
+	</figure> -->
 
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-2">
 

@@ -1098,11 +1098,12 @@ class Defra_Data_Entry_Public {
 			$db = new Defra_Data_DB_Requests();
 			$audit = new Defra_Data_Audit_Log();
 			$post_id = $db->insert_new_appliance($_POST);
+			$comments = $this->create_comment_logic($post_id, $_POST);
 			
 			$audit->set_appliance_audit_data($current_user->ID, $post_id, $_POST);
 			// check and send to reviewer
 			if($_POST['submit-type'] == 'submit-review') {
-				$this->notify_appliance_data_review($post_id);
+				$this->notify_data_review( $post_id, 'appliance' );
 			}
 
 			// redirect with success
@@ -1124,12 +1125,14 @@ class Defra_Data_Entry_Public {
 			wp_die('Sorry, security did not verify.');
 		} else {
 			// process form data
+			$current_user = wp_get_current_user();
 			$db = new Defra_Data_DB_Requests();
+			$audit = new Defra_Data_Audit_Log();
 			$post_id = $db->insert_new_fuel($_POST);
 
 			// check and send to reviewer
 			if($_POST['submit-type'] == 'submit-review') {
-				$this->notify_appliance_data_review($post_id);
+				$this->notify_data_review( $post_id, 'fuel' );
 			}
 
 			// redirect with success
@@ -1141,19 +1144,109 @@ class Defra_Data_Entry_Public {
 	}
 
 	/**
-	 * notify data review of appliance
+	 * To resolve comment meta type
 	 *
-	 * @param [type] $post_id
+	 * @param [type] $postdata
 	 * @return void
 	 */
-	public function notify_appliance_data_review($post_id) {
+	public function resolve_comment_type_id($postdata) {
+		if($postdata["submit-type"] == "submit-review") {
+			$comment_type_id = '1';
+		}
+
+		// @TODO
+		// create conditional logic for Reviewer, Approver & Devolved Admin
+
+		return $comment_type_id;
+	}
+
+	/**
+	 * To resolve comment meta action
+	 *
+	 * @param [type] $postdata
+	 * @return void
+	 */
+	public function resolve_comment_action_id($postdata) {
+		if($postdata["submit-type"] == "submit-review") {
+			$comment_action_id = '1';
+		}
+
+		// @TODO
+		// create conditional logic for Approved, Rejected & Cancelled
+
+		return $comment_action_id;
+	}
+
+	public function create_comment( $post_id, $postdata, $current_user, $appended ) {
+		// Create a new comment object
+		$commentdata = array(
+			'comment_post_ID' => $post_id,
+			'comment_author' => $current_user->user_login,
+			'comment_author_email' => $current_user->user_email,
+			'comment_content' => $appended . $postdata["comment_to_da"],
+			'comment_approved' => 1, // 0 for unapproved, 1 for approved
+		);
+		// Insert the comment into the database
+		$comment_id = wp_insert_comment($commentdata);
+		if ($comment_id) {
+
+			$comment_type_id = $this->resolve_comment_type_id($postdata);
+			$comment_action_id = $this->resolve_comment_action_id($postdata);
+			// Add comment meta
+			update_comment_meta($comment_id, 'comment_type_id', $comment_type_id);
+			update_comment_meta($comment_id, 'comment_action_id', $comment_action_id);
+
+		}
+	}
+
+	/**
+	 * Create a new comment
+	 *
+	 * @param [type] $post_id
+	 * @param [type] $postdata
+	 * @return void
+	 */
+	public function create_comment_logic($post_id, $postdata) {
+		$current_user = wp_get_current_user();
+		if(isset($postdata["comment_to_da"]) && '' != $postdata["comment_to_da"]) {
+			$this->create_comment( $post_id, $postdata, $current_user, 'Comment to DA: ' );
+		}
+		if(isset($postdata["user_comment"]) && '' != $postdata["user_comment"]) {
+			$this->create_comment( $post_id, $postdata, $current_user, 'User comment: ' );
+		}
+	}
+
+	/**
+	 * Resolve type data for human readable output
+	 *
+	 * @param string $type
+	 * @return array $type_array
+	 */
+	public function resolve_type_data( $type ) {
+		$type_array = array(
+			'name' => $type == 'appliance' ? 'Appliance' : 'Fuel',
+			'slug' => $type == 'appliance' ? 'appliances' : 'fuels',
+			'meta_key' => $type == 'appliance' ? 'appliance_id' : 'fuel_id',
+		);
+		return $type_array;
+	}
+
+	/**
+	 * notify data review of appliance
+	 *
+	 * @param int $post_id
+	 * @param string $type
+	 * @return void
+	 */
+	public function notify_data_review( $post_id, $type ) {
 
 		$admin = new Defra_Data_Entry_Admin('Admin','1,0');
+		$type_array = $this->resolve_type_data($type);
 
 		$data_reviewers = $admin->get_data_reviewers_email_addresses();
-		$subject = 'Appliance submitted for review';
-		$content = 'Appliance ID: ' . get_post_meta($post_id, 'appliance_id', true) . '<br>';
-		$content .= 'To review submitted Appliance <a href="'.home_url().'/?post_type=appliances&p='.$post_id.'"><strong>click here</strong></a>';
+		$subject = $type_array['name'] . ' submitted for review';
+		$content = $type_array['name'] . ' ID: ' . get_post_meta($post_id, $type_array['meta_key'], true) . '<br>';
+		$content .= 'To review submitted ' . $type_array['name'] . ' <a href="'.home_url().'/?post_type=' . $type_array['slug'] . '&p='.$post_id.'"><strong>click here</strong></a>';
 		$headers = array('Content-Type: text/html; charset=UTF-8');
 		wp_mail($data_reviewers, $subject, $content, $headers);
 
@@ -1838,10 +1931,10 @@ class Defra_Data_Entry_Public {
 	 */
 	public function get_comment_type_by_key($key) {
 		$comment_type = array(
-			'1' => 'Data Entry',
-			'2' => 'Approved',
-			'3' => 'Rejected',
-			'4' => 'Cancelled'
+			'1' => 'Data Entry User',
+			'2' => 'Reviewer',
+			'3' => 'Approver',
+			'4' => 'Devolved Admin'
 		);
 		return $comment_type[$key];
 	}
@@ -1854,10 +1947,10 @@ class Defra_Data_Entry_Public {
 	 */
 	public function get_comment_action_by_key($key) {
 		$comment_action = array(
-			'1' => 'Data Entry User',
-			'2' => 'Reviewer',
-			'3' => 'Approver',
-			'4' => 'Devolved Admin'
+			'1' => 'Data Entry',
+			'2' => 'Approved',
+			'3' => 'Rejected',
+			'4' => 'Cancelled'
 		);
 		return $comment_action[$key];
 	}

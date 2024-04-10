@@ -1338,20 +1338,18 @@ class Defra_Data_DB_Requests {
 		$current_user = wp_get_current_user();
 		
 		$new_fuel = $this->set_fuel_post_array($postdata);
-		$post_id = wp_insert_post( $new_fuel );
+		if(isset($postdata["post_id"]) && !empty($postdata["post_id"])) {
+			$post_id = $postdata["post_id"];
+			$new_fuel['ID'] = $post_id;
+			wp_update_post( $new_fuel );
+		} else {
+			$post_id = wp_insert_post( $new_fuel );
+		}
 
 		$metas = $this->set_fuel_meta_array($post_id, $postdata);
 		foreach($metas as $k => $v){
 			update_post_meta( $post_id, $k, $v );
 		}
-
-		wp_set_post_terms( $post_id, $postdata["permitted_fuel_id"], 'permitted_fuels' );
-
-		$app_type_terms = get_term_by( 'slug', $postdata["type_terms"], 'appliance_types' );
-		wp_set_post_terms( $post_id, $app_type_terms->name, 'appliance_types' );
-
-		$fuel_type_terms = get_term_by( 'slug', $postdata["fuel_types"], 'fuel_types' );
-		wp_set_post_terms( $post_id, $fuel_type_terms->name, 'fuel_types' );
 
 		return $post_id;
 
@@ -1390,9 +1388,6 @@ class Defra_Data_DB_Requests {
 			'authorised_country_and_statutory_instrument_n_ireland_enabled',
 			'authorised_country_and_statutory_instrument_n_ireland_si',
 			'authorised_country_and_statutory_instrument_n_ireland_status',
-
-			'fuel_id',
-			'entry_user_id'
 		);
 		return $fuel_metas;
 	}
@@ -1407,11 +1402,16 @@ class Defra_Data_DB_Requests {
 	public function set_fuel_meta_array($post_id, $postdata) {
 		// setup meta keys
 		$fuel_metas = $this->fuel_metas();
-		$current_user = wp_get_current_user();
+		if(isset($postdata["post_author"])) {
+			$user_id = $postdata["post_author"];
+		} else {
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+		}
 
 		// add user id to the metas
 		$metas = array(
-			'entry_user_id' => $current_user->ID,
+			'entry_user_id' => $user_id,
 			'fuel_id' => $post_id
 		);
 
@@ -1422,25 +1422,29 @@ class Defra_Data_DB_Requests {
 			|| $k === 'authorised_country_and_statutory_instrument_n_ireland_enabled') {
 				$metas[$k] = $postdata[$k] === 'on' ? '1' : '';
 			} else if($k === 'authorised_country_and_statutory_instrument_england_si') {
-				$metas[$k] = count($postdata[$k]);
-				for($i = 0; $i < count($postdata[$k]); $i++) {
+				$n = $postdata[$k] ? count($postdata[$k]) : 0;
+				for($i = 0; $i < $n; $i++) {
 					$metas['authorised_country_and_statutory_instrument_england_si_'.$i .'_si_id'] = $postdata[$k][$i];
 				}
+				$metas[$k] = $n;
 			} else if($k === 'authorised_country_and_statutory_instrument_wales_si') {
-				$metas[$k] = count($postdata[$k]);
+				$n = $postdata[$k] ? count($postdata[$k]) : 0;
 				for($i = 0; $i < count($postdata[$k]); $i++) {
 					$metas['authorised_country_and_statutory_instrument_wales_si_'.$i .'_si_id'] = $postdata[$k][$i];
 				}
+				$metas[$k] = $n;
 			} else if($k === 'authorised_country_and_statutory_instrument_scotland_si') {
-				$metas[$k] = count($postdata[$k]);
+				$n = $postdata[$k] ? count($postdata[$k]) : 0;
 				for($i = 0; $i < count($postdata[$k]); $i++) {
 					$metas['authorised_country_and_statutory_instrument_scotland_si_'.$i .'_si_id'] = $postdata[$k][$i];
 				}
+				$metas[$k] = $n;
 			} else if($k === 'authorised_country_and_statutory_instrument_n_ireland_si') {
-				$metas[$k] = count($postdata[$k]);
+				$n = $postdata[$k] ? count($postdata[$k]) : 0;
 				for($i = 0; $i < count($postdata[$k]); $i++) {
 					$metas['authorised_country_and_statutory_instrument_n_ireland_si_'.$i .'_si_id'] = $postdata[$k][$i];
 				}
+				$metas[$k] = $n;
 			} else if($k === 'authorised_country_and_statutory_instrument_england_status') {
 				$metas[$k] = $postdata["submit-type"] === 'save-draft' ? '10' : '20';
 			} else if($k === 'authorised_country_and_statutory_instrument_wales_status') {
@@ -1550,8 +1554,6 @@ class Defra_Data_DB_Requests {
 			$user_id = $current_user->ID;
 		}
 
-		$current_user = wp_get_current_user();
-
 		// add user id to the metas
 		$metas = array(
 			'entry_user_id' => $user_id,
@@ -1631,11 +1633,16 @@ class Defra_Data_DB_Requests {
 	 * @return array 
 	 */
 	public function set_fuel_post_array($postdata) {
-		$current_user = wp_get_current_user();
+		if(isset($postdata["post_author"])) {
+			$user_id = $postdata["post_author"];
+		} else {
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+		}
 		$new_fuel = array(
 			'post_title'   => $postdata["fuel_name"],
 			'post_status'  => 'draft',
-			'post_author'  => $current_user->ID,
+			'post_author'  => $user_id,
 			'post_type' => 'fuels'
 		);
 		return $new_fuel;

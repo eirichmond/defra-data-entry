@@ -108,9 +108,9 @@ class Defra_Data_Entry_Public {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/defra-data-entry-public.js', array( 'jquery' ), $this->version, false );
 		wp_localize_script( $this->plugin_name, 'defra_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'nextNonce' => wp_create_nonce( 'create_nonce' ) ) );
 
-		if ( is_page( 'appliances' ) ) {
+		if ( is_page( 'appliances' ) || is_page( 'fuels' ) ) {
 			if (is_user_logged_in()) {
-				wp_enqueue_script( $this->plugin_name.'-appliances', plugin_dir_url( __FILE__ ) . 'js/defra-appliances-auth.js', array( 'jquery' ), $this->version, false );
+				wp_enqueue_script( $this->plugin_name.'-appliances', plugin_dir_url( __FILE__ ) . 'js/defra-assign-auth.js', array( 'jquery' ), $this->version, false );
 				wp_localize_script( $this->plugin_name.'-appliances', 'defra_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'nextNonce' => wp_create_nonce( 'create_nonce' ) ) );
 			}
 		}
@@ -129,16 +129,30 @@ class Defra_Data_Entry_Public {
 		$audit = new Defra_Data_Audit_Log();
 		$permalink = get_the_permalink($_POST["post_id"]);
 		$datetime = new DateTime('now', new DateTimeZone('Europe/London'));
+		$post = get_post($_POST["post_id"]);
+		
 		if($_POST["role"] == 'data_reviewer') {
 			update_post_meta( $_POST["post_id"], 'reviewer_user_id', $_POST["user_id"] );
 			update_post_meta( $_POST["post_id"], 'reviewer_assign_date', $datetime->format('Y-m-d H:i:s') );
-			$audit->defra_audit_log($_POST["user_id"], 'appliance', $_POST["post_id"], 'Data Reviewer assigned appliance to their account', $_SERVER["REMOTE_ADDR"]);
+			$audit->defra_audit_log($_POST["user_id"], $post->post_type == 'appliances' ? 'appliance' : 'fuel', $_POST["post_id"], 'Data Reviewer assigned '.$post->post_type == 'appliances' ? 'appliance' : 'fuel'.' to their account', $_SERVER["REMOTE_ADDR"]);
 		}
 		if($_POST["role"] == 'data_approver') {
+
 			$country_approver_key = get_user_meta( $_POST["user_id"], 'approver_country_id', true );
-			update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_user', $_POST["user_id"] );
-			update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_assigned_date', $datetime->format('Y-m-d H:i:s') );
-			$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Appliance for '.ucfirst($approver_counties[$country_approver_key]).' assigned to user_id: ('.$_POST["user_id"].')', $_SERVER["REMOTE_ADDR"]);
+
+			if($_POST["revoked"] == 'true') { // set only if revocation requested 
+
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_assigned_user_id' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_assigned_user_id', $_POST["user_id"] );
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_assigned_date' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_assigned_date', $datetime->format('Y-m-d H:i:s') );
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_status_id', '60' );
+
+			} else {
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_user' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_user', $_POST["user_id"] );
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_assigned_date' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_assigned_date', $datetime->format('Y-m-d H:i:s') );
+			}
+
+			$audit->defra_audit_log($_POST["user_id"], $post->post_type == 'appliances' ? 'appliance_country' : 'fuel_country', $_POST["post_id"], $post->post_type == 'appliances' ? 'Appliance' : 'Fuel' . ' for '.ucfirst($approver_counties[$country_approver_key]).' assigned to user_id: ('.$_POST["user_id"].')', $_SERVER["REMOTE_ADDR"]);
+
 		}
 
 		wp_send_json( $permalink );
@@ -980,22 +994,22 @@ class Defra_Data_Entry_Public {
 			}
 		}
 
-		// if ( is_post_type_archive('appliances') ) {
-		// 	if (is_user_logged_in()) {
-		// 		$original_template = plugin_dir_path( __FILE__ ) . 'partials/appliances.php';
-		// 	} else {
-		// 		$original_template = plugin_dir_path( __FILE__ ) . 'partials/not-logged-in.php';
+		// Check if the page is a 404 error
+		// if(is_404()) {
+		// 	if(isset($_GET['post_type'])) {
+		// 		// Check if the value of $_GET['post_type'] is 'fuel' or 'appliance'
+		// 		$type = $_GET['post_type'];
+		// 		if($type == 'fuels' || $type == 'appliances') {
+		// 			// Your code here if the conditions are met
+		// 			$redirect_url = admin_url('/');
+
+		// 			// Redirect to the new URL
+		// 			wp_redirect($redirect_url);
+		// 			exit;
+
+		// 		}
 		// 	}
 		// }
-
-		// if ( is_post_type_archive('fuels') ) {
-		// 	if (is_user_logged_in()) {
-		// 		$original_template = plugin_dir_path( __FILE__ ) . 'partials/fuels.php';
-		// 	} else {
-		// 		$original_template = plugin_dir_path( __FILE__ ) . 'partials/not-logged-in.php';
-		// 	}
-		// }
-
 
 		return $original_template;
 	}
@@ -1129,7 +1143,9 @@ class Defra_Data_Entry_Public {
 			$db = new Defra_Data_DB_Requests();
 			$audit = new Defra_Data_Audit_Log();
 			$post_id = $db->insert_new_fuel($_POST);
+			$comments = $this->create_comment_logic($post_id, $_POST);
 
+			$audit->set_appliance_audit_data($current_user->ID, $post_id, $_POST);
 			// check and send to reviewer
 			if($_POST['submit-type'] == 'submit-review') {
 				$this->notify_data_review( $post_id, 'fuel' );
@@ -1260,12 +1276,17 @@ class Defra_Data_Entry_Public {
 	 */
 	public function notify_appliance_data_approve($post_id) {
 
+		$post = get_post($post_id);
+		$type_label = $post->post_type == 'appliances' ? 'Appliance' : 'Fuel';
+		$type_slug = $post->post_type == 'appliances' ? 'appliances' : 'fuels';
+		$type_meta = $post->post_type == 'appliances' ? 'appliance' : 'fuel';
+
 		$admin = new Defra_Data_Entry_Admin('Admin','1,0');
 
 		$data_approvers = $admin->get_data_approver_email_addresses();
-		$subject = 'Appliance submitted for approval';
-		$content = 'Appliance ID: ' . get_post_meta($post_id, 'appliance_id', true) . '<br>';
-		$content .= 'To approve submitted Appliance <a href="'.home_url().'/?post_type=appliances&p='.$post_id.'"><strong>click here</strong></a>';
+		$subject = $type_label . ' submitted for approval';
+		$content = $type_label . ' ID: ' . get_post_meta($post_id, $type_meta . '_id', true) . '<br>';
+		$content .= 'To approve submitted '.$type_label.' <a href="'.home_url().'/?post_type='.$type_slug.'&p='.$post_id.'"><strong>click here</strong></a>';
 		$headers = array('Content-Type: text/html; charset=UTF-8');
 		wp_mail($data_approvers, $subject, $content, $headers);
 
@@ -1277,7 +1298,8 @@ class Defra_Data_Entry_Public {
 	 * @param [type] $post_id
 	 * @return void
 	 */
-	public function notify_appliance_data_approved_by_da($post_id) {
+	public function notify_data_approved_by_da($post_id) {
+		
 
 		$admin = new Defra_Data_Entry_Admin('Admin','1,0');
 
@@ -1296,13 +1318,19 @@ class Defra_Data_Entry_Public {
 	 * @param [type] $post_id
 	 * @return void
 	 */
-	public function notify_appliance_data_rejected_by_da($post_id) {
+	public function notify_data_rejected_by_da($post_id) {
 		$admin = new Defra_Data_Entry_Admin('Admin','1,0');
+		$post = get_post($post_id);
+		$type_label = $post->post_type == 'appliances' ? 'Appliance' : 'Fuel';
+		$type_slug = $post->post_type == 'appliances' ? 'appliances' : 'fuels';
+		$type_meta = $post->post_type == 'appliances' ? 'appliance' : 'fuel';
+
+
 
 		$administrators = $admin->get_administrator_email_addresses();
-		$subject = 'Appliance Rejected by DA';
-		$content = 'Appliance ID: ' . get_post_meta($post_id, 'appliance_id', true) . '<br>';
-		$content .= 'Appliance Rejected by DA <a href="'.home_url().'/?post_type=appliances&p='.$post_id.'"><strong>click here</strong></a>';
+		$subject = $type_label . ' Rejected by DA';
+		$content = $type_label . ' ID: ' . get_post_meta($post_id, $type_meta . '_id', true) . '<br>';
+		$content .= $type_label . ' Rejected by DA <a href="'.home_url().'/?post_type='. $type_slug . '&p='.$post_id.'"><strong>click here</strong></a>';
 		$headers = array('Content-Type: text/html; charset=UTF-8');
 		wp_mail($administrators, $subject, $content, $headers);
 
@@ -1423,9 +1451,26 @@ class Defra_Data_Entry_Public {
 		if ( ! isset( $_POST['create_nonce_field'] ) || ! wp_verify_nonce( $_POST['create_nonce_field'], 'create_nonce' ) ) {
 			wp_die('Sorry, security did not verify.');
 		} else {
-			// process form data
-			$db = new Defra_Data_DB_Requests();
-			$db->insert_new_fuel_type($_POST);
+			// Check if the term exists, if not, create it
+			if (!term_exists($_POST['fuel-type'], 'fuel_types')) {
+				// Arguments for creating the term
+				$args = array(
+					'description' => 'User created fuel type',
+					'slug' => sanitize_title( $_POST['fuel-type'] )
+				);
+
+				// Insert the term into the database
+				$term_inserted = wp_insert_term($_POST['fuel-type'], 'fuel_types', $args);
+				
+				if (is_wp_error($term_inserted)) {
+					// Handle error, for example, log it or display a message
+					wp_die('Error inserting term: ' . $term_inserted->get_error_message());
+				}
+
+			} else {
+				wp_die('This term already exists.');
+			}
+
 			// redirect with success
 			$url = home_url().'/data-entry/fuel-types/create-new-fuel-type/?post=success';
 			wp_redirect( $url );
@@ -1454,6 +1499,24 @@ class Defra_Data_Entry_Public {
 			exit;
 		}
 
+	}
+
+	/**
+	 * Setters for country metas
+	 *
+	 * @return array
+	 */
+	public function country_meta_slugs($key = null) {
+		$country_meta_slugs = array(
+			'1' => 'england',
+			'2' => 'wales',
+			'3' => 'scotland',
+			'4' => 'n_ireland',
+		);
+		if($key) {
+			return $country_meta_slugs[$key];
+		}
+		return $country_meta_slugs;
 	}
 
 	/**
@@ -1503,11 +1566,12 @@ class Defra_Data_Entry_Public {
 			$datetime = new DateTime('now', new DateTimeZone('Europe/London'));
 			$user = get_user_by( 'id', $_POST["user_id"] );
 			$country = get_user_meta( $user->ID, 'approver_country_id', true );
+			$post = get_post($_POST["post_id"]);
 			$countries = array(
-				'1' => 'exempt-in_country_and_statutory_instrument_england_status',
-				'2' => 'exempt-in_country_and_statutory_instrument_wales_status',
-				'3' => 'exempt-in_country_and_statutory_instrument_scotland_status',
-				'4' => 'exempt-in_country_and_statutory_instrument_n_ireland_status'
+				'1' => $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status',
+				'2' => $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status',
+				'3' => $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status',
+				'4' => $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status'
 			);
 			$status_country = array(
 				'1' => 'England',
@@ -1516,15 +1580,17 @@ class Defra_Data_Entry_Public {
 				'4' => 'N. Ireland'
 			);
 
+			$country_meta_slugs = $this->country_meta_slugs();
+
 			// process data
 			if($_POST["status"] == 'reject') {
 				update_post_meta( $_POST["post_id"], 'reviewer_user_id', $_POST["user_id"] );
 				update_post_meta( $_POST["post_id"], 'reviewer_reject_date', $datetime->format('Y-m-d H:i:s') );
 				// update postmeta
-				get_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_england_status', true ) ? update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_england_status', '40' ) : null;
-				get_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_wales_status', true ) ? update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_wales_status', '40' ) : null;
-				get_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_scotland_status', true ) ? update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_scotland_status', '40' ) : null;
-				get_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_n_ireland_status', true ) ? update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_n_ireland_status', '40' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', '40' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_wales_status', '40' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_scotland_status', '40' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', '40' ) : null;
 				
 				if(!empty($_POST["user_comments"])) {
 					// add comments
@@ -1549,10 +1615,10 @@ class Defra_Data_Entry_Public {
 			}
 			if($_POST["status"] == 'approve') {
 
-				get_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_england_status', true ) ? update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_england_status', '50' ) : null;
-				get_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_wales_status', true ) ? update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_wales_status', '50' ) : null;
-				get_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_scotland_status', true ) ? update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_scotland_status', '50' ) : null;
-				get_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_n_ireland_status', true ) ? update_post_meta( $_POST["post_id"], 'exempt-in_country_and_statutory_instrument_n_ireland_status', '50' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', '50' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', '50' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', '50' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', '50' ) : null;
 
 				if(!empty($_POST["comments_to_defra_da"])) {
 					// add comments
@@ -1589,13 +1655,15 @@ class Defra_Data_Entry_Public {
 				}
 
 				// create audit
-				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Changed appliance to status_id: (50) Submitted', $_SERVER["REMOTE_ADDR"]);
+				$audit->defra_audit_log($_POST["user_id"], $post->post_type == 'appliances' ? 'appliance' : 'fuel' . '_country', $_POST["post_id"], 'Changed appliance to status_id: (50) Submitted', $_SERVER["REMOTE_ADDR"]);
 				$this->notify_appliance_data_approve($_POST["post_id"]);
 
 			}
 			if($_POST["status"] == 'approved-by-da') {
 
-				get_post_meta( $_POST["post_id"], $countries[$country], true ) ? update_post_meta( $_POST["post_id"], $countries[$country], '70' ) : null;
+				get_post_meta( $_POST["post_id"], $countries[$country], true ) ? update_post_meta( $_POST["post_id"], $countries[$country], '500' ) : null;
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_publish_date' : 'authorised_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_publish_date', $this->set_next_logical_publish_date() );
+				
 
 				if(!empty($_POST["user_comments"])) {
 					// add comments
@@ -1616,13 +1684,15 @@ class Defra_Data_Entry_Public {
 				}
 
 				// create audit
-				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Approve appliance for '.$status_country[$country].' and set status_id: (70) Approved', $_SERVER["REMOTE_ADDR"]);
-				$this->notify_appliance_data_approved_by_da($_POST["post_id"]); // @TODO
+				$audit->defra_audit_log($_POST["user_id"], $post->post_type == 'appliances' ? 'appliance' : 'fuel' . '_country', $_POST["post_id"], 'Approve '.$post->post_type == 'appliances' ? 'appliance' : 'fuel' . ' for '.$status_country[$country].' and set status_id: (70) Approved', $_SERVER["REMOTE_ADDR"]);
+				$this->notify_data_approved_by_da($_POST["post_id"]);
 
 			}
 			if($_POST["status"] == 'rejected-by-da') {
 
 				get_post_meta( $_POST["post_id"], $countries[$country], true ) ? update_post_meta( $_POST["post_id"], $countries[$country], '80' ) : null;
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in' : 'authorised' . '_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_reject_date', $datetime->format('Y-m-d H:i:s') );
+
 
 				if(!empty($_POST["user_comments"])) {
 					// add comments
@@ -1643,15 +1713,20 @@ class Defra_Data_Entry_Public {
 				}
 
 				// create audit
-				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Appliance rejected for '.$countries[$country].' and set status_id: (80) Rejected', $_SERVER["REMOTE_ADDR"]);
-				$this->notify_appliance_data_rejected_by_da($_POST["post_id"]); // @TODO
+				$audit->defra_audit_log($_POST["user_id"], $post->post_type == 'appliances' ? 'appliance' : 'fuel' . '_country', $_POST["post_id"], $post->post_type == 'appliances' ? 'Appliance' : 'Fuel' . ' rejected for '.$countries[$country].' and set status_id: (80) Rejected', $_SERVER["REMOTE_ADDR"]);
+				$this->notify_data_rejected_by_da($_POST["post_id"]);
 
 			}
-			if($_POST["status"] == 'cancel-revocation-by-da') {
+			if($_POST["status"] == 'cancel') {
 
-				wp_die('@TODO Developer needs more logic explained at this point, there are too many status options for the following Submit Cancellation, Submit Revocation, Approved for Cancellation, Approved for Revocation and Revoked');
+				// generic update of all by country to submitted to data reviewer
+				foreach ( $country_meta_slugs as $k => $slug ) {
 
-				get_post_meta( $_POST["post_id"], $countries[$country], true ) ? update_post_meta( $_POST["post_id"], $countries[$country], '80' ) : null; // this depends on the above, die for now
+					update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$slug.'_revoke_requested' : 'authorised_country_and_statutory_instrument_'.$slug.'_revoke_requested', '1' );
+					update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$slug.'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$slug.'_revoke_status_id', '20' );
+
+				}
+
 
 				if(!empty($_POST["user_comments"])) {
 					// add comments
@@ -1672,10 +1747,71 @@ class Defra_Data_Entry_Public {
 				}
 
 				// create audit
-				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Appliance rejected for '.$countries[$country].' and set status_id: (80) Rejected', $_SERVER["REMOTE_ADDR"]);
-				$this->notify_appliance_data_rejected_by_da($_POST["post_id"]); // @TODO
+				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Revoked for '.$countries[$country].' and set status_id: (20) Revoked', $_SERVER["REMOTE_ADDR"]);
+				//$this->notify_data_rejected_by_da($_POST["post_id"]); // @TODO
 
 			}
+			if($_POST["status"] == 'approve-revocation') { // approved revoke by reviewer
+				// generic update of all by country to submitted to data reviewer
+				foreach ( $country_meta_slugs as $k => $slug ) {
+					update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$slug.'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$slug.'_revoke_status_id', '200' );
+
+				}
+
+
+				if(!empty($_POST["user_comments"])) {
+					// add comments
+					$user_comment_data = array(
+						'comment_post_ID' => $_POST["post_id"], 
+						'comment_content' => $_POST["user_comments"],
+						'comment_author' => $user->data->user_email,
+						'comment_author_email' => $user->data->user_email,
+						'comment_date' => $datetime->format('Y-m-d H:i:s'),
+						'user_id' => $_POST["user_id"],
+						'comment_approved' => 1, 
+					);
+					  
+					$comment_id = wp_insert_comment($user_comment_data);
+					// update comment meta
+					update_comment_meta($comment_id, 'comment_type_id', '3');
+					update_comment_meta($comment_id, 'comment_action_id', '3');
+				}
+
+				// create audit
+				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Revoked for '.$countries[$country].' and set status_id: (200) approved revoke by reviewer', $_SERVER["REMOTE_ADDR"]);
+				//$this->notify_data_rejected_by_da($_POST["post_id"]); // @TODO
+
+			}
+
+			if($_POST["status"] == 'approved-revocation-by-da') { // approved revoke by data approver
+
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_revoke_status_id', '300' );
+				
+				if(!empty($_POST["user_comments"])) {
+					// add comments
+					$user_comment_data = array(
+						'comment_post_ID' => $_POST["post_id"], 
+						'comment_content' => $_POST["user_comments"],
+						'comment_author' => $user->data->user_email,
+						'comment_author_email' => $user->data->user_email,
+						'comment_date' => $datetime->format('Y-m-d H:i:s'),
+						'user_id' => $_POST["user_id"],
+						'comment_approved' => 1, 
+					);
+					  
+					$comment_id = wp_insert_comment($user_comment_data);
+					// update comment meta
+					update_comment_meta($comment_id, 'comment_type_id', '4');
+					update_comment_meta($comment_id, 'comment_action_id', '4');
+				}
+
+				// create audit
+				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Revoked for '.$countries[$country].' and set status_id: (300) approved revoke by approver', $_SERVER["REMOTE_ADDR"]);
+				//$this->notify_data_rejected_by_da($_POST["post_id"]); // @TODO
+				
+
+			}
+
 
 			$url = add_query_arg( 'refer', 'status-updated', home_url().'/data-entry/dashboard/' );
 			wp_redirect( $url );
@@ -1794,7 +1930,13 @@ class Defra_Data_Entry_Public {
 
 
 			if (is_user_logged_in()) {
-				$template = plugin_dir_path( __FILE__ ) . 'partials/data-entry/fuel-view.php';
+				$status = $this->viewing_updating($post);
+				if($status != 'updating') {
+					$template = plugin_dir_path( __FILE__ ) . 'partials/data-entry/fuel-view.php';
+				} else {
+					// if ownership and updating
+					$template = plugin_dir_path( __FILE__ ) . 'partials/data-entry/update-fuel.php';
+				}
 			} else {
 				$template = plugin_dir_path( __FILE__ ) . 'cpt-templates/single-fuels.php';
 			}
@@ -1984,14 +2126,16 @@ class Defra_Data_Entry_Public {
 		return $this->output_units($output_key);
 	}
 
+	/**
+	 * Get additional conditions from the database
+	 *
+	 * @param [type] $key
+	 * @return void
+	 */
 	public function appliance_conditions($key = null) {
-		$conditions = array(
-			'1' => 'Permanent Stop',
-			'2' => 'Cyclone',
-			'3' => 'Conversion Kit',
-			'4' => 'None',
-			'5' => 'Not applicable'
-		);
+		$db_class = new Defra_Data_DB_Requests();
+		$conditions = $db_class->get_additional_conditions();
+		$conditions = wp_list_pluck( $conditions, 'condition_name' );
 		if($key) {
 			$conditions = $conditions[$key];
 		}
@@ -2172,7 +2316,7 @@ class Defra_Data_Entry_Public {
 		$appliance = get_post($id);
 		$user = get_user_by('id', get_post_meta($appliance->ID,'entry_user_id', true));
 		$data_entry = $user->first_name .' '. $user->last_name;
-		$manufacturer = get_post(get_post_meta($appliance->ID,'manufacturer', true));
+		$manufacturer = get_post(get_post_meta($appliance->ID,'manufacturer_id', true));
 		$application_number = get_post_meta($appliance->ID,'appliance_additional_details_application_number', true);
 		//$permitted_fuel = get_post(get_post_meta($appliance->ID,'appliance_fuels_permitted_fuel_id', true));
 		$permitted_fuels = wp_get_post_terms( $appliance->ID, 'permitted_fuels' );
@@ -2209,7 +2353,7 @@ class Defra_Data_Entry_Public {
 
 		$filepath = $phpWord->save();
 
-		$file = 'Appliance-Letter.doc';
+		$file = 'Appliance-Letter-'.$appliance->ID.'.doc';
 		header("Content-Description: File Transfer");
 		header('Content-Disposition: attachment; filename="' . $file . '"');
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
@@ -2337,14 +2481,14 @@ class Defra_Data_Entry_Public {
 	public function appliance_data_details($post_id) {
 		$appliance_data_details = array();
 		$appliance_meta = $this->defra_merge_postmeta($post_id);
-		$manufacturer_meta = $this->defra_merge_postmeta($appliance_meta["manufacturer"]);
+		$manufacturer_meta = $this->defra_merge_postmeta($appliance_meta["manufacturer_id"]);
 
 		$appliance_data_details['appliance_id'] = $appliance_meta["appliance_id"];
 		$appliance_data_details['appliance_name'] = get_the_title($post_id);
 		$appliance_data_details['output'] = $appliance_meta["output_unit_output_unit_id"] == '3' ? 'n/a' : $appliance_meta["output_unit_output_value"] . $this->output_units($appliance_meta["output_unit_output_unit_id"]);
 		$appliance_data_details['fuel_types'] = $this->get_fuel_type($post_id);
 		$appliance_data_details['appliance_type'] = $this->get_appliance_type($post_id);
-		$appliance_data_details['manufacturer'] = $this->manufacturer_composite_address($appliance_meta["manufacturer"]);
+		$appliance_data_details['manufacturer'] = $this->manufacturer_composite_address($appliance_meta["manufacturer_id"]);
 		$appliance_data_details['instructions_instruction_manual_title'] = $appliance_meta["instructions_instruction_manual_title"] ? $appliance_meta["instructions_instruction_manual_title"] : 'See conditions if applicable';
 		$appliance_data_details['instructions_instruction_manual_date'] = $appliance_meta["instructions_instruction_manual_date"] ? $appliance_meta["instructions_instruction_manual_date"] : 'See conditions if applicable';
 		$appliance_data_details['instructions_instruction_manual_reference'] = $appliance_meta["instructions_instruction_manual_reference"] ? $appliance_meta["instructions_instruction_manual_reference"] : 'See conditions if applicable';
@@ -2647,6 +2791,27 @@ class Defra_Data_Entry_Public {
 	public function defra_view_assign_link_callback() {
 		include plugin_dir_path( __FILE__ ) . 'partials/template-part/view-assign-link.php';
 	}
+
+	/**
+	 * Determine in a field is required based on the status
+	 *
+	 * @return boolean
+	 */
+	public function is_a_required_field() {
+		global $post;
+		$bool = false;
+		$post_id = $post->ID;
+		$status = array(
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', true ),
+		);
+		if( in_array( '600', $status ) ) {
+			$bool = true;
+		}
+		return $bool;
+	}
 	
 	/**
 	 * Determine if approve reject button should show based on the current users role
@@ -2655,23 +2820,63 @@ class Defra_Data_Entry_Public {
 	 * @return void
 	 */
 	public function reviewer_approve_reject_callback($post_id) {
+
+		$post = get_post($post_id);
+
 		$approver_counties = $this->get_exemption_countries();
 		$user = wp_get_current_user();
+		$post = get_post($post_id);
 		$status = array(
-			get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_england_status', true ),
-			get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_scotland_status', true ),
-			get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_wales_status', true ),
-			get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_n_ireland_status', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', true ),
 		);
+
 		$status = array_unique($status);
 		$count = count($status);
-		if($count == 1 && $status[0] == '20' && current_user_can( 'data_reviewer' )) {
-			include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
+
+		$revoked = array(
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_revoke_requested' : 'authorised_country_and_statutory_instrument_england_revoke_requested', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_revoke_requested' : 'authorised_country_and_statutory_instrument_scotland_revoke_requested', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_revoke_requested' : 'authorised_country_and_statutory_instrument_wales_revoke_requested', true ),
+			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_revoke_requested' : 'authorised_country_and_statutory_instrument_n_ireland_revoke_requested', true ),
+		);
+		$revoked = array_unique($revoked);
+		
+		if( current_user_can( 'data_reviewer' ) || current_user_can( 'data_entry' ) || current_user_can( 'administrator' ) ) {
+			if($revoked) {
+
+				$status = array(
+					get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_revoke_status_id' : 'authorised_country_and_statutory_instrument_england_revoke_status_id', true ),
+					get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_revoke_status_id' : 'authorised_country_and_statutory_instrument_scotland_revoke_status_id', true ),
+					get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_revoke_status_id' : 'authorised_country_and_statutory_instrument_wales_revoke_status_id', true ),
+					get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_revoke_status_id' : 'authorised_country_and_statutory_instrument_n_ireland_revoke_status_id', true ),
+				);
+				$status = array_unique($status);
+
+				if( in_array( '200', $status ) || in_array( '300', $status ) ) {
+					include plugin_dir_path( __FILE__ ) . 'partials/template-part/status-information.php';
+				} else {
+					include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
+				}
+
+			}
+
 		}
+
 		if(current_user_can( 'data_approver' )) {
 			$country_approver_key = get_user_meta( $user->ID, 'approver_country_id', true );
-			$approver_id = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_user', true );
-			if( !empty($approver_id) && $approver_id == $user->ID ) {
+			$approver_id = get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_user' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_user', true );
+
+			if($revoked) {
+				$status = get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_status_id', true );
+			} else {
+				$status = get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_status' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_status', true );
+			}
+			if( $status == '80' || $status == '500' || $status == '300' ) {
+				include plugin_dir_path( __FILE__ ) . 'partials/template-part/status-information.php';
+			} else if( !empty($approver_id) && $approver_id == $user->ID || $revoked ) {
 				include plugin_dir_path( __FILE__ ) . 'partials/template-part/approver-approve-reject.php';
 			}
 		}
@@ -2691,6 +2896,7 @@ class Defra_Data_Entry_Public {
 			$si_id = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si_'.$i.'_si_id', true );
 			$statutory_instruments[$i]['id'] = $si_id;
 			$statutory_instruments[$i]['title'] = get_the_title($si_id);
+			$statutory_instruments[$i]['publish_date'] = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_publish_date', true );
 			if(strpos(get_the_title($si_id), 'Footnote') !== false) {
 				$statutory_instruments[$i]['url'] = get_permalink($si_id);
 			} else {
@@ -2699,6 +2905,81 @@ class Defra_Data_Entry_Public {
 			
 		}
 		return $statutory_instruments;
+	}
+
+	/**
+	 * Get all terms used or unused for a give taxonomy
+	 *
+	 * @param string $taxonomy
+	 * @return void
+	 */
+	public function defra_get_terms( $taxonomy ) {
+		$terms = get_terms(array(
+			'taxonomy' => $taxonomy, // Replace 'your_custom_taxonomy' with the name of your taxonomy
+			'hide_empty' => false, // Set to true to hide terms with no posts
+		));
+		return $terms;
+	}
+
+	/**
+	 * Get SI posts by term
+	 *
+	 * @param [type] $term
+	 * @return void
+	 */
+	public function get_list_sis_by_term( $term ) {
+
+		$list_appliance_sis = array();
+		// First, let's retrieve the term object for the 'appliance' slug
+		$term = get_term_by('slug', $term, 'si_types');
+
+		// Check if the term exists
+		if ($term) {
+			// Now, let's retrieve all posts of the custom post type 'statutory_instrument' with the 'appliance' term
+			$args = array(
+				'post_type' => 'statutory_instrument',
+				'post_status' => 'publish',
+				'tax_query' => array(
+					array(
+						'taxonomy' => 'si_types',
+						'field' => 'slug',
+						'terms' => $term->slug
+					)
+				),
+				'posts_per_page' => -1 // Retrieve all posts
+			);
+
+			$si_query = get_posts($args);
+
+		}
+		foreach (  $si_query as $k => $si ) {
+			$list_appliance_sis[$si->ID]['id'] = $si->ID;
+			$list_appliance_sis[$si->ID]['number'] = $si->post_title;
+			$list_appliance_sis[$si->ID]['link'] = $si->post_content;
+		}
+
+		return $list_appliance_sis;
+	}
+
+	/**
+	 * Get appliance count based on a status number and 
+	 *
+	 * @param [type] $status
+	 * @param [type] $meta_status
+	 * @return void
+	 */
+	public function count_appliance( $status, $country = null ) {
+		$db = new Defra_Data_DB_Requests();
+		$appliance_data = $db->get_post_country_status( 'appliances', $status, $country );
+
+		$appliances = defra_data_by_appliance_id( $appliance_data );
+
+		if( !empty( $appliances ) ) {
+			return count( $appliances );
+		} else {
+			return 0;
+		}
+
 	}
 
 	/**
@@ -2802,5 +3083,30 @@ class Defra_Data_Entry_Public {
 		curl_close($curl);
 		echo $response;
 
+	}
+
+	/**
+	 * random testing
+	 *
+	 * @return void
+	 */
+	public function set_next_logical_publish_date() {
+		$datetime = new DateTime('now', new DateTimeZone('Europe/London'));
+		$publish_date = $datetime->modify('midnight first day of next month');
+		$publish_date = $datetime->format('Y-m-d H:i:s');
+		return $publish_date;
+	}
+
+
+	/**
+	 * random testing
+	 *
+	 * @return void
+	 */
+	public function test_logic_callback() {
+		$datetime = new DateTime('now', new DateTimeZone('Europe/London'));
+		$publish = $datetime->modify('midnight first day of next month');
+		$publish = $datetime->format('Y-m-d H:i:s');
+		return $publish;
 	}
  }

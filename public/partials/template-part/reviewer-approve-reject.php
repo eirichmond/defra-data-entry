@@ -1,5 +1,22 @@
 <div class="mb-3">
-    <button class="btn btn-success" type="submit" name="status" value="approve">Approve</button>
-    <button class="btn btn-danger" type="submit" name="status" value="reject">Reject</button>
+
+    <?php if( $count == 1 && $status[0] == '20' ) { ?>
+        <button class="btn btn-success" type="submit" name="status" value="approve">Approve</button>
+        <button class="btn btn-danger" type="submit" name="status" value="reject">Reject</button>
+    <?php } ?>
+    
+    <?php if( in_array( '600', $status ) && empty($revoked[0]) ) { ?>
+
+        <button class="btn btn-success" type="submit" name="status" value="cancel">Request Cancellation / Revocation</button>
+        
+    <?php } ?>
+
+    <?php if( in_array( '1', $revoked ) ) { ?>
+        <button class="btn btn-success" type="submit" name="status" value="approve-revocation">Approve Revocation</button>
+    <?php } ?>
+
 </div>
+
+
+
 

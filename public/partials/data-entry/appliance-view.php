@@ -231,18 +231,24 @@ get_header();
 	<?php } ?>
 
 
-	<form method="post" action="/data-entry/form-process/">
+	<form class="needs-validation" method="post" action="/data-entry/form-process/" novalidate>
 	
 		<?php if ( !in_array('data_approver', $roles) ) { ?>
 			<div class="mb-3">
 				<label class="form-label" for="comments_to_defra_da">Comments to DEFRA / Devolved Administrations</label>
-				<textarea class="form-control" id="comments_to_defra_da" name="comments_to_defra_da"></textarea>
+				<textarea class="form-control" id="comments_to_defra_da" name="comments_to_defra_da" required></textarea>
+				<div class="invalid-feedback">
+					Please provide a comment.
+				</div>
 			</div>
 		<?php } ?>
 
 		<div class="mb-3">
 			<label class="form-label" for="user_comments">User Comments</label>
-    		<textarea class="form-control" id="user_comments" name="user_comments"></textarea>
+    		<textarea class="form-control" id="user_comments" name="user_comments" required></textarea>
+			<div class="invalid-feedback">
+				Please provide a comment.
+			</div>
 		</div>
 
 		<input type="hidden" name="process" value="status-change">

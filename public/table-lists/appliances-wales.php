@@ -33,7 +33,7 @@ $appliances = $public_class->get_table_list($args);
 				<td style="width:30%"><?php echo esc_html( $v->manufacturer_name ); ?></td>
 				<td style="width:20%"><?php echo get_the_title( $v->fuel_id ); ?></td>
 				<td style="width:20%"><?php echo esc_html($terms_string); ?></td>
-				<td style="width:20%"><a href="<?php echo esc_url( get_permalink($v) ); ?>?lang=cy">View details  information</a></td>
+				<td style="width:20%"><a href="<?php echo esc_url( get_permalink($v) ); ?>?lang=cy">View detailed information</a></td>
 			</tr>
 
 		<?php } ?>

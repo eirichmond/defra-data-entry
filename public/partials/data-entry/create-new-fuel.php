@@ -127,7 +127,7 @@ get_header(); ?>
                         <div class="row">
                             <div class="col-2">
 
-                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_england_enabled" name="authorised_country_and_statutory_instrument_england_enabled" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_england_enabled', true ) : ''; ?>" <?php echo esc_attr(isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_england_enabled', true ) == '1' ? 'checked' : '' ); ?>>
+                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_england_enabled" name="authorised_country_and_statutory_instrument_england_enabled" value="on" <?php echo esc_attr(isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_england_enabled', true ) == '1' ? 'checked' : '' ); ?>>
                                 <label class="form-check-label" for="authorised_country_and_statutory_instrument_england_enabled">
                                     England
                                 </label>
@@ -151,7 +151,7 @@ get_header(); ?>
                         <div class="row">
                             <div class="col-2">
 
-                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_wales_enabled" name="authorised_country_and_statutory_instrument_wales_enabled" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_wales_enabled', true ) : ''; ?>" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_wales_enabled', true ) == '1' ? 'checked' : '' ); ?>>
+                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_wales_enabled" name="authorised_country_and_statutory_instrument_wales_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_wales_enabled', true ) == '1' ? 'checked' : '' ); ?>>
                                 <label class="form-check-label" for="authorised_country_and_statutory_instrument_wales_enabled">
                                     Wales
                                 </label>
@@ -177,7 +177,7 @@ get_header(); ?>
                         <div class="row">
                             <div class="col-2">
 
-                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_scotland_enabled" name="authorised_country_and_statutory_instrument_scotland_enabled" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_scotland_enabled', true ) : ''; ?>" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_scotland_enabled', true ) == '1' ? 'checked' : '' ); ?>>
+                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_scotland_enabled" name="authorised_country_and_statutory_instrument_scotland_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_scotland_enabled', true ) == '1' ? 'checked' : '' ); ?>>
                                 <label class="form-check-label" for="authorised_country_and_statutory_instrument_scotland_enabled">
                                     Scotland
                                 </label>
@@ -202,7 +202,7 @@ get_header(); ?>
                         <div class="row">
                             <div class="col-2">
 
-                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_n_ireland_enabled" name="authorised_country_and_statutory_instrument_n_ireland_enabled" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_n_ireland_enabled', true ) : ''; ?>" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_n_ireland_enabled', true ) == '1' ? 'checked' : '' ); ?>>
+                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_n_ireland_enabled" name="authorised_country_and_statutory_instrument_n_ireland_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_n_ireland_enabled', true ) == '1' ? 'checked' : '' ); ?>>
                                 <label class="form-check-label" for="authorised_country_and_statutory_instrument_n_ireland_enabled">
                                     N. Ireland
                                 </label>

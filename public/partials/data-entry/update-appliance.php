@@ -30,14 +30,6 @@ function find_set_key($array, $value, $type) {
 	return false;
 }
 
-function exempt_statutory_instrument($post_id, $country) {
-	$count = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si', true );
-	$sis = array();
-	for ($i=0; $i < $count; $i++) { 
-		$sis[] = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si_'.$i.'_si_id', true );
-	}
-	return $sis;
-}
 
 get_header();
 ?>
@@ -113,7 +105,7 @@ get_header();
 				</div>
 				<div class="col-3">
 
-					<label for="type_terms" class="form-label">Fuel</label>
+					<label for="type_terms" class="form-label">Appliance</label>
 					<select class="form-select" id="type_terms" name="type_terms">
 						<?php foreach($appliance_type_terms as $k => $v) { 
 							$key = find_set_key( $set_appliance_types, $v->slug, 'slug' ); ?>

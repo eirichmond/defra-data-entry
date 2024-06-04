@@ -1,7 +1,6 @@
 <?php 
 $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
-$db = new Defra_Data_DB_Requests();
-$list_appliance_sis = $db->list_appliance_sis();
+$list_appliance_sis = $class->get_list_sis_by_term( 'appliance' );
 get_header();
 ?>
 
@@ -21,10 +20,10 @@ get_header();
     <tbody>
 		<?php foreach($list_appliance_sis as $k => $v) { ?>
 			<tr>
-				<td style="width:5%"><?php echo esc_html( $v['appliance_si_id'] ); ?></td>
-				<td style="width:55%"><?php echo esc_html( $v['appliance_si_number'] ); ?></td>
-				<td style="width:55%"><?php echo esc_html( $v['appliance_si_link'] ); ?></td>
-				<td style="width:20%; text-align:right;">??</td>
+				<td style="width:5%"><?php echo esc_html( $v['id'] ); ?></td>
+				<td style="width:55%"><?php echo esc_html( $v['number'] ); ?></td>
+				<td style="width:55%"><?php echo esc_html( $v['link'] ); ?></td>
+				<td style="width:20%; text-align:right;"><?php echo edit_post_link( 'Edit', '', '', $k );?></td>
 
 			</tr>
 

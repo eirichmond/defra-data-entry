@@ -21,6 +21,11 @@ $exempt_wales = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instru
 $exempt_scotland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true);
 $exempt_ireland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true);
 
+$statutory_instruments_england = $public_class->statutory_instrument_assignment( $post->ID, 'england' );
+$statutory_instruments_wales = $public_class->statutory_instrument_assignment( $post->ID, 'wales' );
+$statutory_instruments_scotland = $public_class->statutory_instrument_assignment( $post->ID, 'scotland' );
+$statutory_instruments_n_ireland = $public_class->statutory_instrument_assignment( $post->ID, 'n_ireland' );
+
 ?>
 
 	<main id="primary" class="site-main bg-white container pb-2">
@@ -119,14 +124,39 @@ $exempt_ireland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_inst
 							<tr>
 								<td><strong>England Status<br>Date first exempt</strong></td>
 								<td>
-									<?php echo $exempt_england ? 'Exempt ('.var_dump($public_class->statutory_instrument_assignment( $post->ID,'england' )).')' : 'No'; ?>
+									<?php if ( $exempt_england ) { ?>
+
+										<?php foreach ($statutory_instruments_england as $si_england) { ?>
+											<span>Exempt (<?php echo esc_html( $si_england["title"] ); ?>)<br>
+											See Footnotes or SI Link</span>
+										<?php } ?>
+
+									<?php } else { ?>
+
+										<span>No</br>
+										n/a</span>
+
+									<?php } ?>									
+
 								</td>
 							</tr>
 						
 							<tr>
 								<td><strong>Wales Status<br>Date first exempt</strong></td>
 								<td>
-									<?php echo $exempt_england ? 'Exempt ('.var_dump($public_class->statutory_instrument_assignment( $post->ID,'wales' )).')' : 'No'; ?>	
+									<?php if ( $exempt_wales ) { ?>
+
+										<?php foreach ($statutory_instruments_wales as $si_wales) { ?>
+											<span>Exempt (<?php echo esc_html( $si_wales["title"] ); ?>)<br>
+											See Footnotes or SI Link</span>
+										<?php } ?>
+									<?php } else { ?>
+
+										<span>No</br>
+										n/a</span>
+
+									<?php } ?>									
+
 								</td>
 							</tr>
 
@@ -134,7 +164,19 @@ $exempt_ireland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_inst
 							<tr>
 								<td><strong>Scotland Status<br>Date first exempt</strong></td>
 								<td>
-									<?php echo $exempt_england ? 'Exempt ('.var_dump($public_class->statutory_instrument_assignment( $post->ID,'scotland' )).')' : 'No'; ?>	
+									<?php if ( $exempt_scotland ) { ?>
+
+										<?php foreach ($statutory_instruments_scotland as $si_scotland) { ?>
+											<span>Exempt (<?php echo esc_html( $si_scotland["title"] ); ?>)<br>
+											See Footnotes or SI Link</span>
+										<?php } ?>
+									<?php } else { ?>
+
+										<span>No</br>
+										n/a</span>
+
+									<?php } ?>									
+
 								</td>
 							</tr>
 
@@ -142,7 +184,19 @@ $exempt_ireland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_inst
 							<tr>
 								<td><strong>N. Ireland Status<br>Date first exempt</strong></td>
 								<td>
-									<?php echo $exempt_england ? 'Exempt ('.var_dump($public_class->statutory_instrument_assignment( $post->ID,'n_ireland' )).')' : 'No'; ?>	
+									<?php if ( $exempt_ireland ) { ?>
+
+										<?php foreach ($statutory_instruments_n_ireland as $si_n_ireland) { ?>
+											<span>Exempt (<?php echo esc_html( $si_n_ireland["title"] ); ?>)<br>
+											See Footnotes or SI Link</span>
+										<?php } ?>
+									<?php } else { ?>
+
+										<span>No</br>
+										n/a</span>
+										
+									<?php } ?>									
+
 								</td>
 							</tr>
 

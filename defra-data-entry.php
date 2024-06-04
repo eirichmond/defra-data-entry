@@ -103,6 +103,11 @@ function config_setup() {
 						'title' => 'Create new fuel',
 						'slug' => 'create-new-fuel',
 						'template' => 'partials/data-entry/create-new-fuel.php',
+					),
+					array(
+						'title' => 'Update fuel',
+						'slug' => 'update-fuel',
+						'template' => 'partials/data-entry/update-fuel.php',	
 					)
 				)
 			),

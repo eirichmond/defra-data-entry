@@ -190,6 +190,7 @@ class Defra_Data_Entry {
 		$this->loader->add_action( 'save_post_fuels', $plugin_admin, 'defra_save_fuels', 10, 3 );
 
 		$this->loader->add_action( 'comment_text', $plugin_admin, 'show_defra_comments_admin', 10, 1 );
+		
 
 		$this->loader->add_filter( 'login_headerurl', $plugin_admin, 'defra_logo_url_link', 10, 1 );
   
@@ -258,6 +259,7 @@ class Defra_Data_Entry {
 		 * cURL form tests
 		 */
 		$this->loader->add_action( 'test_post_new_appliance', $plugin_public, 'test_post_new_appliance_callback' );
+		$this->loader->add_action( 'test_logic', $plugin_public, 'test_logic_callback' );
 		
 		
 	}

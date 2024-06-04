@@ -3,12 +3,19 @@ $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSIO
 $db = new Defra_Data_DB_Requests();
 
 $user = wp_get_current_user();
-$country = get_user_meta( $user->ID, 'approver_country_id', true );
 
-if(isset($_GET['revoked']) && '1' === $_GET['revoked']) {
-	$appliances = $db->get_appliance_is_revoked_is_published();
+// only set the country if user is a data approver
+if ( in_array('data_approver', $user->roles )) {
+	$country = get_user_meta( $user->ID, 'approver_country_id', true );
 } else {
-	$appliances = $db->get_appliance_country_status($_GET['status'], $country);
+	$country = null;
+}
+
+if( isset($_GET['revoked']) ) {
+	// $appliances = $db->get_appliance_is_revoked_is_published();
+	$appliances = $db->get_revoked_requested( $_GET['key'], $_GET['value'], 'appliances' );
+} else {
+	$appliances = $db->get_post_country_status( 'appliances', $_GET['status'], $country );
 }
 
 $appliances = defra_data_query_by_appliance_id($appliances);

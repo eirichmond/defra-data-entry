@@ -5,7 +5,7 @@
 
     <div class="mb-2">
         <div class="row">
-
+        <?php if ( array_intersect( $data_entry_review_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
@@ -48,9 +48,12 @@
                     </div>
                 </div>
             </div>
+
+        <?php } ?>
+        <?php if ( array_intersect( $all_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-success-subtle">
                         Submitted to DA
                     </div>
                     <div class="card-body">
@@ -58,12 +61,13 @@
                     </div>
                 </div>
             </div>
+        <?php } ?>
         </div>
     </div>
 
     <div class="mb-2">
         <div class="row">
-
+        <?php if ( array_intersect( $all_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
                     <div class="card-header bg-success-subtle">
@@ -109,13 +113,14 @@
             <div class="col">
                 <div class="card">
                     <div class="card-header bg-success text-white">
-                        Submitted to DA
+                        Published
                     </div>
                     <div class="card-body">
                         <a href="/data-entry/fuels/?status=600" class="">View (<?php echo esc_html( $db->count_fuel_published() ); ?>)</a>
                     </div>
                 </div>
             </div>
+        <?php } ?>
         </div>
     </div>
 
@@ -128,128 +133,132 @@
 
     <div class="mb-2">
         <div class="row">
-
+        <?php if ( array_intersect( $data_entry_review_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-secondary-subtle">
                         Draft
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
+                        <a href="#" class="">View (0)</a>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-secondary-subtle">
                         Awaiting Review
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
+                        <a href="/data-entry/fuels/?revoked=true&key=%_revoke_status_id&value=20" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%_revoke_status_id', '20', 'fuels' ) ) ); ?>)</a>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-secondary-subtle">
                         Being Reviewed
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
+                        <a href="#" class="">View (0)</a>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
+                    <div class="card-header bg-secondary-subtle">
                         Reviewer Rejected
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
+                        <a href="#" class="">View (0)</a>
                     </div>
                 </div>
             </div>
+        <?php } ?>
+
+        <?php if ( array_intersect( $all_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
                     <div class="card-header bg-success text-white">
                         Submitted to DA
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
+                        <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=200" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '200', 'fuels' ) ) ); ?>)</a>
                     </div>
                 </div>
             </div>
+        <?php } ?>
 
         </div>
     </div>
 
     <div class="mb-2">
         <div class="row">
-
+        <?php if ( array_intersect( $all_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-success text-white">
-                        Draft
+                    <div class="card-header bg-success-subtle">
+                        Assigned to DA
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
+                        <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=60" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '60', 'fuels' ) ) ); ?>)</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-header bg-primary-subtle">
+                        Approved by DA
+                    </div>
+                    <div class="card-body">
+                        <a href="#" class="">View (0)</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        Rejected by DA
+                    </div>
+                    <div class="card-body">
+                        <a href="#" class="">View (0)</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-header bg-success-subtle">
+                        Awaiting Publication
+                    </div>
+                    <div class="card-body">
+                        <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=300" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '300', 'fuels' ) ) ); ?>)</a>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card">
                     <div class="card-header bg-success text-white">
-                        Awaiting Review
+                        Published
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
+                        <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=400" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '400', 'fuels' ) ) ); ?>)</a>
                     </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        Being Reviewed
-                    </div>
-                    <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        Reviewer Rejected
-                    </div>
-                    <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        Submitted to DA
-                    </div>
-                    <div class="card-body">
-                        <a href="#" class="">View ( xx )</a>
-                    </div>
-                </div>
-            </div>
-
+        <?php } ?>
         </div>
     </div>
 
 </div>
 
-<div class="status-block">
+<!-- <div class="status-block">
     <div class="bg-secondary rounded text-white p-1 mb-2">
         <h4 class="m-0">Cancellation Requests</h1>
     </div>
 
     <div class="mb-2">
         <div class="row">
-
+        <?php if ( array_intersect( $data_entry_review_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
                     <div class="card-header bg-success text-white">
@@ -290,6 +299,8 @@
                     </div>
                 </div>
             </div>
+        <?php } ?>
+        <?php if ( array_intersect( $all_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
                     <div class="card-header bg-success text-white">
@@ -300,12 +311,13 @@
                     </div>
                 </div>
             </div>
-
+        <?php } ?>
         </div>
     </div>
 
     <div class="mb-2">
         <div class="row">
+        <?php if ( array_intersect( $all_users, $user->roles ) ) { ?>
 
             <div class="col">
                 <div class="card">
@@ -357,8 +369,9 @@
                     </div>
                 </div>
             </div>
+        <?php } ?>
 
         </div>
     </div>
 
-</div>
+</div> -->

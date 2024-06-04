@@ -13,7 +13,7 @@
 				<td style="width:5%"><?php echo esc_html( $v->fuel_id ); ?></td>
 				<td style="width:25%"><?php echo esc_html( $v->post_title ); ?></td>
 				<td style="width:60%"><?php echo esc_html( $v->manufacturer_name ); ?></td>
-				<td style="width:10%"><a href="<?php echo esc_url( get_permalink($v) ); ?>">Veiw detailed information</a></td>
+				<td style="width:10%"><a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a></td>
 			</tr>
 
 		<?php } ?>

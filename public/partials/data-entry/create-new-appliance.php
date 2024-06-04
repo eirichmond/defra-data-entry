@@ -102,7 +102,7 @@ get_header();
 					</div>
 					<div class="col-3">
 
-						<label for="type_terms" class="form-label">Fuel</label>
+						<label for="type_terms" class="form-label">Appliance</label>
 						<select class="form-select" id="type_terms" name="type_terms">
 							<?php foreach($appliance_type_terms as $k => $v) { ?>
 								<option value="<?php echo esc_attr( $v->slug ); ?>"><?php echo esc_attr( $v->name ); ?></option>
@@ -132,7 +132,7 @@ get_header();
 					</div>
 					<div class="col-3">
 
-						<label for="output_unit_output_value" class="form-label">Condition Comments</label>
+						<label for="output_unit_output_value" class="form-label">Value</label>
 						<input type="text" class="form-control" id="output_unit_output_value" name="output_unit_output_value">
 
 					</div>
@@ -295,7 +295,7 @@ get_header();
 
 						<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_wales_si" name="exempt-in_country_and_statutory_instrument_wales_si[]" multiple="multiple">
 							<option value="" disabled>Select</option>
-							<?php foreach($statutory_instrument_england as $k => $v) { ?>
+							<?php foreach($statutory_instrument_wales as $k => $v) { ?>
 								<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
 							<?php } ?>
 						</select>

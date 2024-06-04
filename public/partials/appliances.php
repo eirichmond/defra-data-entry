@@ -1,8 +1,5 @@
 <?php 
 $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
-// $db = new Defra_Data_DB_Requests();
-// $appliances = $db->get_appliance_country_status($_GET['status']);
-// defra_data_query_by_appliance_id($appliances);
 get_header();
 ?>
 

@@ -18,7 +18,6 @@ get_header();
 		<div class="col-12">
 			<label for="permitted-fuel" class="form-label">Permitted Fuel</label>
 			<input type="text" class="form-control" name="permitted-fuel" id="permitted-fuel" value="" required>
-			<input type="hidden" name="entry" value="defra_permitted_fuels">
 			<input type="hidden" name="process" value="create-permitted-fuel">
 			<?php wp_nonce_field( 'create_nonce', 'create_nonce_field' ); ?>
 

@@ -27,6 +27,31 @@ function defra_data_query_statutory_instrument($taxonomy = null, $term = null) {
 
     return $statutory_instruments;
 }
+
+/**
+ * Data based on data entry, ** uses get_posts instead of WP_Query class **
+ *
+ * @param [type] $data_array
+ * @return void
+ */
+function defra_data_by_appliance_id($data_array) {
+    if( empty( $data_array ) ) {
+        return; // return early if there is no data
+    }
+    $appliances = wp_list_pluck( $data_array, 'post_id' );
+
+    $args = array(
+        'post_status' => 'any',
+        'posts_per_page' => -1,
+        'post_type' => 'appliances',
+        'post__in' => $appliances
+    );
+    $appliances = get_posts($args);
+
+    return $appliances;
+}
+
+
 /**
  * Query based on data entry
  *
@@ -123,4 +148,36 @@ function data_setup_approval_status($post_id) {
         }
     }
     return $approved_statuses;
+}
+
+/**
+ * Check exemption
+ *
+ * @param [type] $post_id
+ * @param [type] $country
+ * @return void
+ */
+function exempt_statutory_instrument($post_id, $country) {
+	$count = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si', true );
+	$sis = array();
+	for ($i=0; $i < $count; $i++) { 
+		$sis[] = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si_'.$i.'_si_id', true );
+	}
+	return $sis;
+}
+
+/**
+ * Check authorised
+ *
+ * @param [type] $post_id
+ * @param [type] $country
+ * @return void
+ */
+function authorised_statutory_instrument($post_id, $country) {
+	$count = get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_si', true );
+	$ais = array();
+	for ($i=0; $i < $count; $i++) { 
+		$ais[] = get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_si_'.$i.'_si_id', true );
+	}
+	return $ais;
 }

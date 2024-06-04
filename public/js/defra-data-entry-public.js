@@ -70,7 +70,6 @@
                 var id = $(this).data('id');
                 var type = $(this).data('type');
                 var action = $(this).data('action');
-                debugger;
                 jQuery.post(
                     defra_object.ajax_url,
                     {

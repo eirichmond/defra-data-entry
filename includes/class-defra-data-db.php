@@ -69,7 +69,8 @@ class Defra_Data_DB_Requests {
 				FROM wp_postmeta pm
 				LEFT JOIN wp_posts p ON pm.post_id = p.ID
 				WHERE p.post_type = %s
-				AND pm.meta_key LIKE %s AND pm.meta_value = %s
+				AND pm.meta_key LIKE %s
+				AND pm.meta_value = %s
 				GROUP BY pm.post_id",
 				array('appliances', '%_is_revoked', '1')
 			)
@@ -106,7 +107,7 @@ class Defra_Data_DB_Requests {
 	 * @param string $status
 	 * @return array $results
 	 */
-    public function get_appliance_country_status($status = null, $country = null) {
+    public function get_post_country_status( $post_type, $status = null, $country = null ) {
 
 		$countries = array(
 			'1' => 'exempt-in_country_and_statutory_instrument_england_enabled',
@@ -130,8 +131,8 @@ class Defra_Data_DB_Requests {
 					LEFT JOIN wp_posts p ON pm.post_id = p.ID
 					WHERE pm.meta_key LIKE %s
 					AND pm.meta_value LIKE %s
-					AND p.post_type = 'appliances'",
-					array('%_status', $status)
+					AND p.post_type = %s",
+					array('%_status', $status, $post_type)
 				)
 			);
 		} else {
@@ -147,10 +148,10 @@ class Defra_Data_DB_Requests {
 					INNER JOIN
 						wp_postmeta m2 ON (p.ID = m2.post_id AND m2.meta_key = %s AND m2.meta_value = %s)
 					WHERE
-						p.post_type = 'appliances'
+						p.post_type = %s
 					ORDER BY
 						p.ID DESC;",
-					array($countries[$country],$statuses[$country],$status)
+					array( $countries[$country], $statuses[$country], $status, $post_type )
 				)
 			);
 		}
@@ -332,7 +333,7 @@ class Defra_Data_DB_Requests {
 	 */
 	public function list_permitted_fuels() {
 		$list_permitted_fuels = array();
-		$permitted_fuels = get_terms( 'permitted_fuels' );
+		$permitted_fuels = get_terms( array( 'taxonomy' => 'permitted_fuels', 'hide_empty' => false ) );
 		foreach($permitted_fuels as $k => $v) {
 			$list_permitted_fuels[$v->term_id]['permitted_fuel_id'] = $v->term_id;
 			$list_permitted_fuels[$v->term_id]['permitted_fuel_name'] = $v->description;
@@ -502,20 +503,21 @@ class Defra_Data_DB_Requests {
 	 * @return array $results
 	 */
 	public function get_permitted_fuels() {
-		// redundant if using WP data and schema
-		// global $wpdb;
-        // $results = $wpdb->get_results(
-        //     "SELECT *
-        //     FROM `wp_defra_permitted_fuels`
-		// 	"
-        // );
+		global $wpdb;
+        $results = $wpdb->get_results(
+            "SELECT *
+            FROM `wp_defra_permitted_fuels`
+			",
+			OBJECT_K
+        );
 
-		$args = array(
-			'numberposts' => -1,
-			'post_type' => 'permitted_fuels',
-			'post_status' => 'publish'
-		);
-		$results = get_posts( $args );
+		// logic changed back to original for data import
+		// $args = array(
+		// 	'numberposts' => -1,
+		// 	'post_type' => 'permitted_fuels',
+		// 	'post_status' => 'publish'
+		// );
+		// $results = get_posts( $args );
 		
 		
 		return $results;
@@ -533,7 +535,8 @@ class Defra_Data_DB_Requests {
         $results = $wpdb->get_results(
             "SELECT *
             FROM `wp_defra_additional_conditions`
-			"
+			",
+			OBJECT_K
         );
 		return $results;
 
@@ -837,7 +840,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_draft() {
-		$count = $this->get_appliance_country_status('10');
+		$count = $this->get_post_country_status( 'appliances', '10' );
 		return count($count);
 	}
 
@@ -847,7 +850,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_awaiting_review() {
-		$count = $this->get_appliance_country_status('20');
+		$count = $this->get_post_country_status( 'appliances', '20' );
 		return count($count);
 	}
 
@@ -857,7 +860,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_being_reviewed() {
-		$count = $this->get_appliance_country_status('30');
+		$count = $this->get_post_country_status( 'appliances', '30' );
 		return count($count);
 	}
 
@@ -867,7 +870,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_reviewer_rejected() {
-		$count = $this->get_appliance_country_status('40');
+		$count = $this->get_post_country_status( 'appliances', '40' );
 		return count($count);
 	}
 
@@ -877,7 +880,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_submitted_to_da($country) {
-		$count = $this->get_appliance_country_status('50', $country);
+		$count = $this->get_post_country_status( 'appliances', '50', $country );
 		return count($count);
 	}
 	
@@ -888,7 +891,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_assigned_to_da($country) {
-		$count = $this->get_appliance_country_status('60', $country);
+		$count = $this->get_post_country_status( 'appliances', '60', $country );
 		return count($count);
 	}
 
@@ -898,7 +901,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_approved_by_da($country) {
-		$count = $this->get_appliance_country_status('70', $country);
+		$count = $this->get_post_country_status( 'appliances', '70', $country );
 		return count($count);
 	}
 
@@ -908,7 +911,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_rejected_by_da($country) {
-		$count = $this->get_appliance_country_status('80', $country);
+		$count = $this->get_post_country_status( 'appliances', '80', $country );
 		return count($count);
 	}
 
@@ -918,7 +921,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_cancellation_appliance_submitted_to_da() {
-		$count = $this->get_appliance_country_status('90');
+		$count = $this->get_post_country_status( 'appliances',  '90' );
 		return count($count);
 	}
 
@@ -928,7 +931,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_cancellation_appliance_approved_by_da() {
-		$count = $this->get_appliance_country_status('100');
+		$count = $this->get_post_country_status( 'appliances', '100' );
 		return count($count);
 	}
 
@@ -938,7 +941,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_revocated_appliance_submitted_to_da() {
-		$count = $this->get_appliance_country_status('200');
+		$count = $this->get_post_country_status( 'appliances', '200' );
 		return count($count);
 	}
 
@@ -948,7 +951,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_revocated_appliance_approved_by_da() {
-		$count = $this->get_appliance_country_status('300');
+		$count = $this->get_post_country_status( 'appliances', '300' );
 		return count($count);
 	}
 
@@ -958,7 +961,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_revocated_appliance_published() {
-		$count = $this->get_appliance_country_status('400');
+		$count = $this->get_post_country_status( 'appliances', '400' );
 		return count($count);
 	}
 
@@ -970,7 +973,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_awaiting_publication($country) {
-		$count = $this->get_appliance_country_status('500', $country);
+		$count = $this->get_post_country_status( 'appliances', '500', $country );
 		return count($count);
 	}
 
@@ -980,7 +983,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_appliance_published($country) {
-		$count = $this->get_appliance_country_status('600', $country);
+		$count = $this->get_post_country_status( 'appliances', '600', $country );
 		return count($count);
 	}
 
@@ -1100,7 +1103,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_draft() {
-		$count = $this->get_fuel_country_status('10');
+		$count = $this->get_post_country_status( 'fuels', '10');
 		return count($count);
 	}
 
@@ -1110,7 +1113,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_awaiting_review() {
-		$count = $this->get_fuel_country_status('20');
+		$count = $this->get_post_country_status( 'fuels', '20' );
 		return count($count);
 	}
 
@@ -1120,7 +1123,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_being_reviewed() {
-		$count = $this->get_fuel_country_status('30');
+		$count = $this->get_post_country_status( 'fuels', '30' );
 		return count($count);
 	}
 
@@ -1130,7 +1133,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_reviewer_rejected() {
-		$count = $this->get_fuel_country_status('40');
+		$count = $this->get_post_country_status( 'fuels', '40' );
 		return count($count);
 	}
 
@@ -1140,7 +1143,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_submitted_to_da() {
-		$count = $this->get_fuel_country_status('50');
+		$count = $this->get_post_country_status( 'fuels', '50' );
 		return count($count);
 	}
 	
@@ -1151,7 +1154,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_assigned_to_da() {
-		$count = $this->get_fuel_country_status('60');
+		$count = $this->get_post_country_status( 'fuels', '60' );
 		return count($count);
 	}
 
@@ -1161,7 +1164,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_approved_by_da() {
-		$count = $this->get_fuel_country_status('70');
+		$count = $this->get_post_country_status( 'fuels', '70' );
 		return count($count);
 	}
 
@@ -1171,7 +1174,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_rejected_by_da() {
-		$count = $this->get_fuel_country_status('80');
+		$count = $this->get_post_country_status( 'fuels', '80' );
 		return count($count);
 	}
 
@@ -1181,7 +1184,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_cancellation_fuel_submitted_to_da() {
-		$count = $this->get_fuel_country_status('90');
+		$count = $this->get_post_country_status( 'fuels', '90' );
 		return count($count);
 	}
 
@@ -1191,7 +1194,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_cancellation_fuel_approved_by_da() {
-		$count = $this->get_fuel_country_status('100');
+		$count = $this->get_post_country_status( 'fuels', '100' );
 		return count($count);
 	}
 
@@ -1201,7 +1204,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_revocated_fuel_submitted_to_da() {
-		$count = $this->get_fuel_country_status('200');
+		$count = $this->get_post_country_status( 'fuels', '200' );
 		return count($count);
 	}
 
@@ -1211,7 +1214,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_revocated_fuel_approved_by_da() {
-		$count = $this->get_fuel_country_status('300');
+		$count = $this->get_post_country_status( 'fuels', '300' );
 		return count($count);
 	}
 
@@ -1221,7 +1224,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_revocated_fuel_published() {
-		$count = $this->get_fuel_country_status('400');
+		$count = $this->get_post_country_status( 'fuels', '400' );
 		return count($count);
 	}
 
@@ -1233,7 +1236,7 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_awaiting_publication() {
-		$count = $this->get_fuel_country_status('500');
+		$count = $this->get_post_country_status( 'fuels', '500' );
 		return count($count);
 	}
 
@@ -1243,9 +1246,33 @@ class Defra_Data_DB_Requests {
 	 * @return string $count
 	 */
 	public function count_fuel_published() {
-		$count = $this->get_fuel_country_status('600');
+		$count = $this->get_post_country_status( 'fuels', '600' );
 		// $uniqe_appliance = $this->refine_fuels_by_id($count);
 		return count($count);
+	}
+
+	/**
+	 * Get revoked by key, value and post type
+	 *
+	 * @param string $key
+	 * @param string $value
+	 * @param string $post_type
+	 * @return void
+	 */
+	public function get_revoked_requested( $key, $value, $post_type ) {
+		global $wpdb;
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT DISTINCT pm.post_id
+				FROM wp_postmeta pm
+				LEFT JOIN wp_posts p ON pm.post_id = p.ID
+				WHERE pm.meta_key LIKE %s
+				AND pm.meta_value LIKE %s
+				AND p.post_type = %s",
+				array( $key, $value, $post_type)
+			)
+		);
+		return $results;
 	}
 
 	/**
@@ -1665,6 +1692,7 @@ class Defra_Data_DB_Requests {
 		$current_user = wp_get_current_user();
 		$new_statutory_instrument = array(
 			'post_title'   => $postdata["post_title"],
+			'post_content'   => $postdata["post_content"],
 			'post_status'  => 'publish',
 			'post_author'  => $current_user->ID,
 			'post_type' => 'statutory_instrument'
@@ -1792,7 +1820,7 @@ class Defra_Data_DB_Requests {
 	public function insert_new_additional_condition($postdata) {
 		$now = $this->create_timestamp();
 		$current_user = wp_get_current_user();
-		$table = $this->wpdb->prefix.$postdata['entry'];
+		$table = $this->wpdb->prefix.'defra_additional_conditions';
 		$data = array(
 			'condition_name' => $postdata['additional-condition'],
 			'created_by_user_id' => $current_user->ID,
@@ -1919,35 +1947,31 @@ class Defra_Data_DB_Requests {
 	 * @return void
 	 */
 	public function update_fuel_type($postdata) {
-		$now = $this->create_timestamp();
-		$current_user = wp_get_current_user();
-		$table = $this->wpdb->prefix.$postdata['type'];
-		$data = array(
-			'name' => $postdata['input'],
-			'edited_by_user_id' => $current_user->ID,
-			'date_updated' => $now,
+
+		// Arguments for updating the term
+		$args = array(
+			'name' => $_POST["input"],
+			'description' => 'User updated fuel type'
 		);
-		$where = array(
-			'ID' => $postdata['id']
-		);
-		$format = array(
-			'%s',
-			'%s',
-			'%s'
-		);
-		$this->wpdb->update($table,$data,$where,$format);
+	
+		// Update the term
+		$term_updated = wp_update_term( $_POST["id"], 'fuel_types', $args); // Replace 'your_custom_taxonomy' with your taxonomy name
+	
+		if (is_wp_error($term_updated)) {
+			// Handle error, for example, log it or display a message
+			wp_die('Error updating term: ' . $term_updated->get_error_message());
+		}
 
 	}
 
 	public function delete_fuel_type($postdata) {
-		$table = $this->wpdb->prefix.$postdata['type'];
-		$where = array(
-			'ID' => $postdata['id']
-		);
-		$format = array(
-			'%d'
-		);
-		$this->wpdb->delete($table,$where,$format);
+		// Delete the term
+		$term_deleted = wp_delete_term($postdata['id'], 'fuel_types'); // Replace 'your_custom_taxonomy' with your taxonomy name
+
+		if (is_wp_error($term_deleted)) {
+			// Handle error, for example, log it or display a message
+			wp_die('Error deleting term: ' . $term_deleted->get_error_message());
+		}
 
 	}
 

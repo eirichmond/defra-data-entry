@@ -267,6 +267,8 @@ class Defra_Data_Entry_Activator {
 		}
 		foreach ($fuel_caps as $fuel_cap) {
 			$data_entry_role->add_cap($fuel_cap);
+			$data_reviewer_role->add_cap($fuel_cap);
+			$data_approver_role->add_cap($fuel_cap);
 			$administrator->add_cap($fuel_cap);
 
 		}

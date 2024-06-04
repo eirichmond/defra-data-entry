@@ -499,6 +499,5 @@ class Defra_Data_Entry_Admin {
 			return $comment_text;
 		}
 	}
-	
-	
+
 }

@@ -2845,7 +2845,7 @@ class Defra_Data_Entry_Public {
 		$revoked = array_unique($revoked);
 		
 		if( current_user_can( 'data_reviewer' ) || current_user_can( 'data_entry' ) || current_user_can( 'administrator' ) ) {
-			if($revoked) {
+			if( !empty( $revoked[0] ) ) {
 
 				$status = array(
 					get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_revoke_status_id' : 'authorised_country_and_statutory_instrument_england_revoke_status_id', true ),
@@ -2857,10 +2857,10 @@ class Defra_Data_Entry_Public {
 
 				if( in_array( '200', $status ) || in_array( '300', $status ) ) {
 					include plugin_dir_path( __FILE__ ) . 'partials/template-part/status-information.php';
-				} else {
-					include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
 				}
 
+			} elseif ( !empty( $status[0] ) && in_array( '20', $status ) ) {
+				include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
 			}
 
 		}

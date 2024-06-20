@@ -2,7 +2,7 @@
 $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','1.0');
 $db = new Defra_Data_DB_Requests();
 
-$list_manufacturers = $db->list_manufacturers();
+$list_manufacturers = $db->list_manufacturers( 'fuel' );
 $statutory_instrument_england = defra_data_query_statutory_instrument('si_countries','england');
 $statutory_instrument_wales = defra_data_query_statutory_instrument('si_countries','wales');
 $statutory_instrument_scotland = defra_data_query_statutory_instrument('si_countries','scotland');

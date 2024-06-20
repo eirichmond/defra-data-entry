@@ -115,6 +115,10 @@ class Defra_Data_Entry_Public {
 			}
 		}
 
+		if ( is_singular( 'appliances' ) || is_singular( 'fuels' ) ) {
+			wp_enqueue_script( $this->plugin_name.'-da-comment', plugin_dir_url( __FILE__ ) . 'js/defra-da-comment.js', array( 'jquery' ), $this->version, false );
+		}
+
 
 		wp_enqueue_script( $this->plugin_name . '-datatables', plugin_dir_url( __FILE__ ) . 'js/datatables.min.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name . '-select2', plugin_dir_url( __FILE__ ) . 'js/select2.full.min.js', array( 'jquery' ), $this->version, false );
@@ -2481,14 +2485,14 @@ class Defra_Data_Entry_Public {
 	public function appliance_data_details($post_id) {
 		$appliance_data_details = array();
 		$appliance_meta = $this->defra_merge_postmeta($post_id);
-		$manufacturer_meta = $this->defra_merge_postmeta($appliance_meta["manufacturer_id"]);
+		$manufacturer_meta = $this->defra_merge_postmeta($appliance_meta["manufacturer"]);
 
 		$appliance_data_details['appliance_id'] = $appliance_meta["appliance_id"];
 		$appliance_data_details['appliance_name'] = get_the_title($post_id);
 		$appliance_data_details['output'] = $appliance_meta["output_unit_output_unit_id"] == '3' ? 'n/a' : $appliance_meta["output_unit_output_value"] . $this->output_units($appliance_meta["output_unit_output_unit_id"]);
 		$appliance_data_details['fuel_types'] = $this->get_fuel_type($post_id);
 		$appliance_data_details['appliance_type'] = $this->get_appliance_type($post_id);
-		$appliance_data_details['manufacturer'] = $this->manufacturer_composite_address($appliance_meta["manufacturer_id"]);
+		$appliance_data_details['manufacturer'] = $this->manufacturer_composite_address($appliance_meta["manufacturer"]);
 		$appliance_data_details['instructions_instruction_manual_title'] = $appliance_meta["instructions_instruction_manual_title"] ? $appliance_meta["instructions_instruction_manual_title"] : 'See conditions if applicable';
 		$appliance_data_details['instructions_instruction_manual_date'] = $appliance_meta["instructions_instruction_manual_date"] ? $appliance_meta["instructions_instruction_manual_date"] : 'See conditions if applicable';
 		$appliance_data_details['instructions_instruction_manual_reference'] = $appliance_meta["instructions_instruction_manual_reference"] ? $appliance_meta["instructions_instruction_manual_reference"] : 'See conditions if applicable';
@@ -2634,7 +2638,12 @@ class Defra_Data_Entry_Public {
 	 * @return array
 	 */
 	public function defra_merge_postmeta($post_id) {
-		$meta_array = array_map( function( $a ){ return $a[0]; }, get_post_meta($post_id) );
+		$meta_array = array_map(
+			function( $a ){
+				return $a[0];
+			},
+			get_post_meta($post_id)
+		);
 		return $meta_array;
 	}
 	
@@ -2843,6 +2852,8 @@ class Defra_Data_Entry_Public {
 			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_revoke_requested' : 'authorised_country_and_statutory_instrument_n_ireland_revoke_requested', true ),
 		);
 		$revoked = array_unique($revoked);
+		$revoked = array_filter($revoked);
+
 		
 		if( current_user_can( 'data_reviewer' ) || current_user_can( 'data_entry' ) || current_user_can( 'administrator' ) ) {
 			if( !empty( $revoked[0] ) ) {
@@ -2858,9 +2869,14 @@ class Defra_Data_Entry_Public {
 				if( in_array( '200', $status ) || in_array( '300', $status ) ) {
 					include plugin_dir_path( __FILE__ ) . 'partials/template-part/status-information.php';
 				}
+				if( in_array( '20', $status ) || in_array( '20', $status ) ) {
+					include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
+				}				
 
-			} elseif ( !empty( $status[0] ) && in_array( '20', $status ) ) {
+			} elseif ( !empty( $status[0] ) && in_array( '20', $status ) || in_array( '600', $status ) ) {
+
 				include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
+
 			}
 
 		}
@@ -2875,9 +2891,13 @@ class Defra_Data_Entry_Public {
 				$status = get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_status' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_status', true );
 			}
 			if( $status == '80' || $status == '500' || $status == '300' ) {
+
 				include plugin_dir_path( __FILE__ ) . 'partials/template-part/status-information.php';
+
 			} else if( !empty($approver_id) && $approver_id == $user->ID || $revoked ) {
+
 				include plugin_dir_path( __FILE__ ) . 'partials/template-part/approver-approve-reject.php';
+
 			}
 		}
 	}

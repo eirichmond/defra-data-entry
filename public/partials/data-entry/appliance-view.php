@@ -246,9 +246,11 @@ get_header();
 		<div class="mb-3">
 			<label class="form-label" for="user_comments">User Comments</label>
     		<textarea class="form-control" id="user_comments" name="user_comments" required></textarea>
+
 			<div class="invalid-feedback">
 				Please provide a comment.
 			</div>
+			
 		</div>
 
 		<input type="hidden" name="process" value="status-change">

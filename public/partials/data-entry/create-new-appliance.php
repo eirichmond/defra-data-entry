@@ -2,7 +2,7 @@
 $class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
 
 $db = new Defra_Data_DB_Requests();
-$list_manufacturers = $db->list_manufacturers();
+$list_manufacturers = $db->list_manufacturers( 'appliance' );
 $permitted_fuels = $db->list_permitted_fuels();
 $appliance_fuel_terms = $class->get_appliance_taxonomy_terms('fuel_types');
 $appliance_type_terms = $class->get_appliance_taxonomy_terms('appliance_types');

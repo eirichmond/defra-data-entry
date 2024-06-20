@@ -398,9 +398,9 @@ class Defra_Data_DB_Requests {
 	 *
 	 * @return array $list_manufacturers
 	 */
-	public function list_manufacturers() {
+	public function list_manufacturers( $term = null ) {
 		$list_manufacturers = array();
-		$defra_manufacturers = $this->get_manufacturers();
+		$defra_manufacturers = $this->get_manufacturers( $term );
 		foreach($defra_manufacturers as $k => $v) {
 			$list_manufacturers[$v->ID]['manufacturer_id'] = $v->ID;
 			$list_manufacturers[$v->ID]['manufacturer_name'] = $v->post_title;
@@ -583,21 +583,25 @@ class Defra_Data_DB_Requests {
 	 * @param string $id
 	 * @return array $results
 	 */
-	public function get_manufacturers() {
-		// reduntant if using WP data 
-		// global $wpdb;
-        // $results = $wpdb->get_results(
-        //     "SELECT *
-        //     FROM `wp_defra_manufacturers`
-		// 	ORDER BY name
-		// 	"
-        // );
-
+	public function get_manufacturers( $term = null ) {
+		// create a standard array for other references
 		$args = array(
 			'numberposts' => -1,
 			'post_type' => 'manufacturers',
 			'post_status' => 'publish'
 		);
+
+		// if term exists then append to the array
+		if( $term ) {
+			$args['tax_query'] = array(
+				array(
+					'taxonomy' => 'manufacturer_types',
+					'field'    => 'slug',
+					'terms'    => $term,
+				),
+			);
+		}
+
 		$results = get_posts( $args );
 		return $results;
 

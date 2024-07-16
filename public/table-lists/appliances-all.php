@@ -3,10 +3,10 @@ $public_class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY_NAME', 'DEFRA_DATA
 $args = array(
 	'post_type' => 'appliances',
 	'post_meta_key' => array(
-		'exempt-in_country_and_statutory_instrument_england_enabled',
-		'exempt-in_country_and_statutory_instrument_wales_enabled',
-		'exempt-in_country_and_statutory_instrument_scotland_enabled',
-		'exempt-in_country_and_statutory_instrument_n_ireland_enabled'
+		'exempt-in_country_and_statutory_instrument_england_status',
+		'exempt-in_country_and_statutory_instrument_wales_status',
+		'exempt-in_country_and_statutory_instrument_scotland_status',
+		'exempt-in_country_and_statutory_instrument_n_ireland_status'
 	),
 	'fuel_meta_key' => 'appliance_fuels_permitted_fuel_id',
 	'manufacturer_meta_key' => 'manufacturer',
@@ -45,3 +45,6 @@ $appliances = $public_class->get_table_list($args);
     </tbody>
 </table>
 
+<div class="pb-4">
+	<?php include plugin_dir_path( __DIR__ ) . 'partials/appliance-footnotes.php'; ?>
+</div>

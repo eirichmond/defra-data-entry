@@ -19,3 +19,7 @@
 		<?php } ?>
     </tbody>
 </table>
+
+<div class="pb-4">
+	<?php include plugin_dir_path( __DIR__ ) . 'partials/fuel-footnotes.php'; ?>
+</div>

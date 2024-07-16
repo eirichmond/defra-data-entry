@@ -29,26 +29,26 @@ get_header();
 		<h2>Appliance Fuels</h2>
 		<small>Permitted Fuels (other than authorised fuels)</small><br>
 		<?php foreach ($permitted_fuels as $term) { ?>
-			<div><?php echo esc_html( $term->description ); ?></div>
+			<div><?php echo esc_html( $term->name ); ?> <?php echo esc_html( $term->description ); ?></div>
 		<?php } ?>
 	</figure>
 
-	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
+	<!-- <figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Categories</h2>
 		<p>Appliance categorisation is for web search functionality only</p>
 
 		<div class="flex space-x-4">
 			<div>
 				<strong>Fuel: </strong>
-				<?php echo esc_html( $class->get_term_titles(get_the_ID(),'fuel_types') ); ?>
+				<?php //echo esc_html( $class->get_term_titles(get_the_ID(),'fuel_types') ); ?>
 			</div>
 			<div>
 				<strong>Appliance: </strong>
-				<?php echo esc_html( $class->get_term_titles(get_the_ID(),'appliance_types') ); ?>
+				<?php //echo esc_html( $class->get_term_titles(get_the_ID(),'appliance_types') ); ?>
 			</div>
 		</div>
 	</figure>
-
+ -->
 	<figure class="border border-solid border-gray-300 rounded-lg p-4 mb-4">
 		<h2>Appliance Output</h2>
 		<div class="flex space-x-4">

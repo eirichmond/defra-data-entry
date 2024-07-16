@@ -3,10 +3,10 @@ $public_class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY_NAME', 'DEFRA_DATA
 $args = array(
 	'post_type' => 'fuels',
 	'post_meta_key' => array(
-		'exempt-in_country_and_statutory_instrument_england_enabled',
-		'exempt-in_country_and_statutory_instrument_wales_enabled',
-		'exempt-in_country_and_statutory_instrument_scotland_enabled',
-		'exempt-in_country_and_statutory_instrument_n_ireland_enabled'
+		'authorised_country_and_statutory_instrument_england_status',
+		'authorised_country_and_statutory_instrument_wales_status',
+		'authorised_country_and_statutory_instrument_scotland_status',
+		'authorised_country_and_statutory_instrument_n_ireland_status'
 	),
 	'fuel_meta_key' => 'fuel_id',
 	'manufacturer_meta_key' => 'manufacturer',

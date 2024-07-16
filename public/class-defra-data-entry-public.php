@@ -116,7 +116,7 @@ class Defra_Data_Entry_Public {
 		}
 
 		if ( is_singular( 'appliances' ) || is_singular( 'fuels' ) ) {
-			wp_enqueue_script( $this->plugin_name.'-da-comment', plugin_dir_url( __FILE__ ) . 'js/defra-da-comment.js', array( 'jquery' ), $this->version, false );
+			wp_enqueue_script( $this->plugin_name.'-da-comment', plugin_dir_url( __FILE__ ) . 'js/defra-comments.js', array( 'jquery' ), $this->version, false );
 		}
 
 
@@ -1084,7 +1084,7 @@ class Defra_Data_Entry_Public {
 			}
 
 			if($_POST['process'] == 'download-recommendation-letter') {
-				$this->download_recommendation_letter($_POST['appliance_id']);
+				$this->download_recommendation_letter($_POST);
 			}
 			if($_POST['process'] == 'pdf-fuel-download') {
 				$this->pdf_fuel_download($_POST);
@@ -1197,15 +1197,18 @@ class Defra_Data_Entry_Public {
 		return $comment_action_id;
 	}
 
-	public function create_comment( $post_id, $postdata, $current_user, $appended ) {
+	public function create_comment( $post_id, $postdata, $current_user, $appended, $comment ) {
 		// Create a new comment object
+
 		$commentdata = array(
 			'comment_post_ID' => $post_id,
 			'comment_author' => $current_user->user_login,
 			'comment_author_email' => $current_user->user_email,
-			'comment_content' => $appended . $postdata["comment_to_da"],
+			'comment_content' => $appended . $comment,
 			'comment_approved' => 1, // 0 for unapproved, 1 for approved
 		);
+
+
 		// Insert the comment into the database
 		$comment_id = wp_insert_comment($commentdata);
 		if ($comment_id) {
@@ -1229,10 +1232,10 @@ class Defra_Data_Entry_Public {
 	public function create_comment_logic($post_id, $postdata) {
 		$current_user = wp_get_current_user();
 		if(isset($postdata["comment_to_da"]) && '' != $postdata["comment_to_da"]) {
-			$this->create_comment( $post_id, $postdata, $current_user, 'Comment to DA: ' );
+			$this->create_comment( $post_id, $postdata, $current_user, 'Comment to DA: ', $postdata["comment_to_da"] );
 		}
 		if(isset($postdata["user_comment"]) && '' != $postdata["user_comment"]) {
-			$this->create_comment( $post_id, $postdata, $current_user, 'User comment: ' );
+			$this->create_comment( $post_id, $postdata, $current_user, 'User comment: ', $postdata["user_comment"] );
 		}
 	}
 
@@ -1665,9 +1668,9 @@ class Defra_Data_Entry_Public {
 			}
 			if($_POST["status"] == 'approved-by-da') {
 
-				get_post_meta( $_POST["post_id"], $countries[$country], true ) ? update_post_meta( $_POST["post_id"], $countries[$country], '500' ) : null;
+				get_post_meta( $_POST["post_id"], $countries[$country], true ) ? update_post_meta( $_POST["post_id"], $countries[$country], '600' ) : null;
 				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_publish_date' : 'authorised_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_publish_date', $this->set_next_logical_publish_date() );
-				
+				$this->defra_update_post_status($_POST["post_id"], 'publish');
 
 				if(!empty($_POST["user_comments"])) {
 					// add comments
@@ -1826,6 +1829,33 @@ class Defra_Data_Entry_Public {
 	}
 
 	/**
+	 * Update post_status wrapper
+	 *
+	 * @param int $post_id
+	 * @param string $new_status
+	 * @return void
+	 */
+	public function defra_update_post_status($post_id, $new_status) {
+		// Create an array with the post data
+		$post_data = array(
+			'ID'           => $post_id,
+			'post_status'  => $new_status,
+		);
+	
+		// Update the post
+		$result = wp_update_post( $post_data );
+	
+		// Check for errors
+		if (is_wp_error($result)) {
+			$error_message = $result->get_error_message();
+			error_log( "Error updating post status: $error_message" );
+		} else {
+			error_log( "Post status updated successfully!" );
+		}
+	}
+	
+
+	/**
 	 * get specific table list for this page
 	 *
 	 * @param int $id
@@ -1873,7 +1903,7 @@ class Defra_Data_Entry_Public {
 			$args_array = array();
 			foreach ($arguments['post_meta_key'] as $k => $v) {
 				$args_array[$k]['key'] = $v;
-				$args_array[$k]['value'] = '1';
+				$args_array[$k]['value'] = '600';
 				$args_array[$k]['compare'] = 'LIKE';
 			}
 		}
@@ -1889,7 +1919,7 @@ class Defra_Data_Entry_Public {
 		if(is_array($arguments['post_meta_key'])) {
 			$args['meta_query']['relation'] = 'OR';
 		} else {
-			$args['meta_value'] = '1';
+			$args['meta_value'] = '600';
 		}
 
 		
@@ -1922,6 +1952,7 @@ class Defra_Data_Entry_Public {
 	 * @return void
 	 */
 	public function defra_single_template_callback( $template ) {
+
 		global $post;
 	
 		if ( 'fuels' === $post->post_type && locate_template( array( 'single-fuels.php' ) ) !== $template ) {
@@ -2314,16 +2345,26 @@ class Defra_Data_Entry_Public {
 	 *
 	 * @return void
 	 */
-	public function download_recommendation_letter($id) {
+	public function download_recommendation_letter($post) {
+		$id = $post["id"];
 		$now = new DateTime('now', new DateTimeZone('Europe/London'));
-		$date = $now->format('d/m/Y');
-		$appliance = get_post($id);
-		$user = get_user_by('id', get_post_meta($appliance->ID,'entry_user_id', true));
-		$data_entry = $user->first_name .' '. $user->last_name;
-		$manufacturer = get_post(get_post_meta($appliance->ID,'manufacturer_id', true));
-		$application_number = get_post_meta($appliance->ID,'appliance_additional_details_application_number', true);
-		//$permitted_fuel = get_post(get_post_meta($appliance->ID,'appliance_fuels_permitted_fuel_id', true));
-		$permitted_fuels = wp_get_post_terms( $appliance->ID, 'permitted_fuels' );
+
+		$date = $now->format('d/m/Y'); // fuel & appliance
+		$post_obj = get_post($id); // fuel & appliance
+
+		$user = get_user_by('id', get_post_meta($post_obj->ID,'entry_user_id', true)); 
+
+		$data_entry = $user->first_name .' '. $user->last_name; // appliance
+
+		$manufacturer = get_post(get_post_meta($post_obj->ID,'manufacturer', true)); // fuel & appliance
+
+		if($post["type"] != 'fuels') {
+			$application_number = get_post_meta($post_obj->ID,'appliance_additional_details_application_number', true); // appliance
+		} else {
+			$application_number = get_post_meta($post_obj->ID,'fuel_additional_details_application_number', true); // fuel
+			$fuel_id = get_post_meta($post_obj->ID,'fuel_id', true); // fuel
+		}
+		$permitted_fuels = wp_get_post_terms( $post_obj->ID, 'permitted_fuels' ); // appliance
 		if ( ! empty( $permitted_fuels ) && ! is_wp_error( $permitted_fuels ) ) {
 			$fuels_array = array();
 			foreach($permitted_fuels as $permitted_fuel) {
@@ -2332,21 +2373,25 @@ class Defra_Data_Entry_Public {
 			$permitted_fuel = join( ', ', $fuels_array );
 		}
 
-		$instructions = get_post_meta($appliance->ID,'instructions_instruction_manual_title', true) . ' ' . get_post_meta($appliance->ID,'instructions_instruction_manual_date', true) . ' ' . get_post_meta($appliance->ID,'instructions_instruction_manual_reference', true);
+		$instructions = get_post_meta($post_obj->ID,'instructions_instruction_manual_title', true) . ' ' . get_post_meta($post_obj->ID,'instructions_instruction_manual_date', true) . ' ' . get_post_meta($post_obj->ID,'instructions_instruction_manual_reference', true);
 		
-		$servicing_installation = get_post_meta($appliance->ID,'servicing_and_installation_servicing_install_manual_title', true) . ' ' . get_post_meta($appliance->ID,'servicing_and_installation_servicing_install_manual_date', true) . ' ' . get_post_meta($appliance->ID,'servicing_and_installation_servicing_install_manual_reference', true);
+		$servicing_installation = get_post_meta($post_obj->ID,'servicing_and_installation_servicing_install_manual_title', true) . ' ' . get_post_meta($post_obj->ID,'servicing_and_installation_servicing_install_manual_date', true) . ' ' . get_post_meta($post_obj->ID,'servicing_and_installation_servicing_install_manual_reference', true);
 
-		$conditions = get_post_meta($appliance->ID,'additional_conditions_additional_condition_comment', true);
+		$conditions = get_post_meta($post_obj->ID,'additional_conditions_additional_condition_comment', true);
 
-		$templateFile = plugin_dir_path( __FILE__ ) . 'file-templates/Appliance-Letter.docx';
+		if($post["type"] != 'fuels') {
+			$templateFile = plugin_dir_path( __FILE__ ) . 'file-templates/Appliance-Letter.docx';
+		} else {
+			$templateFile = plugin_dir_path( __FILE__ ) . 'file-templates/Fuel-Letter.docx';
+		}
 		$phpWord = new \PhpOffice\PhpWord\TemplateProcessor($templateFile);
 
-		$phpWord->setValues(
-			[
+		if($post["type"] != 'fuels') {
+			$phpWord->setValues([
 				'TodayDate' => $date,
 				'ApplicationNumber' => $application_number,
 				'Manufacturer' => $manufacturer->post_title,
-				'ApplianceName' => $appliance->post_title,
+				'ApplianceName' => $post_obj->post_title,
 				'PermittedFuels' => $permitted_fuel,
 				'ManufacturerContact' => $manufacturer->post_title,
 				'DataEntryUser' => $data_entry,
@@ -2354,10 +2399,26 @@ class Defra_Data_Entry_Public {
 				'ServiceInstallation' => $servicing_installation,
 				'Conditions' => $conditions
 			]);
+		} else {
+			$phpWord->setValues([
+				'TodayDate' => $date,
+				'ApplicationNumber' => $application_number,
+				'Manufacturer' => $manufacturer->post_title,
+				'FuelName' => $post_obj->post_title,
+				'FuelID' => $fuel_id,
+				'ManufacturerContact' => $manufacturer->post_title,
+			]);
+
+		}
+
 
 		$filepath = $phpWord->save();
 
-		$file = 'Appliance-Letter-'.$appliance->ID.'.doc';
+		if($post["type"] != 'fuels') {
+			$file = 'Appliance-Letter-'.$post_obj->ID.'.doc';
+		} else {
+			$file = 'Fuel-Letter-'.$post_obj->ID.'.doc';
+		}
 		header("Content-Description: File Transfer");
 		header('Content-Disposition: attachment; filename="' . $file . '"');
 		header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
@@ -2400,8 +2461,10 @@ class Defra_Data_Entry_Public {
 		$data = maybe_unserialize($data);
 		if ($data) {
 
-			$html = require plugin_dir_path( dirname( __FILE__ ) ) . 'public/file-templates/appliance-pdf-html.php';
-			$html2pdf = new Html2Pdf('P','A4','en', false, 'UTF-8', array(30, 15, 30, 15));
+			ob_start();
+			require plugin_dir_path( dirname( __FILE__ ) ) . 'public/file-templates/appliance-pdf-html.php';
+			$html = ob_get_clean();
+			$html2pdf = new Html2Pdf('P','A4','en', true, 'UTF-8', 5);
 			$html2pdf->writeHTML($html);
 			$html2pdf->output('appliance.pdf', 'D');
 	
@@ -2487,6 +2550,16 @@ class Defra_Data_Entry_Public {
 		$appliance_meta = $this->defra_merge_postmeta($post_id);
 		$manufacturer_meta = $this->defra_merge_postmeta($appliance_meta["manufacturer"]);
 
+		$taxonomy = 'permitted_fuels'; // replace with your taxonomy
+		$terms = wp_get_post_terms($post_id, $taxonomy);
+		$permitted_fuels = array();
+		if (!is_wp_error($terms) && !empty($terms)) {
+			foreach ($terms as $term) {
+				$permitted_fuels[] = $term->description;
+			}
+		}
+		$permitted_fuels = join( ',',$permitted_fuels );
+
 		$appliance_data_details['appliance_id'] = $appliance_meta["appliance_id"];
 		$appliance_data_details['appliance_name'] = get_the_title($post_id);
 		$appliance_data_details['output'] = $appliance_meta["output_unit_output_unit_id"] == '3' ? 'n/a' : $appliance_meta["output_unit_output_value"] . $this->output_units($appliance_meta["output_unit_output_unit_id"]);
@@ -2500,7 +2573,7 @@ class Defra_Data_Entry_Public {
 		$appliance_data_details['servicing_and_installation_servicing_install_manual_date'] = $appliance_meta["servicing_and_installation_servicing_install_manual_date"] ? $appliance_meta["servicing_and_installation_servicing_install_manual_date"] : 'See conditions if applicable';
 		$appliance_data_details['servicing_and_installation_servicing_install_manual_reference'] = $appliance_meta["servicing_and_installation_servicing_install_manual_reference"] ? $appliance_meta["servicing_and_installation_servicing_install_manual_reference"] : 'See conditions if applicable';
 		$appliance_data_details['additional_conditions_additional_condition_comment'] = $appliance_meta["additional_conditions_additional_condition_comment"] ? $appliance_meta["additional_conditions_additional_condition_comment"] : 'n/a';
-		$appliance_data_details['appliance_fuels_permitted_fuel_id'] = $appliance_meta["appliance_fuels_permitted_fuel_id"] ? get_the_title($appliance_meta["appliance_fuels_permitted_fuel_id"]) : NULL;
+		$appliance_data_details['permitted_fuels'] = $permitted_fuels;
 
 		$appliance_data_details['exempt-in_country_and_statutory_instrument_england_si_id'] = $appliance_meta["exempt-in_country_and_statutory_instrument_england_si"];
 		$appliance_data_details['exempt-in_country_and_statutory_instrument_england_si'] = $appliance_meta["exempt-in_country_and_statutory_instrument_england_si"] ? get_the_title($appliance_meta["exempt-in_country_and_statutory_instrument_england_si"]) : NULL;
@@ -3000,6 +3073,20 @@ class Defra_Data_Entry_Public {
 			return 0;
 		}
 
+	}
+
+	/**
+	 * Conditional check for footnote output or SI link
+	 *
+	 * @param [type] $array
+	 * @return void
+	 */
+	public function footnote_output( $array ) {
+		if(strpos($array['title'], 'Footnote') !== false) {
+			return $array['title'];
+		} else {
+			return '<a href="'.$array['url'].'" target="_blank">'.$array['title'].'</a>';
+		}
 	}
 
 	/**

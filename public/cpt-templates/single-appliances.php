@@ -14,6 +14,7 @@ function manufacturer_by_id($manufacturer_id) {
 }
 
 $public_class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY_VERSION');
+
 $appliance_data_details = $public_class->appliance_data_details($post->ID);
 
 $exempt_england = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true);
@@ -26,6 +27,17 @@ $statutory_instruments_wales = $public_class->statutory_instrument_assignment( $
 $statutory_instruments_scotland = $public_class->statutory_instrument_assignment( $post->ID, 'scotland' );
 $statutory_instruments_n_ireland = $public_class->statutory_instrument_assignment( $post->ID, 'n_ireland' );
 
+
+
+$appliance_data_details['exempt_england'] = $exempt_england;
+$appliance_data_details['exempt_wales'] = $exempt_wales;
+$appliance_data_details['exempt_scotland'] = $exempt_scotland;
+$appliance_data_details['exempt_ireland'] = $exempt_ireland;
+
+$appliance_data_details['statutory_instruments_england'] = $statutory_instruments_england;
+$appliance_data_details['statutory_instruments_wales'] = $statutory_instruments_wales;
+$appliance_data_details['statutory_instruments_scotland'] = $statutory_instruments_scotland;
+$appliance_data_details['statutory_instruments_n_ireland'] = $statutory_instruments_n_ireland;
 ?>
 
 	<main id="primary" class="site-main bg-white container pb-2">
@@ -127,7 +139,7 @@ $statutory_instruments_n_ireland = $public_class->statutory_instrument_assignmen
 									<?php if ( $exempt_england ) { ?>
 
 										<?php foreach ($statutory_instruments_england as $si_england) { ?>
-											<span>Exempt (<?php echo esc_html( $si_england["title"] ); ?>)<br>
+											<span>Exempt (<?php echo esc_html( $public_class->footnote_output( $si_england ) ); ?>)<br>
 											See Footnotes or SI Link</span>
 										<?php } ?>
 

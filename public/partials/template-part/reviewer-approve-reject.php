@@ -1,7 +1,7 @@
 <div class="mb-3">
 
     <?php if( $count == 1 && $status[0] == '20' ) { ?>
-        <button class="btn btn-success" type="submit" name="status" value="approve">Approve</button>
+        <button id="approved-by-dr" class="btn btn-success" type="submit" name="status" value="approve">Approve</button>
         <button class="btn btn-danger" type="submit" name="status" value="reject">Reject</button>
     <?php } ?>
     

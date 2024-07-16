@@ -108,7 +108,14 @@
                     text: 'Select a manufacturer',
                 },
             });
-            $('.js-multiple').select2();
+            $('.js-multiple').select2({
+                minimumInputLength: 2,
+                multiple: true,
+                placeholder: {
+                    id: '0',
+                    text: 'Select a fuel',
+                }
+            });
         });
     });
 })(jQuery);

@@ -34,9 +34,19 @@
 	 */
 	$(function () {
 		var approvedByDa = document.getElementById("approved-by-da");
+		var approvedByDr = document.getElementById("approved-by-dr");
 		var userComments = document.getElementById("user_comments");
-		approvedByDa.addEventListener("click", function () {
-			userComments.removeAttribute("required");
-		});
+		if(approvedByDa) {
+			approvedByDa.addEventListener("click", function () {
+				userComments.removeAttribute("required");
+			});
+		}
+		if(approvedByDr) {
+			var toDefraComments = document.getElementById("comments_to_defra_da");
+			approvedByDr.addEventListener("click", function () {
+				userComments.removeAttribute("required");
+				toDefraComments.removeAttribute("required");
+			});
+		}
 	});
 })(jQuery);

@@ -34,7 +34,8 @@
                 <a href="<?php echo esc_html( '/fuel-change-log/?appliance='.get_the_ID() ); ?>"><i class="gg-attribution"></i></a>
             </li>
         </ul>
-        <input type="hidden" name="appliance_id" value="<?php echo esc_html( get_the_ID() ); ?>">
+        <input type="hidden" name="type" value="fuels">
+        <input type="hidden" name="id" value="<?php echo esc_html( get_the_ID() ); ?>">
         <input type="hidden" name="process" value="download-recommendation-letter" />
     </form>
     </td>

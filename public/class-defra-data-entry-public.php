@@ -2996,8 +2996,10 @@ class Defra_Data_Entry_Public {
 			$statutory_instruments[$i]['publish_date'] = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_publish_date', true );
 			if(strpos(get_the_title($si_id), 'Footnote') !== false) {
 				$statutory_instruments[$i]['url'] = get_permalink($si_id);
+				$statutory_instruments[$i]['status'] = 0;
 			} else {
 				$statutory_instruments[$i]['url'] = get_post_field('post_content', $si_id);
+				$statutory_instruments[$i]['status'] = 1;
 			}
 			
 		}

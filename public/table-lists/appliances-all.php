@@ -20,9 +20,10 @@ $appliances = $public_class->get_table_list($args);
         <tr>
             <th>Appliance name</th>
             <th>Manufacturer</th>
-            <th>Permitted fuels</th>
-            <th>Appliance Type</th>
-            <th>Exemption Reference</th>
+            <th>England</th>
+            <th>Wales</th>
+            <th>Scotland</th>
+            <th>Northern Ireland</th>
         </tr>
     </thead>
     <tbody>
@@ -36,9 +37,77 @@ $appliances = $public_class->get_table_list($args);
 			<tr>
 				<td style="width:30%"><?php echo esc_html( $v->post_title ); ?></td>
 				<td style="width:30%"><?php echo esc_html( $v->manufacturer_name ); ?></td>
-				<td style="width:20%"><?php echo get_the_title( $v->fuel_id ); ?></td>
-				<td style="width:20%"><?php echo esc_html($terms_string); ?></td>
-				<td style="width:20%"><a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a></td>
+				<td style="width:20%">
+				
+				<?php $si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'england' ); 
+
+				if( empty($si_assignment) ) { ?>
+					<span>No</span>
+				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
+
+					<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
+
+				<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
+
+					<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
+									
+				<?php } ?>
+
+				
+				</td>
+				<td style="width:20%">
+				
+				<?php
+				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'wales' ); 
+				if( empty($si_assignment) ) { ?>
+					<span>No</span>
+				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
+
+					<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
+
+				<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
+
+					<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
+									
+				<?php } ?>
+
+				</td>
+				<td style="width:20%">
+				
+				<?php
+				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'scotland' ); 
+				if( empty($si_assignment) ) { ?>
+					<span>No</span>
+				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
+
+					<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
+
+				<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
+
+					<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
+									
+				<?php } ?>
+
+
+				</td>
+				<td style="width:20%">
+			
+				<?php
+				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'n_ireland' ); 
+				if( empty($si_assignment) ) { ?>
+					<span>No</span>
+				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
+
+					<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
+
+				<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
+
+					<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
+									
+				<?php } ?>
+
+			
+				</td>
 			</tr>
 
 		<?php } ?>

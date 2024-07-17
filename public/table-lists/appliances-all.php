@@ -9,7 +9,7 @@ $args = array(
 		'exempt-in_country_and_statutory_instrument_n_ireland_status'
 	),
 	'fuel_meta_key' => 'appliance_fuels_permitted_fuel_id',
-	'manufacturer_meta_key' => 'manufacturer',
+	'manufacturer_meta_key' => 'manufacturer_id',
 );
 $appliances = $public_class->get_table_list($args);
 

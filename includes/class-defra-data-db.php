@@ -103,6 +103,8 @@ class Defra_Data_DB_Requests {
 
 	/**
 	 * Get appliance status
+	 * 
+	 * Test case ref not working 50846 new case test 50848
 	 *
 	 * @param string $status
 	 * @return array $results

@@ -45,7 +45,7 @@ get_header();
 <?php } else { ?>
 
 
-	<form class="w-full" action="/data-entry/form-process/" method="post">
+	<form class="w-full needs-validation" action="/data-entry/form-process/" method="post" novalidate>
 
 
 		<!-- to insert duplication functionality -->
@@ -259,7 +259,10 @@ get_header();
 				<div class="row">
 					<div class="col-2">
 
-						<input class="form-check-input" type="checkbox" id="exempt-in_country_and_statutory_instrument_england_enabled" name="exempt-in_country_and_statutory_instrument_england_enabled">
+						<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_england_enabled" name="exempt-in_country_and_statutory_instrument_england_enabled" required>
+						<div class="invalid-feedback">
+							Please select at least one Exempt-In Country
+						</div>
 						<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_england_enabled">
 							England
 						</label>
@@ -285,7 +288,11 @@ get_header();
 				<div class="row">
 					<div class="col-2">
 
-						<input class="form-check-input" type="checkbox" id="exempt-in_country_and_statutory_instrument_wales_enabled" name="exempt-in_country_and_statutory_instrument_wales_enabled">
+						<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_wales_enabled" name="exempt-in_country_and_statutory_instrument_wales_enabled" required>
+						<div class="invalid-feedback">
+							Please select at least one Exempt-In Country
+						</div>
+
 						<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_wales_enabled">
 							Wales
 						</label>
@@ -311,7 +318,11 @@ get_header();
 				<div class="row">
 					<div class="col-2">
 
-						<input class="form-check-input" type="checkbox" id="exempt-in_country_and_statutory_instrument_scotland_enabled" name="exempt-in_country_and_statutory_instrument_scotland_enabled">
+						<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_scotland_enabled" name="exempt-in_country_and_statutory_instrument_scotland_enabled" required>
+						<div class="invalid-feedback">
+							Please select at least one Exempt-In Country
+						</div>
+
 						<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_scotland_enabled">
 							Scotland
 						</label>
@@ -336,7 +347,11 @@ get_header();
 				<div class="row">
 					<div class="col-2">
 
-						<input class="form-check-input" type="checkbox" id="exempt-in_country_and_statutory_instrument_n_ireland_enabled" name="exempt-in_country_and_statutory_instrument_n_ireland_enabled">
+						<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_n_ireland_enabled" name="exempt-in_country_and_statutory_instrument_n_ireland_enabled" required>
+						<div class="invalid-feedback">
+							Please select at least one Exempt-In Country
+						</div>
+
 						<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_n_ireland_enabled">
 							N. Ireland
 						</label>

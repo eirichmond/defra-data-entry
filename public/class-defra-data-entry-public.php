@@ -108,6 +108,10 @@ class Defra_Data_Entry_Public {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/defra-data-entry-public.js', array( 'jquery' ), $this->version, false );
 		wp_localize_script( $this->plugin_name, 'defra_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'nextNonce' => wp_create_nonce( 'create_nonce' ) ) );
 
+		if ( is_page( 'create-new-appliance' ) ) {
+			wp_enqueue_script( $this->plugin_name.'-create-new-appliance', plugin_dir_url( __FILE__ ) . 'js/defra-create-new-appliance.js', array( 'jquery' ), $this->version, false );
+		}
+
 		if ( is_page( 'appliances' ) || is_page( 'fuels' ) ) {
 			if (is_user_logged_in()) {
 				wp_enqueue_script( $this->plugin_name.'-appliances', plugin_dir_url( __FILE__ ) . 'js/defra-assign-auth.js', array( 'jquery' ), $this->version, false );

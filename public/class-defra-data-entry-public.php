@@ -155,6 +155,7 @@ class Defra_Data_Entry_Public {
 				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_revoke_status_id', '60' );
 
 			} else {
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_status' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_status', '60' );
 				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_user' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_user', $_POST["user_id"] );
 				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_assigned_date' : 'authorised_country_and_statutory_instrument_'.$approver_counties[$country_approver_key].'_assigned_date', $datetime->format('Y-m-d H:i:s') );
 			}

@@ -392,7 +392,7 @@ get_header();
 		<?php wp_nonce_field( 'create_nonce', 'create_nonce_field' ); ?>
 
 		<button type="submit" class="btn btn-primary mt-3 save-draft" name="submit-type" value="save-draft">Save as draft</button>
-		<button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and sent for Review</button>
+		<button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and Send for Review</button>
 		
 	</form>
 

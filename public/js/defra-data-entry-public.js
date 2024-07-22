@@ -113,7 +113,7 @@
                 multiple: true,
                 placeholder: {
                     id: '0',
-                    text: 'Select a fuel',
+                    text: 'Select a footnote',
                 }
             });
         });

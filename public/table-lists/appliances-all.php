@@ -41,7 +41,7 @@ $appliances = $public_class->get_table_list($args);
 				
 				<?php $si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'england' ); 
 
-				if( empty($si_assignment) ) { ?>
+				if( $si_assignment[0]['publish_status'] != '600' ) { ?>
 					<span>No</span>
 				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
@@ -59,7 +59,7 @@ $appliances = $public_class->get_table_list($args);
 				
 				<?php
 				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'wales' ); 
-				if( empty($si_assignment) ) { ?>
+				if( $si_assignment[0]['publish_status'] != '600' ) { ?>
 					<span>No</span>
 				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
@@ -76,7 +76,7 @@ $appliances = $public_class->get_table_list($args);
 				
 				<?php
 				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'scotland' ); 
-				if( empty($si_assignment) ) { ?>
+				if( $si_assignment[0]['publish_status'] != '600' )  { ?>
 					<span>No</span>
 				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
@@ -94,7 +94,7 @@ $appliances = $public_class->get_table_list($args);
 			
 				<?php
 				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'n_ireland' ); 
-				if( empty($si_assignment) ) { ?>
+				if( $si_assignment[0]['publish_status'] != '600')  { ?>
 					<span>No</span>
 				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 

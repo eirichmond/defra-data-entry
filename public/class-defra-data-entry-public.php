@@ -1598,10 +1598,10 @@ class Defra_Data_Entry_Public {
 				update_post_meta( $_POST["post_id"], 'reviewer_user_id', $_POST["user_id"] );
 				update_post_meta( $_POST["post_id"], 'reviewer_reject_date', $datetime->format('Y-m-d H:i:s') );
 				// update postmeta
-				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', '40' ) : null;
-				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', '40' ) : null;
-				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', '40' ) : null;
-				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', '40' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_england_status' : 'authorised_country_and_statutory_instrument_england_status', '10' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', '10' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_scotland_status' : 'authorised_country_and_statutory_instrument_scotland_status', '10' ) : null;
+				get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', true ) ? update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', '10' ) : null;
 				
 				if(!empty($_POST["user_comments"])) {
 					// add comments
@@ -1621,7 +1621,7 @@ class Defra_Data_Entry_Public {
 					update_comment_meta($comment_id, 'comment_action_id', '3');
 				}
 				// create audit
-				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Changed appliance to status_id: (40) Rejected', $_SERVER["REMOTE_ADDR"]);
+				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Changed appliance to status_id: (10) Rejected by data review so back into draft for data entry', $_SERVER["REMOTE_ADDR"]);
 
 			}
 			if($_POST["status"] == 'approve') {
@@ -2994,6 +2994,7 @@ class Defra_Data_Entry_Public {
 			$statutory_instruments[$i]['id'] = $si_id;
 			$statutory_instruments[$i]['title'] = get_the_title($si_id);
 			$statutory_instruments[$i]['publish_date'] = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_publish_date', true );
+			$statutory_instruments[$i]['publish_status'] = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_status', true );
 			if(strpos(get_the_title($si_id), 'Footnote') !== false) {
 				$statutory_instruments[$i]['url'] = get_permalink($si_id);
 				$statutory_instruments[$i]['status'] = 0;

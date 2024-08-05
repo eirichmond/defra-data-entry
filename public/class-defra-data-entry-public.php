@@ -2361,7 +2361,7 @@ class Defra_Data_Entry_Public {
 
 		$data_entry = $user->first_name .' '. $user->last_name; // appliance
 
-		$manufacturer = get_post(get_post_meta($post_obj->ID,'manufacturer', true)); // fuel & appliance
+		$manufacturer = get_post(get_post_meta($post_obj->ID,'manufacturer_id', true)); // fuel & appliance
 
 		if($post["type"] != 'fuels') {
 			$application_number = get_post_meta($post_obj->ID,'appliance_additional_details_application_number', true); // appliance

@@ -2956,6 +2956,7 @@ class Defra_Data_Entry_Public {
 	 */
 	public function reviewer_approve_reject_callback($post_id) {
 
+
 		$post = get_post($post_id);
 
 		$approver_counties = $this->get_exemption_countries();
@@ -2995,14 +2996,14 @@ class Defra_Data_Entry_Public {
 				if( in_array( '200', $status ) || in_array( '300', $status ) ) {
 					include plugin_dir_path( __FILE__ ) . 'partials/template-part/status-information.php';
 				}
-				if( in_array( '20', $status ) || in_array( '20', $status ) ) {
+				if( in_array( '20', $status ) ) {
 					include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
 				}				
 
 			} elseif ( !empty( $status[0] ) && in_array( '20', $status ) || in_array( '600', $status ) ) {
-
-				include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
-
+				if( !current_user_can( 'data_entry' ) ) {
+					include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
+				}
 			}
 
 		}

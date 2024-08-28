@@ -2,7 +2,7 @@
 
     <?php if( $count == 1 && $status[0] == '20' ) { ?>
         <button id="approved-by-dr" class="btn btn-success" type="submit" name="status" value="approve">Approve</button>
-        <button class="btn btn-danger" type="submit" name="status" value="reject">Reject</button>
+        <button id="rejected-by-dr" class="btn btn-danger" type="submit" name="status" value="reject">Reject</button>
     <?php } ?>
     
     <?php if( in_array( '600', $status ) && empty($revoked[0]) ) { ?>

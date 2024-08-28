@@ -35,6 +35,7 @@
 	$(function () {
 		var approvedByDa = document.getElementById("approved-by-da");
 		var approvedByDr = document.getElementById("approved-by-dr");
+		var rejectedByDr = document.getElementById("rejected-by-dr");
 		var userComments = document.getElementById("user_comments");
 		if(approvedByDa) {
 			approvedByDa.addEventListener("click", function () {
@@ -48,5 +49,11 @@
 				toDefraComments.removeAttribute("required");
 			});
 		}
+		if(rejectedByDr) {
+			rejectedByDr.addEventListener("click", function () {
+				toDefraComments.removeAttribute("required");
+			});
+		}
+
 	});
 })(jQuery);

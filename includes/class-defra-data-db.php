@@ -1460,19 +1460,19 @@ class Defra_Data_DB_Requests {
 				$metas[$k] = $n;
 			} else if($k === 'authorised_country_and_statutory_instrument_wales_si') {
 				$n = $postdata[$k] ? count($postdata[$k]) : 0;
-				for($i = 0; $i < count($postdata[$k]); $i++) {
+				for($i = 0; $i < $n; $i++) {
 					$metas['authorised_country_and_statutory_instrument_wales_si_'.$i .'_si_id'] = $postdata[$k][$i];
 				}
 				$metas[$k] = $n;
 			} else if($k === 'authorised_country_and_statutory_instrument_scotland_si') {
 				$n = $postdata[$k] ? count($postdata[$k]) : 0;
-				for($i = 0; $i < count($postdata[$k]); $i++) {
+				for($i = 0; $i < $n; $i++) {
 					$metas['authorised_country_and_statutory_instrument_scotland_si_'.$i .'_si_id'] = $postdata[$k][$i];
 				}
 				$metas[$k] = $n;
 			} else if($k === 'authorised_country_and_statutory_instrument_n_ireland_si') {
 				$n = $postdata[$k] ? count($postdata[$k]) : 0;
-				for($i = 0; $i < count($postdata[$k]); $i++) {
+				for($i = 0; $i < $n; $i++) {
 					$metas['authorised_country_and_statutory_instrument_n_ireland_si_'.$i .'_si_id'] = $postdata[$k][$i];
 				}
 				$metas[$k] = $n;

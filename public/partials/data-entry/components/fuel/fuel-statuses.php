@@ -57,7 +57,9 @@
                         Submitted to DA
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?status=50" class="">View (<?php echo esc_html( $db->count_fuel_submitted_to_da() ); ?>)</a>
+                        <?php if( $db->count_fuel_submitted_to_da() > 0 ) { ?>
+                            <a href="/data-entry/fuels/?status=50" class="">View (<?php echo esc_html( $db->count_fuel_submitted_to_da() ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -74,7 +76,9 @@
                         Assigned to DA
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?status=60" class="">View (<?php echo esc_html( $db->count_fuel_assigned_to_da() ); ?>)</a>
+                        <?php if( $db->count_fuel_assigned_to_da() > 0 ) { ?>
+                            <a href="/data-entry/fuels/?status=60" class="">View (<?php echo esc_html( $db->count_fuel_assigned_to_da() ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -85,7 +89,9 @@
                         Approved by DA
                     </div>
                     <div class="card-body">
-                    <a href="/data-entry/fuels/?status=70" class="">View (<?php echo esc_html( $db->count_fuel_approved_by_da() ); ?>)</a>
+                        <?php if( $db->count_fuel_approved_by_da() > 0 ) { ?>
+                            <a href="/data-entry/fuels/?status=70" class="">View (<?php echo esc_html( $db->count_fuel_approved_by_da() ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -96,7 +102,9 @@
                         Rejected by DA
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?status=80" class="">View (<?php echo esc_html( $db->count_fuel_rejected_by_da() ); ?>)</a>
+                        <?php if( $db->count_fuel_rejected_by_da() > 0 ) { ?>
+                            <a href="/data-entry/fuels/?status=80" class="">View (<?php echo esc_html( $db->count_fuel_rejected_by_da() ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -106,7 +114,9 @@
                         Awaiting Publication
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?status=500" class="">View (<?php echo esc_html( $db->count_fuel_awaiting_publication() ); ?>)</a>
+                        <?php if( $db->count_fuel_awaiting_publication() > 0 ) { ?>
+                            <a href="/data-entry/fuels/?status=500" class="">View (<?php echo esc_html( $db->count_fuel_awaiting_publication() ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -116,7 +126,9 @@
                         Published
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?status=600" class="">View (<?php echo esc_html( $db->count_fuel_published() ); ?>)</a>
+                        <?php if( $db->count_fuel_published() > 0 ) { ?>
+                            <a href="/data-entry/fuels/?status=600" class="">View (<?php echo esc_html( $db->count_fuel_published() ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -183,7 +195,9 @@
                         Submitted to DA
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=200" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '200', 'fuels' ) ) ); ?>)</a>
+                        <?php if ( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '200', 'fuels' ) ) > 0 ) { ?>
+                            <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=200" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '200', 'fuels' ) ) ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -201,7 +215,9 @@
                         Assigned to DA
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=60" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '60', 'fuels' ) ) ); ?>)</a>
+                        <?php if ( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '60', 'fuels' ) ) ) { ?>
+                            <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=60" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '60', 'fuels' ) ) ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -211,7 +227,7 @@
                         Approved by DA
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View (0)</a>
+                        <!-- <a href="#" class="">View (0)</a> -->
                     </div>
                 </div>
             </div>
@@ -221,7 +237,7 @@
                         Rejected by DA
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View (0)</a>
+                        <!-- <a href="#" class="">View (0)</a> -->
                     </div>
                 </div>
             </div>
@@ -231,7 +247,9 @@
                         Awaiting Publication
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=300" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '300', 'fuels' ) ) ); ?>)</a>
+                        <?php if ( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '300', 'fuels' ) ) ) { ?>
+                            <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=300" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '300', 'fuels' ) ) ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -241,7 +259,9 @@
                         Published
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=400" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '400', 'fuels' ) ) ); ?>)</a>
+                        <?php if ( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '400', 'fuels' ) ) ) { ?>
+                            <a href="/data-entry/fuels/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=400" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '400', 'fuels' ) ) ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>

@@ -24,7 +24,7 @@ get_header();
 			<select class="form-select" aria-label="Manufacturer Type" id="manufacturer_type" name="manufacturer_type">
 				<option selected disabled>Please select</option>
 				<?php foreach ($manufacturer_types as $manufacturer_type) { ?>
-					<option value="<?php echo esc_attr( $manufacturer_type->id ); ?>"><?php echo esc_attr( $manufacturer_type->type_name ); ?></option>
+					<option value="<?php echo esc_attr( $manufacturer_type->term_id ); ?>"><?php echo esc_attr( $manufacturer_type->name ); ?></option>
 				<?php } ?>
 			</select>
 		</div>

@@ -112,6 +112,10 @@ class Defra_Data_Entry_Public {
 			wp_enqueue_script( $this->plugin_name.'-create-new-appliance', plugin_dir_url( __FILE__ ) . 'js/defra-create-new-appliance.js', array( 'jquery' ), $this->version, false );
 		}
 
+		if ( is_page( 'si-appliance' ) ) {
+			wp_enqueue_script( $this->plugin_name.'-si-appliance', plugin_dir_url( __FILE__ ) . 'js/defra-si-appliance.js', array( 'jquery' ), $this->version, false );
+		}
+
 		if ( is_page( 'appliances' ) || is_page( 'fuels' ) ) {
 			if (is_user_logged_in()) {
 				wp_enqueue_script( $this->plugin_name.'-appliances', plugin_dir_url( __FILE__ ) . 'js/defra-assign-auth.js', array( 'jquery' ), $this->version, false );
@@ -1069,6 +1073,9 @@ class Defra_Data_Entry_Public {
 			if($_POST['process'] == 'create-statutory-instrument') {
 				$this->process_create_statutory_instrument();
 			}
+			if($_POST['process'] == 'update-statutory-instrument') {
+				$this->process_update_statutory_instrument();
+			}
 			if($_POST['process'] == 'create-permitted-fuel') {
 				$this->process_create_permitted_fuel();
 			}
@@ -1385,8 +1392,49 @@ class Defra_Data_Entry_Public {
 			$url = home_url().'/data-entry/si/create-new-si/?post=success&id='.$post_id;
 			wp_redirect( $url );
 			exit;
-
+			
 		}
+	}
+	
+	/**
+	 * Update a statutory instrument
+	 *
+	 * @return void
+	 */
+	public function process_update_statutory_instrument() {
+		if ( ! isset( $_POST['update_si_appliance_field'] ) || ! wp_verify_nonce( $_POST['update_si_appliance_field'], 'update_si_appliance' ) ) {
+			wp_die('Sorry, security did not verify.');
+		} else {
+			// Create an array with the post data
+			$post_data = array(
+				'ID'           => $_POST["deid"],             // The ID of the post to update
+				'post_title'   => $_POST["denumber"], // New post title
+				'post_content' => $_POST["delink"], // New post content
+				'post_author'  => $_POST["user_id"],                    // Post author ID
+			);
+			
+			// Update the post using wp_update_post()
+			$updated_post_id = wp_update_post( $post_data );
+			
+			if ( is_wp_error( $updated_post_id ) ) {
+				// Handle errors
+				error_log( 'Error updating post: ' . $updated_post_id->get_error_message() );
+			} else {
+				error_log( 'Post updated successfully with ID: ' . $updated_post_id );
+				
+				// Now update the taxonomy terms
+				$taxonomy = 'si_countries'; // Replace with your taxonomy (e.g., 'category', 'post_tag', 'genre')
+				$term_ids = array_map( 'intval', $_POST["countries"] ); // Array of term IDs to associate with the post
+				
+				// Set the taxonomy terms for the post
+				wp_set_post_terms( $post_data["ID"], $term_ids, $taxonomy );
+			}
+		}
+		
+		$url = home_url().'/data-entry/si/si-appliance/?post=success&id='.$post_data["ID"];
+		wp_redirect( $url );
+		exit;
+
 	}
 
 	/**
@@ -3054,9 +3102,13 @@ class Defra_Data_Entry_Public {
 
 		}
 		foreach (  $si_query as $k => $si ) {
+			$terms = get_the_terms( $si->ID, 'si_countries' );
 			$list_appliance_sis[$si->ID]['id'] = $si->ID;
 			$list_appliance_sis[$si->ID]['number'] = $si->post_title;
 			$list_appliance_sis[$si->ID]['link'] = $si->post_content;
+			foreach($terms as $t => $term) {
+				$list_appliance_sis[$si->ID]['country_term_id'][$t] = $term->term_id;
+			}
 		}
 
 		return $list_appliance_sis;

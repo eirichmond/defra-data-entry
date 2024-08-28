@@ -1317,14 +1317,12 @@ class Defra_Data_DB_Requests {
 	 * @return array $results
 	 */
     public function get_manufacturer_types() {
-        global $wpdb;
-        $results = $wpdb->get_results(
-            "SELECT *
-            FROM `wp_defra_manufacturer_type`
-            ORDER BY `id`"
-        );
-		$results = array_reverse($results);
-        return $results;
+        $taxonomy = 'manufacturer_types'; // Replace with your taxonomy name
+		$terms = get_terms( array(
+			'taxonomy'   => $taxonomy,
+			'hide_empty' => false, // Set to true to only get terms with posts
+		) );
+		return $terms;
     }
 
 	/**
@@ -1744,8 +1742,8 @@ class Defra_Data_DB_Requests {
 			update_post_meta( $post_id, $v, $postdata[$v] );
 		}
 		update_post_meta($post_id, 'id', $post_id);
-		$term = $postdata["manufacturer_type"] == '1' ? 'appliance' : 'fuel';
-		wp_set_post_terms( $post_id, $term, 'manufacturer_types' );
+		$term = get_term_by( 'id', intval( $postdata["manufacturer_type"] ), 'manufacturer_types' );
+		wp_set_post_terms( $post_id, $term->slug, 'manufacturer_types' );
 	}
 
 	
@@ -1876,22 +1874,22 @@ class Defra_Data_DB_Requests {
 	 * @return void
 	 */
 	public function insert_new_appliance_type($postdata) {
-		$now = $this->create_timestamp();
+
 		$current_user = wp_get_current_user();
-		$table = $this->wpdb->prefix.$postdata['entry'];
-		$data = array(
-			'name' => $postdata['appliance-type'],
-			'created_by_user_id' => $current_user->ID,
-			'date_added' => $now,
-			'date_updated' => $now,
+
+		$term_name = $postdata['appliance-type'];
+		$term_slug = sanitize_title($term_name);
+		$taxonomy = 'appliance_types';
+		
+		$args = array(
+			'description' => $term_name,
+			'slug' => $term_slug,
 		);
-		$format = array(
-			'%s',
-			'%s',
-			'%s',
-			'%s'
-		);
-		$this->wpdb->insert($table,$data,$format);
+		
+		// Insert the term
+		$term = wp_insert_term($term_name, $taxonomy, $args);
+		return $term;
+
 	}
 
 	/**

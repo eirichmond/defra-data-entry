@@ -58,8 +58,10 @@
                             Submitted to DA
                         </div>
                         <div class="card-body">
-                            <a href="/data-entry/appliances/?status=50" class="app-submitted-to-da">View (<?php echo esc_html( $db->count_appliance_submitted_to_da($country) ); ?>)</a>
-                        </div>
+                            <?php if ($db->count_appliance_submitted_to_da($country) > 0 ) { ?>
+                                <a href="/data-entry/appliances/?status=50" class="app-submitted-to-da">View (<?php echo esc_html( $db->count_appliance_submitted_to_da($country) ); ?>)</a>
+                            <?php } ?>
+                        </div>                            
                     </div>
                 </div>
             <?php } ?>
@@ -76,7 +78,9 @@
                             Assigned to DA
                         </div>
                         <div class="card-body">
-                            <a href="/data-entry/appliances/?status=60" class="app-assigned-to-da">View (<?php echo esc_html( $db->count_appliance_assigned_to_da($country) ); ?>)</a>
+                            <?php if ($db->count_appliance_assigned_to_da($country) > 0 ) { ?>
+                                <a href="/data-entry/appliances/?status=60" class="app-assigned-to-da">View (<?php echo esc_html( $db->count_appliance_assigned_to_da($country) ); ?>)</a>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -87,7 +91,9 @@
                             Approved by DA
                         </div>
                         <div class="card-body">
-                        <a href="/data-entry/appliances/?status=70" class="app-approved-by-da">View (<?php echo esc_html( $db->count_appliance_approved_by_da($country) ); ?>)</a>
+                            <?php if ($db->count_appliance_approved_by_da($country) > 0 ) { ?>
+                                <a href="/data-entry/appliances/?status=70" class="app-approved-by-da">View (<?php echo esc_html( $db->count_appliance_approved_by_da($country) ); ?>)</a>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -98,7 +104,9 @@
                             Rejected by DA
                         </div>
                         <div class="card-body">
-                            <a href="/data-entry/appliances/?status=80" class="app-rejected-by-da">View (<?php echo esc_html( $db->count_appliance_rejected_by_da($country) ); ?>)</a>
+                            <?php if ($db->count_appliance_rejected_by_da($country) > 0 ) { ?>
+                                <a href="/data-entry/appliances/?status=80" class="app-rejected-by-da">View (<?php echo esc_html( $db->count_appliance_rejected_by_da($country) ); ?>)</a>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -109,7 +117,9 @@
                             Awaiting Publication
                         </div>
                         <div class="card-body">
-                            <a href="/data-entry/appliances/?status=500" class="app-awaiting-publication">View (<?php echo esc_html( $db->count_appliance_awaiting_publication($country) ); ?>)</a>
+                            <?php if ($db->count_appliance_awaiting_publication($country) > 0 ) { ?>
+                                <a href="/data-entry/appliances/?status=500" class="app-awaiting-publication">View (<?php echo esc_html( $db->count_appliance_awaiting_publication($country) ); ?>)</a>
+                            <?php } ?>
                         </div>
                     </div>
                 </div>
@@ -186,7 +196,9 @@
                         Submitted to DA
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/appliances/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=200" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '200', 'appliances' ) ) ); ?>)</a>
+                        <?php if (count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '200', 'appliances' ) ) > 0 ) { ?>
+                            <a href="/data-entry/appliances/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=200" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '200', 'appliances' ) ) ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -203,7 +215,9 @@
                         Assigned to DA
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/appliances/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=60" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '60', 'appliances' ) ) ); ?>)</a>
+                        <?php if(count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '60', 'appliances' ) )) { ?>
+                            <a href="/data-entry/appliances/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=60" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '60', 'appliances' ) ) ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -213,7 +227,7 @@
                         Approved by DA
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View (0)</a>
+                        <!-- <a href="#" class="">View (0)</a> -->
                     </div>
                 </div>
             </div>
@@ -223,7 +237,7 @@
                         Rejected by DA
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View (0)</a>
+                        <!-- <a href="#" class="">View (0)</a> -->
                     </div>
                 </div>
             </div>
@@ -233,7 +247,9 @@
                         Awaiting Publication
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/appliances/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=300" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '300', 'appliances' ) ) ); ?>)</a>
+                        <?php if ( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '300', 'appliances' ) ) ) { ?>
+                            <a href="/data-entry/appliances/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=300" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '300', 'appliances' ) ) ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -243,7 +259,9 @@
                         Published
                     </div>
                     <div class="card-body">
-                        <a href="/data-entry/appliances/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=400" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '400', 'appliances' ) ) ); ?>)</a>
+                        <?php if ( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '400', 'appliances' ) ) ) { ?>
+                            <a href="/data-entry/appliances/?revoked=true&key=%<?php echo esc_html( $country_slug ); ?>_revoke_status_id&value=400" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%'.$country_slug.'_revoke_status_id', '400', 'appliances' ) ) ); ?>)</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>

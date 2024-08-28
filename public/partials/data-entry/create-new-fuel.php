@@ -135,7 +135,7 @@ get_header(); ?>
                             </div>
                             <div class="col-8">
 
-                                <select class="form-select js-multiple" id="authorised_country_and_statutory_instrument_england_si" name="authorised_country_and_statutory_instrument_england_si[]" multiple="multiple">
+                                <select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_england_si" name="authorised_country_and_statutory_instrument_england_si[]" multiple="multiple">
                                     <option value="" disabled>Select</option>
                                     <?php foreach($statutory_instrument_england as $k => $v) { ?>
                                         <option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
@@ -159,9 +159,9 @@ get_header(); ?>
                             </div>
                             <div class="col-8">
 
-                                <select class="form-select js-multiple" id="authorised_country_and_statutory_instrument_wales_si" name="authorised_country_and_statutory_instrument_wales_si[]" multiple="multiple">
+                                <select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_wales_si" name="authorised_country_and_statutory_instrument_wales_si[]" multiple="multiple">
                                     <option value="" disabled>Select</option>
-                                    <?php foreach($statutory_instrument_england as $k => $v) { ?>
+                                    <?php foreach($statutory_instrument_wales as $k => $v) { ?>
                                         <option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
                                     <?php } ?>
                                 </select>
@@ -185,7 +185,7 @@ get_header(); ?>
                             </div>
                             <div class="col-8">
 
-                                <select class="form-select js-multiple" id="authorised_country_and_statutory_instrument_scotland_si" name="authorised_country_and_statutory_instrument_scotland_si[]" multiple="multiple">
+                                <select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_scotland_si" name="authorised_country_and_statutory_instrument_scotland_si[]" multiple="multiple">
                                     <option value="" disabled>Select</option>
                                     <?php foreach($statutory_instrument_scotland as $k => $v) { ?>
                                         <option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
@@ -210,7 +210,7 @@ get_header(); ?>
                             </div>
                             <div class="col-8">
 
-                                <select class="form-select js-multiple" id="authorised_country_and_statutory_instrument_n_ireland_si" name="authorised_country_and_statutory_instrument_n_ireland_si[]" multiple="multiple">
+                                <select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_n_ireland_si" name="authorised_country_and_statutory_instrument_n_ireland_si[]" multiple="multiple">
                                     <option value="" disabled>Select</option>	
                                     <?php foreach($statutory_instrument_nireland as $k => $v) { ?>
                                         <option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>

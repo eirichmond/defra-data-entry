@@ -7,9 +7,12 @@ get_header();
 
 <h1 class="entry-title"><?php the_title(); ?></h1>
 
-<?php if(isset($_GET['post']) && 'success' == $_GET['post']) { ?>
-	<div class="bg-green-700 text-white font-bold py-2 px-4 rounded">New Fuel Type Successfully Added!</div>
-<?php } else { ?>
+	<?php if(isset($_GET['post']) && 'success' == $_GET['post']) { ?>
+        <div class="alert alert-success" role="alert">
+            New Appliance Type Successfully Added!
+        </div>
+    <?php } else { ?>
+
 
 	<form class="w-full" action="/data-entry/form-process/" method="post">
 

@@ -116,6 +116,14 @@
                     text: 'Select a footnote',
                 }
             });
+            $('.js-multiple-si').select2({
+                minimumInputLength: 2,
+                multiple: true,
+                placeholder: {
+                    id: '0',
+                    text: 'Select a Statutory Instrument',
+                }
+            });
         });
     });
 })(jQuery);

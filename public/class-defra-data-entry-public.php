@@ -2942,7 +2942,7 @@ class Defra_Data_Entry_Public {
 			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_wales_status' : 'authorised_country_and_statutory_instrument_wales_status', true ),
 			get_post_meta( $post_id, $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_n_ireland_status' : 'authorised_country_and_statutory_instrument_n_ireland_status', true ),
 		);
-		if( in_array( '600', $status ) || in_array( '20', $status ) ) {
+		if( in_array( '600', $status ) || in_array( '20', $status ) || in_array( '50', $status ) ) {
 			$bool = true;
 		}
 		return $bool;

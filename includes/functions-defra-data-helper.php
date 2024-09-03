@@ -6,7 +6,7 @@
  * @param [type] $data_array
  * @return void
  */
-function defra_data_query_statutory_instrument($taxonomy = null, $term = null) {
+function defra_data_query_statutory_instrument( $taxonomy = null, $term = null, $type = null ) {
 
     $args = array(
         'post_status' => 'any',
@@ -16,11 +16,17 @@ function defra_data_query_statutory_instrument($taxonomy = null, $term = null) {
 
     if($taxonomy) {
         $args['tax_query'] = array(
+            'relation' => 'AND',
             array(
                 'taxonomy' => $taxonomy, // Replace with your custom taxonomy slug
                 'field' => 'slug',
                 'terms' => $term // Replace with the slug of the term you want to query
-            )
+            ),
+            array(
+                'taxonomy' => 'si_types',
+                'field'    => 'slug',
+                'terms'    => $type
+            ),
         );
     }
     $statutory_instruments = get_posts($args);

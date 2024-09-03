@@ -9,10 +9,10 @@ $appliance_type_terms = $class->get_appliance_taxonomy_terms('appliance_types');
 
 $output_units = $class->output_units();
 $additional_conditions = $class->appliance_conditions();
-$statutory_instrument_england = defra_data_query_statutory_instrument('si_countries','england');
-$statutory_instrument_wales = defra_data_query_statutory_instrument('si_countries','wales');
-$statutory_instrument_scotland = defra_data_query_statutory_instrument('si_countries','scotland');
-$statutory_instrument_nireland = defra_data_query_statutory_instrument('si_countries','n-ireland');
+$statutory_instrument_england = defra_data_query_statutory_instrument('si_countries','england', 'appliance' );
+$statutory_instrument_wales = defra_data_query_statutory_instrument('si_countries','wales', 'appliance' );
+$statutory_instrument_scotland = defra_data_query_statutory_instrument('si_countries','scotland', 'appliance' );
+$statutory_instrument_nireland = defra_data_query_statutory_instrument('si_countries','n-ireland', 'appliance' );
 
 if(!empty($_GET['p'])) {
 	$set_fuel_types = wp_get_post_terms( $_GET['p'], 'fuel_types');

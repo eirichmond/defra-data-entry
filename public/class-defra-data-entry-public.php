@@ -112,8 +112,8 @@ class Defra_Data_Entry_Public {
 			wp_enqueue_script( $this->plugin_name.'-create-new-appliance', plugin_dir_url( __FILE__ ) . 'js/defra-create-new-appliance.js', array( 'jquery' ), $this->version, false );
 		}
 
-		if ( is_page( 'si-appliance' ) ) {
-			wp_enqueue_script( $this->plugin_name.'-si-appliance', plugin_dir_url( __FILE__ ) . 'js/defra-si-appliance.js', array( 'jquery' ), $this->version, false );
+		if ( is_page( 'si-appliance' ) || is_page( 'si-fuel' ) ) {
+			wp_enqueue_script( $this->plugin_name.'-si-appliance', plugin_dir_url( __FILE__ ) . 'js/defra-si-edit.js', array( 'jquery' ), $this->version, false );
 		}
 
 		if ( is_page( 'appliances' ) || is_page( 'fuels' ) ) {
@@ -1427,17 +1427,19 @@ class Defra_Data_Entry_Public {
 				error_log( 'Error updating post: ' . $updated_post_id->get_error_message() );
 			} else {
 				error_log( 'Post updated successfully with ID: ' . $updated_post_id );
-				
+
 				// Now update the taxonomy terms
 				$taxonomy = 'si_countries'; // Replace with your taxonomy (e.g., 'category', 'post_tag', 'genre')
-				$term_ids = array_map( 'intval', $_POST["countries"] ); // Array of term IDs to associate with the post
-				
-				// Set the taxonomy terms for the post
-				wp_set_post_terms( $post_data["ID"], $term_ids, $taxonomy );
+
+				if(isset($_POST["countries"])) {
+					$term_ids = array_map( 'intval', $_POST["countries"] ); // Array of term IDs to associate with the post
+					// Set the taxonomy terms for the post
+					wp_set_post_terms( $post_data["ID"], $term_ids, $taxonomy );
+				}
 			}
 		}
 		
-		$url = home_url().'/data-entry/si/si-appliance/?post=success&id='.$post_data["ID"];
+		$url = home_url().'/data-entry/si/si-'.$_POST["rd"].'/?post=success&id='.$post_data["ID"];
 		wp_redirect( $url );
 		exit;
 

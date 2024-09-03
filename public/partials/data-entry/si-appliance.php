@@ -36,8 +36,8 @@ get_header();
 				<td style="width:55%"><?php echo esc_html( $v['number'] ); ?></td>
 				<td style="width:55%"><?php echo esc_html( $v['link'] ); ?></td>
 				<td style="width:20%; text-align:right;">
-                    <a class="btn btn-link edit-si-appliance" data-deid="<?php echo esc_html( $v['id'] ); ?>" data-denumber="<?php echo esc_html( $v['number'] ); ?>" data-delink="<?php echo esc_html( $v['link'] ); ?>" data-decountries="<?php echo esc_html($json_string); ?>" data-bs-toggle="modal" data-bs-target="#exampleModal" href="#" role="button">Edit</a>
-                </td>
+            <a class="btn btn-link edit-si-edit" data-deid="<?php echo esc_html( $v['id'] ); ?>" data-denumber="<?php echo esc_html( $v['number'] ); ?>" data-delink="<?php echo esc_html( $v['link'] ); ?>" data-decountries="<?php echo esc_html($json_string); ?>" data-bs-toggle="modal" data-bs-target="#editModal" href="#" role="button">Edit</a>
+        </td>
 
 			</tr>
 
@@ -46,11 +46,11 @@ get_header();
 </table>
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Appliance SI</h1>
+        <h1 class="modal-title fs-5" id="editModalLabel">Edit Appliance SI</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -83,6 +83,7 @@ get_header();
                 </div>
             </div>
             <?php wp_nonce_field( 'update_si_appliance', 'update_si_appliance_field' ); ?>
+            <input type="hidden" class="form-control" name="rd" value="appliance">
             <input type="hidden" class="form-control" name="process" value="update-statutory-instrument">
             <input type="hidden" class="form-control" name="deid" id="deid" value="">
 

@@ -31,7 +31,7 @@
 
 	$(function () {
 		
-		$(".edit-si-appliance").click(function (e) {
+		$(".edit-si-edit").click(function (e) {
 			let deid = document.getElementById('deid');
 			let denumber = document.getElementById('denumber');
 			let delink = document.getElementById('delink');
@@ -43,7 +43,8 @@
 				let option = countryTerms.options[i];
 				option.selected = false;
 				// Check if the option's value is in the selectedItems array
-				if (decountries.includes(parseInt(option.value))) {
+				debugger;
+				if (decountries !== null && decountries.includes(parseInt(option.value))) {
 					option.selected = true;
 				}
 			}

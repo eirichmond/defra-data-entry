@@ -9,7 +9,7 @@ $args = array(
 		'authorised_country_and_statutory_instrument_n_ireland_status'
 	),
 	'fuel_meta_key' => 'fuel_id',
-	'manufacturer_meta_key' => 'manufacturer',
+	'manufacturer_meta_key' => 'manufacturer_id',
 );
 $fuels = $public_class->get_table_list($args);
 

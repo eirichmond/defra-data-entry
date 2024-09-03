@@ -67,7 +67,7 @@ get_header();
 							</tr>
 							<tr>
 								<td><strong>Manufacturer</strong></td>
-								<td><?php echo esc_html( $public_class->manufacturer_composite_address(get_post_meta($post->ID, 'manufacturer', true ))); ?></td>
+								<td><?php echo esc_html( $public_class->manufacturer_composite_address(get_post_meta($post->ID, 'manufacturer_id', true ))); ?></td>
 							</tr>
 
 							<?php if( !empty( get_post_meta($post->ID, 'point_a', true ) ) ) { ?>

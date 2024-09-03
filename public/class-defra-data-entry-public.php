@@ -2589,7 +2589,7 @@ class Defra_Data_Entry_Public {
 
 		$fuel_data_details['fuel_id'] = $fuel_meta["fuel_id"];
 		$fuel_data_details['fuel_name'] = get_the_title($post_id);
-		$fuel_data_details['manufacturer'] = $this->manufacturer_composite_address($fuel_meta["manufacturer"]);
+		$fuel_data_details['manufacturer'] = $this->manufacturer_composite_address($fuel_meta["manufacturer_id"]);
 		$fuel_data_details['a'] = $fuel_meta["point_a"];
 		$fuel_data_details['b'] = $fuel_meta["point_b"];
 		$fuel_data_details['c'] = $fuel_meta["point_c"];
@@ -2772,6 +2772,9 @@ class Defra_Data_Entry_Public {
 	 * @return array
 	 */
 	public function defra_merge_postmeta($post_id) {
+		if(null == $post_id) {
+			return;
+		}
 		$meta_array = array_map(
 			function( $a ){
 				return $a[0];

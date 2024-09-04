@@ -3012,9 +3012,7 @@ class Defra_Data_Entry_Public {
 				}				
 
 			} elseif ( !empty( $status[0] ) && in_array( '20', $status ) || in_array( '600', $status ) || in_array( '30', $status ) ) {
-				if( !current_user_can( 'data_entry' ) ) {
-					include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
-				}
+				include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
 			}
 
 		}

@@ -16,7 +16,7 @@
         
     <?php } ?>
 
-    <?php if( in_array( '1', $revoked ) ) { ?>
+    <?php if( in_array( '1', $revoked ) && current_user_can( 'data_reviewer' ) ) { ?>
         <button class="btn btn-success" type="submit" name="status" value="approve-revocation">Approve Revocation</button>
     <?php } ?>
 

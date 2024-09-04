@@ -33,12 +33,12 @@
 	 * remove required input if da is approving something
 	 */
 	$(function () {
-		debugger;
 		var approvedByDa = document.getElementById("approved-by-da");
 		var approvedByDr = document.getElementById("approved-by-dr");
 		var approvedRevocationByDr = document.getElementById("approve-revocation-by-dr");
 		var rejectedRevocationByDa = document.getElementById("rejected-revocation-by-da");
-
+		var approvedRevocationByDa = document.getElementById("approved-revocation-by-da");
+		
 		var rejectedByDr = document.getElementById("rejected-by-dr");
 		var userComments = document.getElementById("user_comments");
 		if(approvedByDa) {
@@ -63,10 +63,12 @@
 		}
 
 		if(rejectedRevocationByDa) {
-			// rejectedRevocationByDa.addEventListener("click", function () {
-			// 	userComments.removeAttribute("required");
-			// 	toDefraComments.removeAttribute("required");
-			// });
+		}
+
+		if(approvedRevocationByDa) {
+			approvedRevocationByDa.addEventListener("click", function () {
+				userComments.removeAttribute("required");
+			});
 		}
 
 		if(rejectedByDr) {

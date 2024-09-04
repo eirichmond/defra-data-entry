@@ -21,7 +21,7 @@ if(isset($_GET) && !empty($_GET["revoked"])) {
     
     <a href="<?php echo the_permalink(); ?>" class="defra-assign" data-role="data_approver" data-nonce="<?php echo wp_create_nonce('defra-assign'); ?>" data-id="<?php echo esc_attr(get_the_ID()); ?>" data-user_id="<?php echo esc_attr( $user->ID ); ?>" title="Assign to me" ><i class="gg-lock"></i></a>
     
-<?php } elseif ( in_array('data_approver', $roles) && !empty($approver_id) ) { ?>
+<?php } elseif ( in_array('data_approver', $roles) && !empty($approver_id) && intval($approver_id) == $user->ID ) { ?>
 
     <a href="<?php echo the_permalink(); ?>" title="Review"><i class="gg-eye"></i></a>
 

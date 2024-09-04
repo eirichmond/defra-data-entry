@@ -33,8 +33,12 @@
 	 * remove required input if da is approving something
 	 */
 	$(function () {
+		debugger;
 		var approvedByDa = document.getElementById("approved-by-da");
 		var approvedByDr = document.getElementById("approved-by-dr");
+		var approvedRevocationByDr = document.getElementById("approve-revocation-by-dr");
+		var rejectedRevocationByDa = document.getElementById("rejected-revocation-by-da");
+
 		var rejectedByDr = document.getElementById("rejected-by-dr");
 		var userComments = document.getElementById("user_comments");
 		if(approvedByDa) {
@@ -49,6 +53,22 @@
 				toDefraComments.removeAttribute("required");
 			});
 		}
+
+		if(approvedRevocationByDr) {
+			var toDefraComments = document.getElementById("comments_to_defra_da");
+			approvedRevocationByDr.addEventListener("click", function () {
+				userComments.removeAttribute("required");
+				toDefraComments.removeAttribute("required");
+			});
+		}
+
+		if(rejectedRevocationByDa) {
+			// rejectedRevocationByDa.addEventListener("click", function () {
+			// 	userComments.removeAttribute("required");
+			// 	toDefraComments.removeAttribute("required");
+			// });
+		}
+
 		if(rejectedByDr) {
 			rejectedByDr.addEventListener("click", function () {
 				toDefraComments.removeAttribute("required");

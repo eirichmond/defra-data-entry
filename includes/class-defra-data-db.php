@@ -136,6 +136,7 @@ class Defra_Data_DB_Requests {
 					AND p.post_type = %s",
 					array('%_status', $status, $post_type)
 				)
+		
 			);
 		} else {
 			$results = $wpdb->get_results(

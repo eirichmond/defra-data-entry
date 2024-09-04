@@ -1,7 +1,7 @@
 <div class="mb-3">
 
 
-    <?php if( !isset($revoked) ) { ?>
+    <?php if( !isset($revoked[0]) ) { ?>
 
         <?php if( $count == 1 && $status[0] == '20' || $status[0] == '30' ) { ?>
             <button id="approved-by-dr" class="btn btn-success" type="submit" name="status" value="approve">Approve</button>

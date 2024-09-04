@@ -46,13 +46,24 @@ function defra_data_by_appliance_id($data_array) {
     }
     $appliances = wp_list_pluck( $data_array, 'post_id' );
 
-    $args = array(
-        'post_status' => 'any',
-        'posts_per_page' => -1,
-        'post_type' => 'appliances',
-        'post__in' => $appliances
-    );
-    $appliances = get_posts($args);
+    foreach($appliances as $k => $appliance) {
+        $meta_keys = get_post_meta($appliance);
+        foreach ($meta_keys as $key => $value) {
+            if (strpos($key, '_revoke_status_id') !== false) { // 'partial_key' is the part of the key you're looking for
+                unset($appliances[$k]);
+            }
+        }
+    }
+
+    if($appliances) {
+        $args = array(
+            'post_status' => 'any',
+            'posts_per_page' => -1,
+            'post_type' => 'appliances',
+            'post__in' => $appliances
+        );
+        $appliances = get_posts($args);
+    }
 
     return $appliances;
 }

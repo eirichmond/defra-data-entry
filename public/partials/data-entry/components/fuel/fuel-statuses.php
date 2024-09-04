@@ -172,7 +172,7 @@
                         Being Reviewed
                     </div>
                     <div class="card-body">
-                        <a href="#" class="">View (0)</a>
+                        <a href="/data-entry/fuels/?revoked=true&key=%_revoke_status_id&value=30" class="">View (<?php echo esc_html( count( $db->get_revoked_requested( '%_revoke_status_id', '30', 'fuels' ) ) ); ?>)</a>
                     </div>
                 </div>
             </div>

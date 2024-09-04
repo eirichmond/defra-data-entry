@@ -5,7 +5,7 @@ $args = array(
 	// 'post_meta_key' => 'exempt-in_country_and_statutory_instrument_england_enabled',
 	'post_meta_key' => 'authorised_country_and_statutory_instrument_england_status',
 	'fuel_meta_key' => 'fuel_id',
-	'manufacturer_meta_key' => 'manufacturer',
+	'manufacturer_meta_key' => 'manufacturer_id',
 );
 $fuels = $public_class->get_table_list($args);
 

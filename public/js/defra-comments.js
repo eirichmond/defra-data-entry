@@ -36,6 +36,7 @@
 		var approvedByDa = document.getElementById("approved-by-da");
 		var approvedByDr = document.getElementById("approved-by-dr");
 		var approvedRevocationByDr = document.getElementById("approve-revocation-by-dr");
+
 		var rejectedRevocationByDa = document.getElementById("rejected-revocation-by-da");
 		var approvedRevocationByDa = document.getElementById("approved-revocation-by-da");
 		

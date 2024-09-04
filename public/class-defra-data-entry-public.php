@@ -1853,7 +1853,7 @@ class Defra_Data_Entry_Public {
 
 			if($_POST["status"] == 'approved-revocation-by-da') { // approved revoke by data approver
 
-				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_revoke_status_id', '300' );
+				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_revoke_status_id', '400' );
 				
 				if(!empty($_POST["user_comments"])) {
 					// add comments

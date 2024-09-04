@@ -3047,15 +3047,15 @@ class Defra_Data_Entry_Public {
 	 * @param [type] $country
 	 * @return void
 	 */
-	public function statutory_instrument_assignment( $post_id, $country ) {
-		$count = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si', true );
+	public function statutory_instrument_assignment( $post_id, $country, $type = null ) {
+		$count = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_si', true );
 		$statutory_instruments = array();
 		for ($i=0; $i < $count; $i++) { 
-			$si_id = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si_'.$i.'_si_id', true );
+			$si_id = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si_'.$i.'_si_id', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_si_'.$i.'_si_id', true );
 			$statutory_instruments[$i]['id'] = $si_id;
 			$statutory_instruments[$i]['title'] = get_the_title($si_id);
-			$statutory_instruments[$i]['publish_date'] = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_publish_date', true );
-			$statutory_instruments[$i]['publish_status'] = get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_status', true );
+			$statutory_instruments[$i]['publish_date'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_publish_date', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_publish_date', true );
+			$statutory_instruments[$i]['publish_status'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_status', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_status', true );
 			if(strpos(get_the_title($si_id), 'Footnote') !== false) {
 				$statutory_instruments[$i]['url'] = get_permalink($si_id);
 				$statutory_instruments[$i]['status'] = 0;

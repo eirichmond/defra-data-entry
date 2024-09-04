@@ -22,10 +22,10 @@ $exempt_wales = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instru
 $exempt_scotland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true);
 $exempt_ireland = get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_si', true);
 
-$statutory_instruments_england = $public_class->statutory_instrument_assignment( $post->ID, 'england' );
-$statutory_instruments_wales = $public_class->statutory_instrument_assignment( $post->ID, 'wales' );
-$statutory_instruments_scotland = $public_class->statutory_instrument_assignment( $post->ID, 'scotland' );
-$statutory_instruments_n_ireland = $public_class->statutory_instrument_assignment( $post->ID, 'n_ireland' );
+$statutory_instruments_england = $public_class->statutory_instrument_assignment( $post->ID, 'england', 'appliance' );
+$statutory_instruments_wales = $public_class->statutory_instrument_assignment( $post->ID, 'wales', 'appliance'  );
+$statutory_instruments_scotland = $public_class->statutory_instrument_assignment( $post->ID, 'scotland', 'appliance'  );
+$statutory_instruments_n_ireland = $public_class->statutory_instrument_assignment( $post->ID, 'n_ireland', 'appliance'  );
 
 
 

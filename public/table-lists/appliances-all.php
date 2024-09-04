@@ -39,74 +39,74 @@ $appliances = $public_class->get_table_list($args);
 				<td style="width:30%"><?php echo esc_html( $v->manufacturer_name ); ?></td>
 				<td style="width:20%">
 				
-				<?php $si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'england' ); 
+					<?php $si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'england', 'appliance' ); 
 
-				if( $si_assignment[0]['publish_status'] != '600' ) { ?>
-					<span>No</span>
-				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
+					if( $si_assignment[0]['publish_status'] != '600' ) { ?>
+						<span>No</span>
+					<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
-					<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
+						<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
 
-				<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
+					<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
 
-					<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
-									
-				<?php } ?>
+						<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
+										
+					<?php } ?>
 
 				
 				</td>
 				<td style="width:20%">
 				
-				<?php
-				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'wales' ); 
-				if( $si_assignment[0]['publish_status'] != '600' ) { ?>
-					<span>No</span>
-				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
+					<?php
+					$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'wales', 'appliance'  ); 
+					if( $si_assignment[0]['publish_status'] != '600' ) { ?>
+						<span>No</span>
+					<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
-					<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
+						<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
 
-				<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
+					<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
 
-					<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
-									
-				<?php } ?>
+						<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
+										
+					<?php } ?>
 
 				</td>
 				<td style="width:20%">
 				
-				<?php
-				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'scotland' ); 
-				if( $si_assignment[0]['publish_status'] != '600' )  { ?>
-					<span>No</span>
-				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
+					<?php
+					$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'scotland', 'appliance'  ); 
+					if( $si_assignment[0]['publish_status'] != '600' )  { ?>
+						<span>No</span>
+					<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
-					<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
+						<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
 
-				<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
+					<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
 
-					<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
-									
-				<?php } ?>
+						<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
+										
+					<?php } ?>
 
 
 				</td>
+
 				<td style="width:20%">
 			
-				<?php
-				$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'n_ireland' ); 
-				if( $si_assignment[0]['publish_status'] != '600')  { ?>
-					<span>No</span>
-				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
+					<?php
+					$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'n_ireland', 'appliance'  ); 
+					if( $si_assignment[0]['publish_status'] != '600')  { ?>
+						<span>No</span>
+					<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
-					<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
+						<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>
 
-				<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
+					<?php } elseif ( $si_assignment[0]['status'] == 1 ) { ?>
 
-					<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
-									
-				<?php } ?>
+						<a href="<?php echo esc_url( $si_assignment[0]['url'] ); ?>"><?php echo esc_html( $si_assignment[0]['title'] ); ?></a>
+										
+					<?php } ?>
 
-			
 				</td>
 			</tr>
 

@@ -1892,12 +1892,10 @@ class Defra_Data_Entry_Public {
 				}
 
 				
-
 				// create audit
 				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Revoked for '.$countries[$country].' and set status_id: (300) approved revoke by approver', $_SERVER["REMOTE_ADDR"]);
 				//$this->notify_data_rejected_by_da($_POST["post_id"]); // @TODO
 				
-
 			}
 
 

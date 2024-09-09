@@ -1798,7 +1798,7 @@ class Defra_Data_Entry_Public {
 				foreach ( $country_meta_slugs as $k => $slug ) {
 
 					update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$slug.'_revoke_requested' : 'authorised_country_and_statutory_instrument_'.$slug.'_revoke_requested', '1' );
-					update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$slug.'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$slug.'_revoke_status_id', '20' );
+					update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$slug.'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$slug.'_revoke_status_id', '200' );
 
 				}
 
@@ -1880,6 +1880,19 @@ class Defra_Data_Entry_Public {
 					update_comment_meta($comment_id, 'comment_action_id', '4');
 				}
 
+				// check if all DA's have revoked, if so set main status to 400 so not published to the frontend
+				$revoked_status = array();
+				foreach ( $country_meta_slugs as $k => $slug ) {
+					$revoked_status[$k] = get_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$slug.'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$slug.'_revoke_status_id', true );
+				}
+				if ( $this->defra_all_values_are( $revoked_status, '400' ) ) {
+					foreach ( $country_meta_slugs as $k => $slug ) {
+						update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$slug.'_status' : 'authorised_country_and_statutory_instrument_'.$slug.'_status', '400' );
+					}
+				}
+
+				
+
 				// create audit
 				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Revoked for '.$countries[$country].' and set status_id: (300) approved revoke by approver', $_SERVER["REMOTE_ADDR"]);
 				//$this->notify_data_rejected_by_da($_POST["post_id"]); // @TODO
@@ -1894,6 +1907,23 @@ class Defra_Data_Entry_Public {
 
 		}
 
+	}
+
+	/**
+	 * check if all values are the same
+	 *
+	 * @param [type] $array
+	 * @param [type] $value
+	 * @return void
+	 */
+	public function defra_all_values_are($array, $value) {
+		// Filter the array, keeping only elements that are not equal to $value
+		$filteredArray = array_filter($array, function($item) use ($value) {
+			return $item !== $value;
+		});
+		
+		// If the filtered array is empty, then all elements were equal to $value
+		return empty($filteredArray);
 	}
 
 	/**
@@ -3063,6 +3093,11 @@ class Defra_Data_Entry_Public {
 			$statutory_instruments[$i]['title'] = get_the_title($si_id);
 			$statutory_instruments[$i]['publish_date'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_publish_date', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_publish_date', true );
 			$statutory_instruments[$i]['publish_status'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_status', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_status', true );
+			$revoke_requested = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_revoke_requested', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_revoke_requested', true );
+			// if revocation has been requested asign to array
+			if(!empty( $revoke_requested )) {
+				$statutory_instruments[$i]['revoke_requested'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_revoke_requested', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_revoke_requested', true );
+			}
 			if(strpos(get_the_title($si_id), 'Footnote') !== false) {
 				$statutory_instruments[$i]['url'] = get_permalink($si_id);
 				$statutory_instruments[$i]['status'] = 0;
@@ -3070,6 +3105,7 @@ class Defra_Data_Entry_Public {
 				$statutory_instruments[$i]['url'] = get_post_field('post_content', $si_id);
 				$statutory_instruments[$i]['status'] = 1;
 			}
+
 			
 		}
 		return $statutory_instruments;

@@ -18,49 +18,49 @@ get_header();
 
 <?php do_action('before_main_content'); ?>
 
-    <h1 class="entry-title"><?php the_title(); ?></h1>
+<h1 class="entry-title"><?php the_title(); ?></h1>
 
-    <?php if(!empty($_GET) && isset($_GET['refer'])) { ?>
+<?php if(!empty($_GET) && isset($_GET['refer'])) { ?>
 
-        <div class="alert alert-success" role="alert">
-            Status updated!
-        </div>
-    
-    <?php } ?>
+<div class="alert alert-success" role="alert">
+	Status updated!
+</div>
 
-    <div class="accordion" id="accordionPanelsStayOpenExample">
-        <div class="accordion-item mt-2">
-            <h2 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    Appliance Status
-                </button>
-            </h2>
-            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
-                <div class="accordion-body">
-                    
-                    <?php require_once(plugin_dir_path( __FILE__ ) . 'components/appliance/appliance-statuses.php'); ?>
+<?php } ?>
 
-                </div>
-            </div>
-        </div>
+<div class="accordion" id="accordionPanelsStayOpenExample">
+	<div class="accordion-item mt-2">
+		<h2 class="accordion-header">
+			<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+				Appliance Status
+			</button>
+		</h2>
+		<div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+			<div class="accordion-body">
 
-        <div class="accordion-item">
-            <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                    Fuel Status
-                </button>
-            </h2>
-            <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
-                <div class="accordion-body">
+				<?php require_once(plugin_dir_path( __FILE__ ) . 'components/appliance/appliance-statuses.php'); ?>
 
-                    <?php require_once(plugin_dir_path( __FILE__ ) . 'components/fuel/fuel-statuses.php'); ?>
+			</div>
+		</div>
+	</div>
 
-               </div>
-            </div>
-        </div>
-    </div>
+	<div class="accordion-item">
+		<h2 class="accordion-header">
+			<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+				Fuel Status
+			</button>
+		</h2>
+		<div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
+			<div class="accordion-body">
 
-<?php do_action('after_main_content'); ?>          
+				<?php require_once(plugin_dir_path( __FILE__ ) . 'components/fuel/fuel-statuses.php'); ?>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<?php do_action('after_main_content'); ?>
 
 <?php //include(plugin_dir_path( __FILE__ ) . 'template-part/dashboard-removed.php'); ?>
 

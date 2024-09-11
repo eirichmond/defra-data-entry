@@ -1857,7 +1857,6 @@ class Defra_Data_Entry_Public {
 				//$this->notify_data_rejected_by_da($_POST["post_id"]); // @TODO
 
 			}
-
 			if($_POST["status"] == 'approved-revocation-by-da') { // approved revoke by data approver
 
 				update_post_meta( $_POST["post_id"], $post->post_type == 'appliances' ? 'exempt-in_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_revoke_status_id' : 'authorised_country_and_statutory_instrument_'.$country_meta_slugs[$country].'_revoke_status_id', '400' );
@@ -2500,7 +2499,7 @@ class Defra_Data_Entry_Public {
 				'TodayDate' => $date,
 				'ApplicationNumber' => $application_number,
 				'Manufacturer' => $manufacturer->post_title,
-				'FuelName' => $post_obj->post_title,
+				'FuelName' => esc_attr( $post_obj->post_title ),
 				'FuelID' => $fuel_id,
 				'ManufacturerContact' => $manufacturer->post_title,
 			]);

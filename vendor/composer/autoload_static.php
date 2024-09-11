@@ -7,10 +7,6 @@ namespace Composer\Autoload;
 class ComposerStaticInitf809f814f194ddd05d698aef6e6b6031
 {
     public static $prefixLengthsPsr4 = array (
-        'T' => 
-        array (
-            'Tests\\PhpOffice\\Math\\' => 21,
-        ),
         'S' => 
         array (
             'Svg\\' => 4,
@@ -37,10 +33,6 @@ class ComposerStaticInitf809f814f194ddd05d698aef6e6b6031
     );
 
     public static $prefixDirsPsr4 = array (
-        'Tests\\PhpOffice\\Math\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpoffice/math/tests/Math',
-        ),
         'Svg\\' => 
         array (
             0 => __DIR__ . '/..' . '/phenx/php-svg-lib/src/Svg',

@@ -22,7 +22,7 @@ $appliances = $public_class->get_table_list($args);
 	</thead>
 	<tbody>
 		<?php foreach($appliances as $k => $v) {
-			$revoke_requested = get_post_meta( $v->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_revoke_requested' );
+			$revoke_status_id = get_post_meta( $v->ID, 'exempt-in_country_and_statutory_instrument_n_ireland_revoke_status_id' );
 			$app_types = get_the_terms( $v->ID, 'appliance_types' );
 			if($app_types) {
 				$terms_string = join(', ', wp_list_pluck($app_types, 'name'));
@@ -35,7 +35,7 @@ $appliances = $public_class->get_table_list($args);
 			<td style="width:20%"><?php echo get_the_title( $v->fuel_id ); ?></td>
 			<td style="width:20%"><?php echo esc_html($terms_string); ?></td>
 			<td style="width:20%">
-				<?php if($revoke_requested) { ?>
+				<?php if($revoke_status_id == '400') { ?>
 				No
 				<?php } else { ?>
 				<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>

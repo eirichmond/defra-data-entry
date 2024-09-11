@@ -41,7 +41,7 @@ $appliances = $public_class->get_table_list($args);
 
 				<?php $si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'england', 'appliance' ); 
 
-				if( $si_assignment[0]['publish_status'] != '600' || !empty( $si_assignment[0]['revoke_requested'] ) ) { ?>
+				if( $si_assignment[0]['publish_status'] != '600' || !empty( $si_assignment[0]['revoke_status_id'] ) ) { ?>
 
 				<span>No</span>
 
@@ -61,7 +61,7 @@ $appliances = $public_class->get_table_list($args);
 
 				<?php
 					$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'wales', 'appliance'  ); 
-					if( $si_assignment[0]['publish_status'] != '600' || !empty( $si_assignment[0]['revoke_requested'] ) ) { ?>
+					if( $si_assignment[0]['publish_status'] != '600' || !empty( $si_assignment[0]['revoke_status_id'] ) ) { ?>
 				<span>No</span>
 				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
@@ -78,7 +78,7 @@ $appliances = $public_class->get_table_list($args);
 
 				<?php
 					$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'scotland', 'appliance'  ); 
-					if( $si_assignment[0]['publish_status'] != '600' || !empty( $si_assignment[0]['revoke_requested'] ) )  { ?>
+					if( $si_assignment[0]['publish_status'] != '600' || !empty( $si_assignment[0]['revoke_status_id'] ) )  { ?>
 				<span>No</span>
 				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 
@@ -97,7 +97,7 @@ $appliances = $public_class->get_table_list($args);
 
 				<?php
 					$si_assignment = $public_class->statutory_instrument_assignment( $v->ID, 'n_ireland', 'appliance'  ); 
-					if( $si_assignment[0]['publish_status'] != '600' || !empty( $si_assignment[0]['revoke_requested'] ) )  { ?>
+					if( $si_assignment[0]['publish_status'] != '600' || !empty( $si_assignment[0]['revoke_status_id'] ) )  { ?>
 				<span>No</span>
 				<?php } elseif ( $si_assignment[0]['status'] == 0 ) { ?>
 

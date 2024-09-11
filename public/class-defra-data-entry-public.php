@@ -3090,10 +3090,10 @@ class Defra_Data_Entry_Public {
 			$statutory_instruments[$i]['title'] = get_the_title($si_id);
 			$statutory_instruments[$i]['publish_date'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_publish_date', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_publish_date', true );
 			$statutory_instruments[$i]['publish_status'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_status', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_status', true );
-			$revoke_requested = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_revoke_requested', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_revoke_requested', true );
+			$revoke_requested = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_revoke_status_id', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_revoke_status_id', true );
 			// if revocation has been requested asign to array
-			if(!empty( $revoke_requested )) {
-				$statutory_instruments[$i]['revoke_requested'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_revoke_requested', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_revoke_requested', true );
+			if(!empty( $revoke_requested && $revoke_requested == '400' )) {
+				$statutory_instruments[$i]['revoke_status_id'] = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_revoke_status_id', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_revoke_status_id', true );
 			}
 			if(strpos(get_the_title($si_id), 'Footnote') !== false) {
 				$statutory_instruments[$i]['url'] = get_permalink($si_id);

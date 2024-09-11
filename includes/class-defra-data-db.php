@@ -372,8 +372,8 @@ class Defra_Data_DB_Requests {
 		$list_appliance_types = array();
 		$defra_appliance_types = $this->get_appliance_types();
 		foreach($defra_appliance_types as $k => $v) {
-			$list_appliance_types[$v->id]['appliance_type_id'] = $v->id;
-			$list_appliance_types[$v->id]['appliance_type_name'] = $v->name;
+			$list_appliance_types[$v->term_id]['term_id'] = $v->term_id;
+			$list_appliance_types[$v->term_id]['name'] = $v->name;
 		}
         return $list_appliance_types;
 
@@ -552,13 +552,21 @@ class Defra_Data_DB_Requests {
 	 * @return array $results
 	 */
 	public function get_appliance_types() {
-		global $wpdb;
-        $results = $wpdb->get_results(
-            "SELECT *
-            FROM `wp_defra_appliance_types`
-			"
-        );
-		return $results;
+
+		$taxonomy = 'appliance_types';
+		$terms = get_terms( array(
+			'taxonomy' => $taxonomy, 
+			'hide_empty' => true,
+		) );
+
+		return $terms;
+		// global $wpdb;
+        // $results = $wpdb->get_results(
+        //     "SELECT *
+        //     FROM `wp_defra_appliance_types`
+		// 	"
+        // );
+		// return $results;
 
 	}
 
@@ -1900,23 +1908,19 @@ class Defra_Data_DB_Requests {
 	 * @return void
 	 */
 	public function update_appliance_type($postdata) {
-		$now = $this->create_timestamp();
-		$current_user = wp_get_current_user();
-		$table = $this->wpdb->prefix.$postdata['type'];
-		$data = array(
+		// Arguments for updating the term
+		$args = array(
 			'name' => $postdata['input'],
-			'edited_by_user_id' => $current_user->ID,
-			'date_updated' => $now,
+			'description' => 'User updated appliance type'
 		);
-		$where = array(
-			'ID' => $postdata['id']
-		);
-		$format = array(
-			'%s',
-			'%s',
-			'%s'
-		);
-		$this->wpdb->update($table,$data,$where,$format);
+	
+		// Update the term
+		$term_updated = wp_update_term( $postdata['id'], 'appliance_types', $args); // Replace 'your_custom_taxonomy' with your taxonomy name
+	
+		if (is_wp_error($term_updated)) {
+			// Handle error, for example, log it or display a message
+			wp_die('Error updating term: ' . $term_updated->get_error_message());
+		}
 
 	}
 

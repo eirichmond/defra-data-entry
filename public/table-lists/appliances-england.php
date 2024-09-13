@@ -43,7 +43,7 @@ $appliances = $public_class->get_table_list($args);
 			<td style="width:20%"><?php echo esc_html( $permitted_fuels ); ?></td>
 			<td style="width:20%"><?php echo esc_html($terms_string); ?></td>
 			<td style="width:20%">
-				<?php if($revoke_status_id == '400') { ?>
+				<?php if($revoke_status_id[0] == '400') { ?>
 				No
 				<?php } else { ?>
 				<a href="<?php echo esc_url( get_permalink($v) ); ?>">View detailed information</a>

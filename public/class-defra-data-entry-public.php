@@ -1306,7 +1306,7 @@ class Defra_Data_Entry_Public {
 	 * @param [type] $post_id
 	 * @return void
 	 */
-	public function notify_appliance_data_approve($post_id) {
+	public function notify_email_callback($post_id, $status) {
 
 		$post = get_post($post_id);
 		$type_label = $post->post_type == 'appliances' ? 'Appliance' : 'Fuel';
@@ -1314,13 +1314,70 @@ class Defra_Data_Entry_Public {
 		$type_meta = $post->post_type == 'appliances' ? 'appliance' : 'fuel';
 
 		$admin = new Defra_Data_Entry_Admin('Admin','1,0');
-
+		$administrators = $admin->get_administrator_email_addresses();
+		$data_entry = $admin->get_data_entry_email_addresses();
+		$data_reviewers = $admin->get_data_reviewers_email_addresses();
 		$data_approvers = $admin->get_data_approver_email_addresses();
-		$subject = $type_label . ' submitted for approval';
-		$content = $type_label . ' ID: ' . get_post_meta($post_id, $type_meta . '_id', true) . '<br>';
-		$content .= 'To approve submitted '.$type_label.' <a href="'.home_url().'/?post_type='.$type_slug.'&p='.$post_id.'"><strong>click here</strong></a>';
+
+		$args = array();
+
+		switch ($status) {
+		case '1':
+			$args['to'] = $data_reviewers;
+			$args['sub'] = 'New '.$type_label.' submission for review';
+			$args['msg'] = 'A new '.$type_meta.' submission is awaiting your review:';
+			$args['url'] = 'To view <a href="'.home_url().'/?post_type='.$type_slug.'&p='.$post_id.'"><strong>click here</strong></a>';
+			break;
+		case '2':
+			$args['to'] = $data_entry;
+			$args['sub'] = $type_label.' rejected by a Reviewer';
+			$args['msg'] =  'The submission for '.$type_meta.' has been REJECTED by a Reviewer and is awaiting your review:';
+			$args['url'] = 'To view <a href="'.home_url().'/?post_type='.$type_slug.'&p='.$post_id.'"><strong>click here</strong></a>';
+			break;
+		case '3':
+			$args['to'] = array_merge( $data_approvers, $data_entry );
+			$args['sub'] = $type_label.' approved by a Reviewer';
+			$args['msg'] =  'The following '.$type_meta.' has been APPROVED by a Reviewer and is now awaiting final approval:';
+			$args['url'] = 'To view <a href="'.home_url().'/?post_type='.$type_slug.'&p='.$post_id.'"><strong>click here</strong></a>';
+			break;
+		case 4:
+			$args['to'] = array_merge( $data_reviewers, $data_entry );
+			$args['sub'] = $type_label.' rejected by an Approver';
+			$args['msg'] =  'The submission for '.$type_meta.' has been REJECTED by an Approver and is awaiting your review:';
+			$args['url'] = 'To view <a href="'.home_url().'/?post_type='.$type_slug.'&p='.$post_id.'"><strong>click here</strong></a>';
+			break;
+		case '5':
+			$args['to'] = $data_entry;
+			$args['sub'] = $type_label.' approved by an Approver';
+			$args['msg'] =  'The following '.$type_meta.' has been APPROVED by an Approver and has now been published:';
+			
+			$args['url'] = 'To view <a href="'.get_permalink( $post_id ).'"><strong>click here</strong></a>';
+			break;
+		case '6':
+			$args['to'] = $data_approvers;
+			$args['sub'] = 'New '.$type_label.' revocation request';
+			$args['msg'] = 'A new REVOCATION request for '.$type_meta.' is awaiting your review:';
+			$args['url'] = 'To view <a href="'.home_url().'/?post_type='.$type_slug.'&p='.$post_id.'"><strong>click here</strong></a>';
+			break;
+		case '7':
+			$args['to'] = $data_reviewers;
+			$args['sub'] = $type_label.' revocation approved';
+			$args['msg'] =  'The following REVOCATION request for '.$type_meta.' has been APPROVED and has now been published:';
+			$args['url'] = 'To view <a href="'.get_permalink( $post_id ).'"><strong>click here</strong></a>';
+			break;
+		default:
+			$args['sub'] = 'Submission test fail';
+			$args['msg'] = 'Submission test failed due to missing status, please ignore this email if you\'ve recieved it in error!';
+			$args['url'] = 'null';
+			break;
+		}
+
+		$subject = $args['sub'];
+		$content = '<img src="https://smokecontrol-data-entry.hetas.co.uk/themes/scades/images/defra-logo.gif"><br /><br />'.$type_label . ' ID: ' . $post_id . '<br /><br />';
+		$content .= $args['msg'] . '<br />';
+		$content .= $args['url'];
 		$headers = array('Content-Type: text/html; charset=UTF-8');
-		wp_mail($data_approvers, $subject, $content, $headers);
+		wp_mail($args['to'], $subject, $content, $headers);
 
 	}
 
@@ -1686,7 +1743,7 @@ class Defra_Data_Entry_Public {
 				}
 				// create audit
 				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Changed appliance to status_id: (10) Rejected by data review so back into draft for data entry', $_SERVER["REMOTE_ADDR"]);
-
+				$this->notify_email_callback($_POST["post_id"],'2');
 			}
 			if($_POST["status"] == 'approve') {
 
@@ -1731,7 +1788,8 @@ class Defra_Data_Entry_Public {
 
 				// create audit
 				$audit->defra_audit_log($_POST["user_id"], $post->post_type == 'appliances' ? 'appliance' : 'fuel' . '_country', $_POST["post_id"], 'Changed appliance to status_id: (50) Submitted', $_SERVER["REMOTE_ADDR"]);
-				$this->notify_appliance_data_approve($_POST["post_id"]);
+				$this->notify_email_callback($_POST["post_id"],'3');
+
 
 			}
 			if($_POST["status"] == 'approved-by-da') {
@@ -1760,7 +1818,7 @@ class Defra_Data_Entry_Public {
 
 				// create audit
 				$audit->defra_audit_log($_POST["user_id"], $post->post_type == 'appliances' ? 'appliance' : 'fuel' . '_country', $_POST["post_id"], 'Approve '.$post->post_type == 'appliances' ? 'appliance' : 'fuel' . ' for '.$status_country[$country].' and set status_id: (70) Approved', $_SERVER["REMOTE_ADDR"]);
-				$this->notify_data_approved_by_da($_POST["post_id"]);
+				$this->notify_email_callback($_POST["post_id"],'5');
 
 			}
 			if($_POST["status"] == 'rejected-by-da') {
@@ -1789,7 +1847,8 @@ class Defra_Data_Entry_Public {
 
 				// create audit
 				$audit->defra_audit_log($_POST["user_id"], $post->post_type == 'appliances' ? 'appliance' : 'fuel' . '_country', $_POST["post_id"], $post->post_type == 'appliances' ? 'Appliance' : 'Fuel' . ' rejected for '.$countries[$country].' and set status_id: (80) Rejected', $_SERVER["REMOTE_ADDR"]);
-				$this->notify_data_rejected_by_da($_POST["post_id"]);
+				$this->notify_email_callback($_POST["post_id"],'4');
+
 
 			}
 			if($_POST["status"] == 'cancel') {
@@ -1823,7 +1882,7 @@ class Defra_Data_Entry_Public {
 
 				// create audit
 				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Revoked for '.$countries[$country].' and set status_id: (20) Revoked', $_SERVER["REMOTE_ADDR"]);
-				//$this->notify_data_rejected_by_da($_POST["post_id"]); // @TODO
+				$this->notify_email_callback($_POST["post_id"],'6');
 
 			}
 			if($_POST["status"] == 'approve-revocation') { // approved revoke by reviewer
@@ -1893,7 +1952,7 @@ class Defra_Data_Entry_Public {
 				
 				// create audit
 				$audit->defra_audit_log($_POST["user_id"], 'appliance_country', $_POST["post_id"], 'Revoked for '.$countries[$country].' and set status_id: (300) approved revoke by approver', $_SERVER["REMOTE_ADDR"]);
-				//$this->notify_data_rejected_by_da($_POST["post_id"]); // @TODO
+				$this->notify_email_callback($_POST["post_id"],'7');
 				
 			}
 
@@ -3082,6 +3141,8 @@ class Defra_Data_Entry_Public {
 	 * @return void
 	 */
 	public function statutory_instrument_assignment( $post_id, $country, $type = null ) {
+		//if($post_id == '50928') {
+
 		$count = $type == 'appliance' ? get_post_meta( $post_id, 'exempt-in_country_and_statutory_instrument_'.$country.'_si', true ) : get_post_meta( $post_id, 'authorised_country_and_statutory_instrument_'.$country.'_si', true );
 		$statutory_instruments = array();
 		for ($i=0; $i < $count; $i++) { 
@@ -3105,6 +3166,8 @@ class Defra_Data_Entry_Public {
 
 			
 		}
+		//}
+
 		return $statutory_instruments;
 	}
 

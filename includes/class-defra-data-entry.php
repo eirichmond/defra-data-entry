@@ -253,7 +253,8 @@ class Defra_Data_Entry {
 		$this->loader->add_filter( 'login_redirect', $plugin_public, 'defra_login_redirect', 10, 3 );
 		
 		$this->loader->add_filter( 'wp_nav_menu_objects', $plugin_public, 'defra_wp_nav_menu_objects', 10, 2 );
-
+		
+		$this->loader->add_action( 'notify_email', $plugin_public, 'notify_email_callback', 10, 2 );
 
 		/**
 		 * cURL form tests

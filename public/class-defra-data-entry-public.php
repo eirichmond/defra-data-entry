@@ -2719,7 +2719,7 @@ class Defra_Data_Entry_Public {
 		$appliance_data_details['output'] = $appliance_meta["output_unit_output_unit_id"] == '3' ? 'n/a' : $appliance_meta["output_unit_output_value"] . $this->output_units($appliance_meta["output_unit_output_unit_id"]);
 		$appliance_data_details['fuel_types'] = $this->get_fuel_type($post_id);
 		$appliance_data_details['appliance_type'] = $this->get_appliance_type($post_id);
-		$appliance_data_details['manufacturer'] = $this->manufacturer_composite_address($appliance_meta["manufacturer"]);
+		$appliance_data_details['manufacturer'] = $this->manufacturer_composite_address($appliance_meta["manufacturer_id"]);
 		$appliance_data_details['instructions_instruction_manual_title'] = $appliance_meta["instructions_instruction_manual_title"] ? $appliance_meta["instructions_instruction_manual_title"] : 'See conditions if applicable';
 		$appliance_data_details['instructions_instruction_manual_date'] = $appliance_meta["instructions_instruction_manual_date"] ? $appliance_meta["instructions_instruction_manual_date"] : 'See conditions if applicable';
 		$appliance_data_details['instructions_instruction_manual_reference'] = $appliance_meta["instructions_instruction_manual_reference"] ? $appliance_meta["instructions_instruction_manual_reference"] : 'See conditions if applicable';

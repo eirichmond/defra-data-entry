@@ -2,10 +2,32 @@
     <td style="width:5%"><?php echo get_post_meta(get_the_ID(), 'appliance_id', true ); ?></td>
     <td style="width:20%"><?php the_title(); ?></td>
     <td style="width:30%">
+
+    <?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_revoke_status_id', true) == '400') { ?>
+        <strong>England:</strong> No
+    <?php } else { ?>
         <strong>England:</strong> <?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_status', true))); ?><br>
+    <?php }  ?>
+
+    <?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_revoke_status_id', true) == '400') { ?>
+        <strong>Wales:</strong> No
+    <?php } else { ?>
         <strong>Wales:</strong> <?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_status', true))); ?><br>
+    <?php } ?>
+
+    <?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_revoke_status_id', true) == '400') { ?>
+        <strong>Scotland:</strong> No
+    <?php } else { ?>
         <strong>Scotland:</strong> <?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_status', true))); ?><br>
+    <?php } ?>
+
+    <?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_revoke_status_id', true) == '400') { ?>
+        <strong>N. Ireland:</strong> No
+    <?php } else { ?>
         <strong>N. Ireland:</strong> <?php echo esc_html($class->si_status(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_status', true))); ?>
+    <?php } ?>
+
+
     </td>
     <td style="width:30%">
         <?php if(get_post_meta(get_the_ID(), 'entry_user_id', true )) { ?>

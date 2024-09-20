@@ -49,7 +49,7 @@ function defra_data_by_appliance_id($data_array) {
     foreach($appliances as $k => $appliance) {
         $meta_keys = get_post_meta($appliance);
         foreach ($meta_keys as $key => $value) {
-            if (strpos($key, '_revoke_status_id') !== false) { // 'partial_key' is the part of the key you're looking for
+            if (strpos($key, '_revoke_status_id') !== false && $value == '400' ) { // 'partial_key' is the part of the key you're looking for
                 unset($appliances[$k]);
             }
         }

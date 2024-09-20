@@ -3125,7 +3125,7 @@ class Defra_Data_Entry_Public {
 
 				include plugin_dir_path( __FILE__ ) . 'partials/template-part/status-information.php';
 
-			} else if( !empty($approver_id) && $approver_id == $user->ID || $revoked ) {
+			} else if( !empty($approver_id) && $approver_id == $user->ID && $status != '600' || $revoked ) {
 
 				include plugin_dir_path( __FILE__ ) . 'partials/template-part/approver-approve-reject.php';
 

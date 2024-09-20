@@ -148,7 +148,7 @@
         <?php if ( array_intersect( $data_entry_review_users, $user->roles ) ) { ?>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-secondary-subtle">
+                    <div class="card-header bg-primary text-white">
                         Draft
                     </div>
                     <div class="card-body">
@@ -158,7 +158,7 @@
             </div>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-secondary-subtle">
+                    <div class="card-header bg-info text-white">
                         Awaiting Review
                     </div>
                     <div class="card-body">
@@ -178,7 +178,7 @@
             </div>
             <div class="col">
                 <div class="card">
-                    <div class="card-header bg-secondary-subtle">
+                    <div class="card-header bg-danger text-white">
                         Reviewer Rejected
                     </div>
                     <div class="card-body">

@@ -76,7 +76,7 @@ get_header();
 			<div class="mb-3">
 				<label for="permitted_fuels" class="form-label">Permitted Fuels <small>(other than authorised fuels)</small></label>
 				
-				<select class="form-select js-multiple" id="permitted_fuel_id" name="permitted_fuel_id[]">
+				<select class="form-select js-multiple-fuel" id="permitted_fuel_id" name="permitted_fuel_id[]">
 
 					<?php foreach($permitted_fuels as $k => $v) {
 						$key = find_set_key( $set_permitted_fuels, $k, 'slug' ); ?>

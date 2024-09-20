@@ -148,7 +148,7 @@ get_header();
 			</div>
 
 			<div class="col">
-				<?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_revoke_status_id', true) == '400') { ?>
+				<?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_revoke_status_id', true) == '400' || get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_is_published', true) == '0') { ?>
 				No
 				<?php } else { ?>
 				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_england_si_0_si_id', true))); ?></span>
@@ -175,7 +175,7 @@ get_header();
 			</div>
 
 			<div class="col">
-				<?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_revoke_status_id', true) == '400') { ?>
+				<?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_revoke_status_id', true) == '400' || get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_is_published', true) == '0') { ?>
 				No
 				<?php } else { ?>
 				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_wales_si_0_si_id', true))); ?></span>
@@ -202,7 +202,7 @@ get_header();
 
 			<div class="col">
 				<span class="flex-grow">
-					<?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_revoke_status_id', true) == '400') { ?>
+					<?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_revoke_status_id', true) == '400' || get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_is_published', true) == '0') { ?>
 					No
 					<?php } else { ?>
 					<?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_scotland_si_0_si_id', true))); ?>
@@ -231,7 +231,7 @@ get_header();
 			</div>
 
 			<div class="col">
-				<?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_revoke_status_id', true) == '400') { ?>
+				<?php if (get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_revoke_status_id', true) == '400' || get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_is_published', true) == '0') { ?>
 				No
 				<?php } else { ?>
 				<span class="flex-grow"><?php echo esc_html($class->get_post_title_by_id(get_post_meta(get_the_ID(), 'exempt-in_country_and_statutory_instrument_n_ireland_si_0_si_id', true))); ?></span>

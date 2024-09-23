@@ -111,26 +111,20 @@
 			$(".js-multiple").select2({
 				minimumInputLength: 2,
 				multiple: true,
-				placeholder: {
-					id: "0",
-					text: "Select a footnote",
-				},
+				allowClear: true,
+				placeholder: "Select a footnote",
 			});
 			$(".js-multiple-fuel").select2({
 				minimumInputLength: 2,
 				multiple: true,
-				placeholder: {
-					id: "0",
-					text: "Select a fuel",
-				},
+				allowClear: true,
+				placeholder: "Select a fuel",
 			});
 			$(".js-multiple-si").select2({
 				minimumInputLength: 2,
 				multiple: true,
-				placeholder: {
-					id: "0",
-					text: "Select a Statutory Instrument",
-				},
+				allowClear: true,
+				placeholder: "Select a Statutory Instrument",
 			});
 		});
 	});

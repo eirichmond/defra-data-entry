@@ -39,364 +39,368 @@ get_header();
 <h1 class="entry-title"><?php the_title(); ?></h1>
 
 <?php if(isset($_GET['post']) && 'success' == $_GET['post']) { ?>
-	<div class="alert alert-success" role="alert">
-		New Appliance Successfully Saved!
-	</div>
+<div class="alert alert-success" role="alert">
+	New Appliance Successfully Saved!
+</div>
 <?php } else { ?>
 
 
-	<form class="w-full needs-validation" action="/data-entry/form-process/" method="post" novalidate>
+<form class="w-full needs-validation" action="/data-entry/form-process/" method="post" novalidate>
 
 
-		<!-- to insert duplication functionality -->
+	<!-- to insert duplication functionality -->
 
 
-		<fieldset>
-			<legend>Manufacturer</legend>
+	<fieldset>
+		<legend>Manufacturer</legend>
 
-			<div class="mb-3">
-				<select class="form-select js-example-basic-single" id="manufacturer_id" name="manufacturer_id">
-					<option selected value="">Select a Manufacturer</option>
-					<?php foreach($list_manufacturers as $k => $v) { ?>
-						<option value="<?php echo esc_attr( $k ); ?>"<?php echo esc_html( !empty($manufacturer_id) && $manufacturer_id ==  $k ? ' selected' : '' ); ?>><?php echo esc_attr( $v['manufacturer_name'] ); ?></option>
-					<?php } ?>
-				</select>
-			</div>
-		</fieldset>
+		<div class="mb-3">
+			<select class="form-select js-example-basic-single" id="manufacturer_id" name="manufacturer_id">
+				<option selected value="">Select a Manufacturer</option>
+				<?php foreach($list_manufacturers as $k => $v) { ?>
+				<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_html( !empty($manufacturer_id) && $manufacturer_id ==  $k ? ' selected' : '' ); ?>><?php echo esc_attr( $v['manufacturer_name'] ); ?></option>
+				<?php } ?>
+			</select>
+		</div>
+	</fieldset>
 
-		<fieldset>
-			<legend>Appliance Name</legend>
-			<div class="mb-3">
-				<textarea class="form-control" id="appliance_name" rows="3" name="appliance_name" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_the_title( $_GET['id'] ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_the_title( $_GET['id'] ) : '' ); ?></textarea>
-			</div>
-		</fieldset>
+	<fieldset>
+		<legend>Appliance Name</legend>
+		<div class="mb-3">
+			<textarea class="form-control" id="appliance_name" rows="3" name="appliance_name" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_the_title( $_GET['id'] ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_the_title( $_GET['id'] ) : '' ); ?></textarea>
+		</div>
+	</fieldset>
 
-		<fieldset>
-			<legend>Appliance Fuels</legend>
-			<div class="mb-3">
-				<label for="permitted_fuels" class="form-label">Permitted Fuels <small>(other than authorised fuels)</small></label>
-				
-				<select class="form-select js-multiple-fuel" id="permitted_fuel_id" name="permitted_fuel_id[]">
+	<fieldset>
+		<legend>Appliance Fuels</legend>
+		<div class="mb-3">
+			<label for="permitted_fuels" class="form-label">Permitted Fuels <small>(other than authorised fuels)</small></label>
 
-					<?php foreach($permitted_fuels as $k => $v) {
-						$key = find_set_key( $set_permitted_fuels, $k, 'slug' ); ?>
-						<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_attr( false != $key ? 'selected' : '' ); ?>><?php echo esc_attr( $v["permitted_fuel_name"] ); ?></option>
-					<?php } ?>
-				</select>
-			</div>
-		</fieldset>
+			<select class="form-select js-multiple-fuel" id="permitted_fuel_id" name="permitted_fuel_id[]">
 
-		<fieldset>
-			<legend>Categories</legend>
-			<div class="mb-3">
-				<p>Appliance categorisation is for web search functionality only</p>
+				<option></option>
 
-				<div class="row">
-					<div class="col-3">
+				<?php foreach($permitted_fuels as $k => $v) {
+						$key = find_set_key( $set_permitted_fuels, $k, 'slug' );
+						?>
 
-						<label for="fuel_types" class="form-label">Fuel</label>
-						<select class="form-select" id="fuel_types" name="fuel_types">
-							<?php foreach($appliance_fuel_terms as $k => $v) { ?>
-								<option value="<?php echo esc_attr( $v->slug ); ?>" <?php echo esc_attr( !empty($set_fuel_types[0]) && $v->term_id == $set_fuel_types[$k]->term_id ? 'selected' : ''); ?>> <?php echo esc_attr( $v->name ); ?> </option>
-							<?php } ?>
-						</select>
+				<option value="<?php echo esc_attr( $k ); ?>"><?php echo esc_attr( $v["permitted_fuel_name"] ); ?></option>
+				<?php } ?>
+			</select>
+		</div>
+	</fieldset>
 
-					</div>
-					<div class="col-3">
+	<fieldset>
+		<legend>Categories</legend>
+		<div class="mb-3">
+			<p>Appliance categorisation is for web search functionality only</p>
 
-						<label for="type_terms" class="form-label">Appliance</label>
-						<select class="form-select" id="type_terms" name="type_terms">
-							<?php foreach($appliance_type_terms as $k => $v) { ?>
-								<option value="<?php echo esc_attr( $v->slug ); ?>"><?php echo esc_attr( $v->name ); ?></option>
-							<?php } ?>
-						</select>
+			<div class="row">
+				<div class="col-3">
 
-					</div>
+					<label for="fuel_types" class="form-label">Fuel</label>
+					<select class="form-select" id="fuel_types" name="fuel_types">
+						<?php foreach($appliance_fuel_terms as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->slug ); ?>" <?php echo esc_attr( !empty($set_fuel_types[0]) && $v->term_id == $set_fuel_types[$k]->term_id ? 'selected' : ''); ?>> <?php echo esc_attr( $v->name ); ?> </option>
+						<?php } ?>
+					</select>
+
 				</div>
+				<div class="col-3">
 
-			</div>
-		</fieldset>
+					<label for="type_terms" class="form-label">Appliance</label>
+					<select class="form-select" id="type_terms" name="type_terms">
+						<?php foreach($appliance_type_terms as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->slug ); ?>"><?php echo esc_attr( $v->name ); ?></option>
+						<?php } ?>
+					</select>
 
-		<fieldset>
-			<legend>Appliance Output</legend>
-			<div class="mb-3">
-				<div class="row">
-					<div class="col-3">
-
-						<label for="output_unit_output_unit_id" class="form-label">Unit</label>
-						<select class="form-select" id="output_unit_output_unit_id" name="output_unit_output_unit_id">
-							<option selected value="">Please select</option>
-							<?php foreach($output_units as $k => $v) { ?>
-								<option value="<?php echo esc_attr( $k ); ?>"><?php echo esc_attr( $v ); ?></option>
-							<?php } ?>
-						</select>
-
-					</div>
-					<div class="col-3">
-
-						<label for="output_unit_output_value" class="form-label">Value</label>
-						<input type="text" class="form-control" id="output_unit_output_value" name="output_unit_output_value">
-
-					</div>
 				</div>
-
 			</div>
-		</fieldset>
 
-		<fieldset>
-			<legend>Instructions</legend>
-			<div class="mb-3">
-				<div class="row">
-					<div class="col-3">
+		</div>
+	</fieldset>
 
-						<label for="instructions_instruction_manual_date" class="form-label">Manual Date</label>
-						<input type="date" class="form-control" id="instructions_instruction_manual_date" name="instructions_instruction_manual_date">
-						
-					</div>
-					<div class="col-6">
-						
-						<label for="instructions_instruction_manual_title" class="form-label">Manual Title</label>
-						<input type="text" class="form-control" id="instructions_instruction_manual_title" name="instructions_instruction_manual_title">
+	<fieldset>
+		<legend>Appliance Output</legend>
+		<div class="mb-3">
+			<div class="row">
+				<div class="col-3">
 
-					</div>
-					<div class="col-3">
-						
-						<label for="instructions_instruction_manual_reference" class="form-label">Manual Reference</label>
-						<input type="text" class="form-control" id="instructions_instruction_manual_reference" name="instructions_instruction_manual_reference">
+					<label for="output_unit_output_unit_id" class="form-label">Unit</label>
+					<select class="form-select" id="output_unit_output_unit_id" name="output_unit_output_unit_id">
+						<option selected value="">Please select</option>
+						<?php foreach($output_units as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $k ); ?>"><?php echo esc_attr( $v ); ?></option>
+						<?php } ?>
+					</select>
 
-					</div>
 				</div>
+				<div class="col-3">
 
-			</div>
-		</fieldset>
+					<label for="output_unit_output_value" class="form-label">Value</label>
+					<input type="text" class="form-control" id="output_unit_output_value" name="output_unit_output_value">
 
-		<fieldset>
-			<legend>Servicing and Installation</legend>
-			<div class="mb-3">
-				<div class="row">
-					<div class="col-3">
-
-						<label for="servicing_and_installation_servicing_install_manual_date" class="form-label">Manual Date</label>
-						<input type="date" class="form-control" id="servicing_and_installation_servicing_install_manual_date" name="servicing_and_installation_servicing_install_manual_date">
-						
-					</div>
-					<div class="col-6">
-						
-						<label for="servicing_and_installation_servicing_install_manual_title" class="form-label">Manual Title</label>
-						<input type="text" class="form-control" id="servicing_and_installation_servicing_install_manual_title" name="servicing_and_installation_servicing_install_manual_title">
-
-					</div>
-					<div class="col-3">
-						
-						<label for="servicing_and_installation_servicing_install_manual_reference" class="form-label">Manual Reference</label>
-						<input type="text" class="form-control" id="servicing_and_installation_servicing_install_manual_reference" name="servicing_and_installation_servicing_install_manual_reference">
-
-					</div>
 				</div>
-
 			</div>
-		</fieldset>
 
-		<fieldset>
-			<legend>Additional Conditions</legend>
-			<div class="mb-3">
-				<div class="row">
-					<div class="col-3">
+		</div>
+	</fieldset>
 
-						<label for="additional_conditions_additional_condition_id" class="form-label">Condition</label>
-						<select class="form-select" id="additional_conditions_additional_condition_id" name="additional_conditions_additional_condition_id">
-							<option selected value="">Please select</option>
-							<?php foreach($additional_conditions as $k => $v) { ?>
-								<option value="<?php echo esc_attr( $k ); ?>"><?php echo esc_attr( $v ); ?></option>
-							<?php } ?>
-						</select>
+	<fieldset>
+		<legend>Instructions</legend>
+		<div class="mb-3">
+			<div class="row">
+				<div class="col-3">
 
-					</div>
-					<div class="col-9">
+					<label for="instructions_instruction_manual_date" class="form-label">Manual Date</label>
+					<input type="date" class="form-control" id="instructions_instruction_manual_date" name="instructions_instruction_manual_date">
 
-						<label for="additional_conditions_additional_condition_comment" class="form-label">Condition Comments</label>
-						<textarea class="form-control" id="additional_conditions_additional_condition_comment" name="additional_conditions_additional_condition_comment" rows="3"></textarea>
-
-					</div>
 				</div>
+				<div class="col-6">
 
-			</div>
-		</fieldset>
+					<label for="instructions_instruction_manual_title" class="form-label">Manual Title</label>
+					<input type="text" class="form-control" id="instructions_instruction_manual_title" name="instructions_instruction_manual_title">
 
-		<fieldset>
-			<legend>Appliance Additional Details</legend>
-			<div class="mb-3">
-
-				<div class="row">
-					<div class="col-4">
-
-						<label for="appliance_additional_details_application_number" class="form-label">Application Number</label>
-						<input type="text" class="form-control" id="appliance_additional_details_application_number" name="appliance_additional_details_application_number">
-						
-					</div>
-					<div class="col-8">
-						
-						<label for="appliance_additional_details_linked_applications" class="form-label">Linked Applications</label>
-						<input type="text" class="form-control" id="appliance_additional_details_linked_applications" name="appliance_additional_details_linked_applications">
-
-					</div>
 				</div>
+				<div class="col-3">
 
-				<div class="row">
-					<div class="col-12">
+					<label for="instructions_instruction_manual_reference" class="form-label">Manual Reference</label>
+					<input type="text" class="form-control" id="instructions_instruction_manual_reference" name="instructions_instruction_manual_reference">
 
-						<label for="appliance_additional_details_comments" class="form-label">Comments</label>
-						<textarea class="form-control" id="appliance_additional_details_comments" name="appliance_additional_details_comments" rows="3"></textarea>
-						
-					</div>
 				</div>
-
 			</div>
-		</fieldset>
 
-		<fieldset>
-			<legend>Exempt-In Country and Statutory Instrument</legend>
-			<div class="mb-3">
+		</div>
+	</fieldset>
 
-				<div class="row">
-					<div class="col-2">
+	<fieldset>
+		<legend>Servicing and Installation</legend>
+		<div class="mb-3">
+			<div class="row">
+				<div class="col-3">
 
-						<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_england_enabled" name="exempt-in_country_and_statutory_instrument_england_enabled" required>
-						<div class="invalid-feedback">
-							Please select at least one Exempt-In Country
-						</div>
-						<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_england_enabled">
-							England
-						</label>
+					<label for="servicing_and_installation_servicing_install_manual_date" class="form-label">Manual Date</label>
+					<input type="date" class="form-control" id="servicing_and_installation_servicing_install_manual_date" name="servicing_and_installation_servicing_install_manual_date">
 
-					</div>
-					<div class="col-8">
-
-						<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_england_si" name="exempt-in_country_and_statutory_instrument_england_si[]" multiple="multiple">
-							<option value="" disabled>Select</option>
-							<?php foreach($statutory_instrument_england as $k => $v) { ?>
-								<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
-							<?php } ?>
-						</select>
-
-					
-					</div>
 				</div>
+				<div class="col-6">
 
+					<label for="servicing_and_installation_servicing_install_manual_title" class="form-label">Manual Title</label>
+					<input type="text" class="form-control" id="servicing_and_installation_servicing_install_manual_title" name="servicing_and_installation_servicing_install_manual_title">
 
-			</div>
-			<div class="mb-3">
-
-				<div class="row">
-					<div class="col-2">
-
-						<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_wales_enabled" name="exempt-in_country_and_statutory_instrument_wales_enabled" required>
-						<div class="invalid-feedback">
-							Please select at least one Exempt-In Country
-						</div>
-
-						<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_wales_enabled">
-							Wales
-						</label>
-
-					</div>
-					<div class="col-8">
-
-						<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_wales_si" name="exempt-in_country_and_statutory_instrument_wales_si[]" multiple="multiple">
-							<option value="" disabled>Select</option>
-							<?php foreach($statutory_instrument_wales as $k => $v) { ?>
-								<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
-							<?php } ?>
-						</select>
-
-					
-					</div>
 				</div>
+				<div class="col-3">
 
+					<label for="servicing_and_installation_servicing_install_manual_reference" class="form-label">Manual Reference</label>
+					<input type="text" class="form-control" id="servicing_and_installation_servicing_install_manual_reference" name="servicing_and_installation_servicing_install_manual_reference">
 
-			</div>
-			<div class="mb-3">
-
-				<div class="row">
-					<div class="col-2">
-
-						<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_scotland_enabled" name="exempt-in_country_and_statutory_instrument_scotland_enabled" required>
-						<div class="invalid-feedback">
-							Please select at least one Exempt-In Country
-						</div>
-
-						<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_scotland_enabled">
-							Scotland
-						</label>
-
-					</div>
-					<div class="col-8">
-
-						<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_scotland_si" name="exempt-in_country_and_statutory_instrument_scotland_si[]" multiple="multiple">
-							<option value="" disabled>Select</option>
-							<?php foreach($statutory_instrument_scotland as $k => $v) { ?>
-								<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
-							<?php } ?>
-						</select>
-
-					
-					</div>
 				</div>
-
 			</div>
-			<div class="mb-3">
 
-				<div class="row">
-					<div class="col-2">
+		</div>
+	</fieldset>
 
-						<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_n_ireland_enabled" name="exempt-in_country_and_statutory_instrument_n_ireland_enabled" required>
-						<div class="invalid-feedback">
-							Please select at least one Exempt-In Country
-						</div>
+	<fieldset>
+		<legend>Additional Conditions</legend>
+		<div class="mb-3">
+			<div class="row">
+				<div class="col-3">
 
-						<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_n_ireland_enabled">
-							N. Ireland
-						</label>
+					<label for="additional_conditions_additional_condition_id" class="form-label">Condition</label>
+					<select class="form-select" id="additional_conditions_additional_condition_id" name="additional_conditions_additional_condition_id">
+						<option selected value="">Please select</option>
+						<?php foreach($additional_conditions as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $k ); ?>"><?php echo esc_attr( $v ); ?></option>
+						<?php } ?>
+					</select>
 
-					</div>
-					<div class="col-8">
-
-						<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_n_ireland_si" name="exempt-in_country_and_statutory_instrument_n_ireland_si[]" multiple="multiple">
-							<option value="" disabled>Select</option>	
-							<?php foreach($statutory_instrument_nireland as $k => $v) { ?>
-								<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
-							<?php } ?>
-						</select>
-
-					
-					</div>
 				</div>
+				<div class="col-9">
 
+					<label for="additional_conditions_additional_condition_comment" class="form-label">Condition Comments</label>
+					<textarea class="form-control" id="additional_conditions_additional_condition_comment" name="additional_conditions_additional_condition_comment" rows="3"></textarea>
 
+				</div>
 			</div>
-		</fieldset>
 
-		<fieldset>
-			<legend>Comments to DEFRA / Devolved Administrations</legend>
-			<div class="mb-3">
-				<textarea class="form-control" id="??" rows="3" name="comment_to_da"></textarea>
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>Appliance Additional Details</legend>
+		<div class="mb-3">
+
+			<div class="row">
+				<div class="col-4">
+
+					<label for="appliance_additional_details_application_number" class="form-label">Application Number</label>
+					<input type="text" class="form-control" id="appliance_additional_details_application_number" name="appliance_additional_details_application_number">
+
+				</div>
+				<div class="col-8">
+
+					<label for="appliance_additional_details_linked_applications" class="form-label">Linked Applications</label>
+					<input type="text" class="form-control" id="appliance_additional_details_linked_applications" name="appliance_additional_details_linked_applications">
+
+				</div>
 			</div>
-		</fieldset>
 
-		<fieldset>
-			<legend>User Comments</legend>
-			<div class="mb-3">
-				<textarea class="form-control" id="??" rows="3" name="user_comment"></textarea>
+			<div class="row">
+				<div class="col-12">
+
+					<label for="appliance_additional_details_comments" class="form-label">Comments</label>
+					<textarea class="form-control" id="appliance_additional_details_comments" name="appliance_additional_details_comments" rows="3"></textarea>
+
+				</div>
 			</div>
-		</fieldset>
 
-		<input type="hidden" name="process" value="create-appliance">
-		<?php wp_nonce_field( 'create_nonce', 'create_nonce_field' ); ?>
+		</div>
+	</fieldset>
 
-		<button type="submit" class="btn btn-primary mt-3 save-draft" name="submit-type" value="save-draft">Save as draft</button>
-		<button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and Send for Review</button>
-		
-	</form>
+	<fieldset>
+		<legend>Exempt-In Country and Statutory Instrument</legend>
+		<div class="mb-3">
+
+			<div class="row">
+				<div class="col-2">
+
+					<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_england_enabled" name="exempt-in_country_and_statutory_instrument_england_enabled" required>
+					<div class="invalid-feedback">
+						Please select at least one Exempt-In Country
+					</div>
+					<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_england_enabled">
+						England
+					</label>
+
+				</div>
+				<div class="col-8">
+
+					<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_england_si" name="exempt-in_country_and_statutory_instrument_england_si[]" multiple="multiple">
+						<option value="" disabled>Select</option>
+						<?php foreach($statutory_instrument_england as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
+						<?php } ?>
+					</select>
+
+
+				</div>
+			</div>
+
+
+		</div>
+		<div class="mb-3">
+
+			<div class="row">
+				<div class="col-2">
+
+					<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_wales_enabled" name="exempt-in_country_and_statutory_instrument_wales_enabled" required>
+					<div class="invalid-feedback">
+						Please select at least one Exempt-In Country
+					</div>
+
+					<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_wales_enabled">
+						Wales
+					</label>
+
+				</div>
+				<div class="col-8">
+
+					<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_wales_si" name="exempt-in_country_and_statutory_instrument_wales_si[]" multiple="multiple">
+						<option value="" disabled>Select</option>
+						<?php foreach($statutory_instrument_wales as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
+						<?php } ?>
+					</select>
+
+
+				</div>
+			</div>
+
+
+		</div>
+		<div class="mb-3">
+
+			<div class="row">
+				<div class="col-2">
+
+					<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_scotland_enabled" name="exempt-in_country_and_statutory_instrument_scotland_enabled" required>
+					<div class="invalid-feedback">
+						Please select at least one Exempt-In Country
+					</div>
+
+					<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_scotland_enabled">
+						Scotland
+					</label>
+
+				</div>
+				<div class="col-8">
+
+					<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_scotland_si" name="exempt-in_country_and_statutory_instrument_scotland_si[]" multiple="multiple">
+						<option value="" disabled>Select</option>
+						<?php foreach($statutory_instrument_scotland as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
+						<?php } ?>
+					</select>
+
+
+				</div>
+			</div>
+
+		</div>
+		<div class="mb-3">
+
+			<div class="row">
+				<div class="col-2">
+
+					<input class="form-check-input exempt-in" type="checkbox" id="exempt-in_country_and_statutory_instrument_n_ireland_enabled" name="exempt-in_country_and_statutory_instrument_n_ireland_enabled" required>
+					<div class="invalid-feedback">
+						Please select at least one Exempt-In Country
+					</div>
+
+					<label class="form-check-label" for="exempt-in_country_and_statutory_instrument_n_ireland_enabled">
+						N. Ireland
+					</label>
+
+				</div>
+				<div class="col-8">
+
+					<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_n_ireland_si" name="exempt-in_country_and_statutory_instrument_n_ireland_si[]" multiple="multiple">
+						<option value="" disabled>Select</option>
+						<?php foreach($statutory_instrument_nireland as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
+						<?php } ?>
+					</select>
+
+
+				</div>
+			</div>
+
+
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>Comments to DEFRA / Devolved Administrations</legend>
+		<div class="mb-3">
+			<textarea class="form-control" id="??" rows="3" name="comment_to_da"></textarea>
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>User Comments</legend>
+		<div class="mb-3">
+			<textarea class="form-control" id="??" rows="3" name="user_comment"></textarea>
+		</div>
+	</fieldset>
+
+	<input type="hidden" name="process" value="create-appliance">
+	<?php wp_nonce_field( 'create_nonce', 'create_nonce_field' ); ?>
+
+	<button type="submit" class="btn btn-primary mt-3 save-draft" name="submit-type" value="save-draft">Save as draft</button>
+	<button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and Send for Review</button>
+
+</form>
 
 <?php } ?>
 

@@ -40,16 +40,16 @@ get_header();
 <h1 class="entry-title"><?php the_title(); ?></h1>
 
 <?php if(isset($_GET['post']) && 'success' == $_GET['post']) { ?>
-	<div class="alert alert-success" role="alert">
-		New Appliance Successfully Saved!
-	</div>
+<div class="alert alert-success" role="alert">
+	New Appliance Successfully Saved!
+</div>
 <?php } ?>
 
 
 <form class="w-full" action="/data-entry/form-process/" method="post">
 
 
-<!-- to insert duplication functionality -->
+	<!-- to insert duplication functionality -->
 
 
 	<fieldset>
@@ -59,11 +59,19 @@ get_header();
 			<select class="form-select js-example-basic-single" id="manufacturer_id" name="manufacturer_id">
 				<option selected value="">Select a Manufacturer</option>
 				<?php foreach($list_manufacturers as $k => $v) { ?>
-					<option value="<?php echo esc_attr( $k ); ?>"<?php echo esc_html( !empty($manufacturer_id) && $manufacturer_id ==  $k ? ' selected' : '' ); ?>><?php echo esc_attr( $v['manufacturer_name'] ); ?></option>
+				<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_html( !empty($manufacturer_id) && $manufacturer_id ==  $k ? ' selected' : '' ); ?>><?php echo esc_attr( $v['manufacturer_name'] ); ?></option>
 				<?php } ?>
 			</select>
 		</div>
 	</fieldset>
+
+	<fieldset>
+		<legend>Appliance ID</legend>
+		<div class="mb-3">
+			<input type="text" class="form-control" id="appliance_id" name="appliance_id" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'appliance_id', true ) ? get_post_meta( $_GET['p'], 'appliance_id', true ) : '' ); ?>">
+		</div>
+	</fieldset>
+
 
 	<fieldset>
 		<legend>Appliance Name</legend>
@@ -80,7 +88,7 @@ get_header();
 				<?php foreach($permitted_fuels as $k => $v) {
 					$key = find_set_key( $set_permitted_fuels, $k, 'slug' ); ?>
 
-					<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_attr( false != $key ? 'selected' : '' ); ?>><?php echo esc_attr( $v["permitted_fuel_name"] ); ?></option>
+				<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_attr( false != $key ? 'selected' : '' ); ?>><?php echo esc_attr( $v["permitted_fuel_name"] ); ?></option>
 				<?php } ?>
 			</select>
 		</div>
@@ -98,7 +106,7 @@ get_header();
 					<select class="form-select" id="fuel_types" name="fuel_types">
 						<?php foreach($appliance_fuel_terms as $k => $v) {
 							$key = find_set_key( $set_fuel_types, $v->slug, 'slug' ); ?>
-							<option value="<?php echo esc_attr( $v->slug ); ?>" <?php echo esc_attr( false != $key ? 'selected' : '' ); ?>> <?php echo esc_attr( $v->name ); ?> </option>
+						<option value="<?php echo esc_attr( $v->slug ); ?>" <?php echo esc_attr( false != $key ? 'selected' : '' ); ?>> <?php echo esc_attr( $v->name ); ?> </option>
 						<?php } ?>
 					</select>
 
@@ -109,7 +117,7 @@ get_header();
 					<select class="form-select" id="type_terms" name="type_terms">
 						<?php foreach($appliance_type_terms as $k => $v) { 
 							$key = find_set_key( $set_appliance_types, $v->slug, 'slug' ); ?>
-							<option value="<?php echo esc_attr( $v->slug ); ?>" <?php echo esc_attr( false != $key ? 'selected' : '' ); ?>><?php echo esc_attr( $v->name ); ?></option>
+						<option value="<?php echo esc_attr( $v->slug ); ?>" <?php echo esc_attr( false != $key ? 'selected' : '' ); ?>><?php echo esc_attr( $v->name ); ?></option>
 						<?php } ?>
 					</select>
 
@@ -131,7 +139,7 @@ get_header();
 						<?php foreach($output_units as $k => $v) {
 							$output_unit_output_unit_id = get_post_meta( $_GET['p'], 'output_unit_output_unit_id', true );
 							?>
-							<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_attr( $output_unit_output_unit_id == $k ? 'selected' : '' ); ?>><?php echo esc_attr( $v ); ?></option>
+						<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_attr( $output_unit_output_unit_id == $k ? 'selected' : '' ); ?>><?php echo esc_attr( $v ); ?></option>
 						<?php } ?>
 					</select>
 
@@ -155,16 +163,16 @@ get_header();
 
 					<label for="instructions_instruction_manual_date" class="form-label">Manual Date</label>
 					<input type="date" class="form-control" id="instructions_instruction_manual_date" name="instructions_instruction_manual_date" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'instructions_instruction_manual_date', true ) ? get_post_meta( $_GET['p'], 'instructions_instruction_manual_date', true ) : '' ); ?>">
-					
+
 				</div>
 				<div class="col-6">
-					
+
 					<label for="instructions_instruction_manual_title" class="form-label">Manual Title</label>
 					<input type="text" class="form-control" id="instructions_instruction_manual_title" name="instructions_instruction_manual_title" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'instructions_instruction_manual_title', true ) ? get_post_meta( $_GET['p'], 'instructions_instruction_manual_title', true ) : '' ); ?>">
 
 				</div>
 				<div class="col-3">
-					
+
 					<label for="instructions_instruction_manual_reference" class="form-label">Manual Reference</label>
 					<input type="text" class="form-control" id="instructions_instruction_manual_reference" name="instructions_instruction_manual_reference" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'instructions_instruction_manual_reference', true ) ? get_post_meta( $_GET['p'], 'instructions_instruction_manual_reference', true ) : '' ); ?>">
 
@@ -182,16 +190,16 @@ get_header();
 
 					<label for="servicing_and_installation_servicing_install_manual_date" class="form-label">Manual Date</label>
 					<input type="date" class="form-control" id="servicing_and_installation_servicing_install_manual_date" name="servicing_and_installation_servicing_install_manual_date" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'servicing_and_installation_servicing_install_manual_date', true ) ? get_post_meta( $_GET['p'], 'servicing_and_installation_servicing_install_manual_date', true ) : '' ); ?>">
-					
+
 				</div>
 				<div class="col-6">
-					
+
 					<label for="servicing_and_installation_servicing_install_manual_title" class="form-label">Manual Title</label>
 					<input type="text" class="form-control" id="servicing_and_installation_servicing_install_manual_title" name="servicing_and_installation_servicing_install_manual_title" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'servicing_and_installation_servicing_install_manual_title', true ) ? get_post_meta( $_GET['p'], 'servicing_and_installation_servicing_install_manual_title', true ) : '' ); ?>">
 
 				</div>
 				<div class="col-3">
-					
+
 					<label for="servicing_and_installation_servicing_install_manual_reference" class="form-label">Manual Reference</label>
 					<input type="text" class="form-control" id="servicing_and_installation_servicing_install_manual_reference" name="servicing_and_installation_servicing_install_manual_reference" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'servicing_and_installation_servicing_install_manual_reference', true ) ? get_post_meta( $_GET['p'], 'servicing_and_installation_servicing_install_manual_reference', true ) : '' ); ?>">
 
@@ -213,7 +221,7 @@ get_header();
 						<?php foreach($additional_conditions as $k => $v) {
 							$additional_conditions_additional_condition_id = get_post_meta( $_GET['p'], 'additional_conditions_additional_condition_id', true );
 							?>
-							<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_attr( $additional_conditions_additional_condition_id == $k ? 'selected' : '' ); ?>><?php echo esc_attr( $v ); ?></option>
+						<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_attr( $additional_conditions_additional_condition_id == $k ? 'selected' : '' ); ?>><?php echo esc_attr( $v ); ?></option>
 						<?php } ?>
 					</select>
 
@@ -238,10 +246,10 @@ get_header();
 
 					<label for="appliance_additional_details_application_number" class="form-label">Application Number</label>
 					<input type="text" class="form-control" id="appliance_additional_details_application_number" name="appliance_additional_details_application_number" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'appliance_additional_details_application_number', true ) ? get_post_meta( $_GET['p'], 'appliance_additional_details_application_number', true ) : '' ); ?>">
-					
+
 				</div>
 				<div class="col-8">
-					
+
 					<label for="appliance_additional_details_linked_applications" class="form-label">Linked Applications</label>
 					<input type="text" class="form-control" id="appliance_additional_details_linked_applications" name="appliance_additional_details_linked_applications" value="<?php echo esc_attr( get_post_meta( $_GET['p'], 'appliance_additional_details_linked_applications', true ) ? get_post_meta( $_GET['p'], 'appliance_additional_details_linked_applications', true ) : '' ); ?>">
 
@@ -253,7 +261,7 @@ get_header();
 
 					<label for="appliance_additional_details_comments" class="form-label">Comments</label>
 					<textarea class="form-control" id="appliance_additional_details_comments" name="appliance_additional_details_comments" rows="3"><?php echo esc_attr( get_post_meta( $_GET['p'], 'appliance_additional_details_comments', true ) ); ?></textarea>
-					
+
 				</div>
 			</div>
 
@@ -280,11 +288,11 @@ get_header();
 						<?php foreach($statutory_instrument_england as $k => $v) { 
 
 							$sis = exempt_statutory_instrument( $_GET['p'], 'england' ); ?>
-							<option value="<?php echo esc_attr( $v->ID ); ?>" <?php echo esc_attr( in_array( $v->ID, $sis ) ? 'selected' : '' ); ?>><?php echo esc_attr( $v->post_title ); ?></option>
+						<option value="<?php echo esc_attr( $v->ID ); ?>" <?php echo esc_attr( in_array( $v->ID, $sis ) ? 'selected' : '' ); ?>><?php echo esc_attr( $v->post_title ); ?></option>
 						<?php } ?>
 					</select>
 
-				
+
 				</div>
 			</div>
 
@@ -307,11 +315,11 @@ get_header();
 						<option value="" disabled>Select</option>
 						<?php foreach($statutory_instrument_england as $k => $v) {
 							$sis = exempt_statutory_instrument( $_GET['p'], 'wales' ); ?>
-							<option value="<?php echo esc_attr( $v->ID ); ?>" <?php echo esc_attr( in_array( $v->ID, $sis ) ? 'selected' : '' ); ?>><?php echo esc_attr( $v->post_title ); ?></option>
+						<option value="<?php echo esc_attr( $v->ID ); ?>" <?php echo esc_attr( in_array( $v->ID, $sis ) ? 'selected' : '' ); ?>><?php echo esc_attr( $v->post_title ); ?></option>
 						<?php } ?>
 					</select>
 
-				
+
 				</div>
 			</div>
 
@@ -334,11 +342,11 @@ get_header();
 						<option value="" disabled>Select</option>
 						<?php foreach($statutory_instrument_scotland as $k => $v) {
 							$sis = exempt_statutory_instrument( $_GET['p'], 'scotland' ); ?>
-							<option value="<?php echo esc_attr( $v->ID ); ?>" <?php echo esc_attr( in_array( $v->ID, $sis ) ? 'selected' : '' ); ?>><?php echo esc_attr( $v->post_title ); ?></option>
+						<option value="<?php echo esc_attr( $v->ID ); ?>" <?php echo esc_attr( in_array( $v->ID, $sis ) ? 'selected' : '' ); ?>><?php echo esc_attr( $v->post_title ); ?></option>
 						<?php } ?>
 					</select>
 
-				
+
 				</div>
 			</div>
 
@@ -357,14 +365,14 @@ get_header();
 				<div class="col-8">
 
 					<select class="form-select js-multiple" id="exempt-in_country_and_statutory_instrument_n_ireland_si" name="exempt-in_country_and_statutory_instrument_n_ireland_si[]" multiple="multiple">
-						<option value="" disabled>Select</option>	
+						<option value="" disabled>Select</option>
 						<?php foreach($statutory_instrument_nireland as $k => $v) {
 							$sis = exempt_statutory_instrument( $_GET['p'], 'n_ireland' ); ?>
-							<option value="<?php echo esc_attr( $v->ID ); ?>" <?php echo esc_attr( in_array( $v->ID, $sis ) ? 'selected' : '' ); ?>><?php echo esc_attr( $v->post_title ); ?></option>
+						<option value="<?php echo esc_attr( $v->ID ); ?>" <?php echo esc_attr( in_array( $v->ID, $sis ) ? 'selected' : '' ); ?>><?php echo esc_attr( $v->post_title ); ?></option>
 						<?php } ?>
 					</select>
 
-				
+
 				</div>
 			</div>
 
@@ -392,7 +400,7 @@ get_header();
 
 	<button type="submit" class="btn btn-primary mt-3 save-draft" name="submit-type" value="save-draft">Save as draft</button>
 	<button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and Send for Review</button>
-	
+
 </form>
 
 

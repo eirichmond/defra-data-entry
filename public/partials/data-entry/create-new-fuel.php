@@ -14,242 +14,248 @@ if(!empty($_GET['id'])) {
 
 get_header(); ?>
 
-    <?php do_action('before_main_content'); ?>
+<?php do_action('before_main_content'); ?>
 
-        <h1 class="entry-title"><?php the_title(); ?></h1>
-        
-        <?php if(isset($_GET['post']) && 'success' == $_GET['post']) { ?>
-            <div class="alert alert-success" role="alert">
-                New Fuel Successfully Saved!
-            </div>
-        <?php } else { ?>
+<h1 class="entry-title"><?php the_title(); ?></h1>
 
-            <form class="w-full" action="/data-entry/form-process/" method="post">
+<?php if(isset($_GET['post']) && 'success' == $_GET['post']) { ?>
+<div class="alert alert-success" role="alert">
+	New Fuel Successfully Saved!
+</div>
+<?php } else { ?>
 
-                <fieldset>
-                    <legend>Manufacturer</legend>
+<form class="w-full" action="/data-entry/form-process/" method="post">
 
-                    <div class="mb-3">
-                        <select class="form-select js-example-basic-single" id="manufacturer_id" name="manufacturer_id">
-                            <option selected value="">Select a Manufacturer</option>
-                            <?php foreach($list_manufacturers as $k => $v) { ?>
-                                <option value="<?php echo esc_attr( $k ); ?>"<?php echo esc_html( !empty($manufacturer_id) && $manufacturer_id ==  $k ? ' selected' : '' ); ?>><?php echo esc_attr( $v['manufacturer_name'] ); ?></option>
-                            <?php } ?>
-                        </select>
-                    </div>
-                </fieldset>
+	<fieldset>
+		<legend>Manufacturer</legend>
 
-                <fieldset>
-                    <legend>Fuel Name</legend>
+		<div class="mb-3">
+			<select class="form-select js-example-basic-single" id="manufacturer_id" name="manufacturer_id">
+				<option selected value="">Select a Manufacturer</option>
+				<?php foreach($list_manufacturers as $k => $v) { ?>
+				<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_html( !empty($manufacturer_id) && $manufacturer_id ==  $k ? ' selected' : '' ); ?>><?php echo esc_attr( $v['manufacturer_name'] ); ?></option>
+				<?php } ?>
+			</select>
+		</div>
+	</fieldset>
 
+	<fieldset>
+		<div class="mb-3">
+			<legend>Fuel ID</legend>
+			<input type="text" class="form-control" id="fuel_id" name="fuel_id" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_id', true ) : ''; ?>">
+		</div>
+	</fieldset>
 
-                    <div class="mb-3">
-                        <textarea class="form-control" id="fuel_name" rows="3" name="fuel_name" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_the_title( $_GET['id'] ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_the_title( $_GET['id'] ) : '' ); ?></textarea>
-                    </div>
-                    <div class="mb-3 row">
+	<fieldset>
+		<legend>Fuel Name</legend>
 
-                        <label for="point_a" class="col-sm-1 col-form-label">a)</label>
-                        <div class="col-sm-11">
-                            <textarea class="form-control" id="point_a" rows="3" name="point_a" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_a', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_a', true ) : '' ); ?></textarea>
-                        </div>
+		<div class="mb-3">
+			<textarea class="form-control" id="fuel_name" rows="3" name="fuel_name" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_the_title( $_GET['id'] ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_the_title( $_GET['id'] ) : '' ); ?></textarea>
+		</div>
+		<div class="mb-3 row">
 
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="point_b" class="col-sm-1 col-form-label">b)</label>
-                        <div class="col-sm-11">
-                            <textarea class="form-control" id="point_b" rows="3" name="point_b" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_b', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_b', true ) : '' ); ?></textarea>
-                        </div>
+			<label for="point_a" class="col-sm-1 col-form-label">a)</label>
+			<div class="col-sm-11">
+				<textarea class="form-control" id="point_a" rows="3" name="point_a" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_a', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_a', true ) : '' ); ?></textarea>
+			</div>
 
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="point_c" class="col-sm-1 col-form-label">c)</label>
-                        <div class="col-sm-11">
-                            <textarea class="form-control" id="point_c" rows="3" name="point_c" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_c', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_c', true ) : '' ); ?></textarea>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="point_d" class="col-sm-1 col-form-label">d)</label>
-                        <div class="col-sm-11">
-                            <textarea class="form-control" id="point_d" rows="3" name="point_d" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_d', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_d', true ) : '' ); ?></textarea>
-                        </div>
-                    </div>
+		</div>
+		<div class="mb-3 row">
+			<label for="point_b" class="col-sm-1 col-form-label">b)</label>
+			<div class="col-sm-11">
+				<textarea class="form-control" id="point_b" rows="3" name="point_b" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_b', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_b', true ) : '' ); ?></textarea>
+			</div>
 
-                    <div class="mb-3 row">
-                        <label for="point_e" class="col-sm-1 col-form-label">e)</label>
-                        <div class="col-sm-11">
-                            <textarea class="form-control" id="point_e" rows="3" name="point_e" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_e', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_e', true ) : '' ); ?></textarea>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label for="point_f" class="col-sm-1 col-form-label">f)</label>
-                        <div class="col-sm-11">
-                            <textarea class="form-control" id="point_f" rows="3" name="point_f" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_f', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_f', true ) : '' ); ?></textarea>
-                        </div>
-                    </div>
-                </fieldset>
+		</div>
+		<div class="mb-3 row">
+			<label for="point_c" class="col-sm-1 col-form-label">c)</label>
+			<div class="col-sm-11">
+				<textarea class="form-control" id="point_c" rows="3" name="point_c" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_c', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_c', true ) : '' ); ?></textarea>
+			</div>
+		</div>
+		<div class="mb-3 row">
+			<label for="point_d" class="col-sm-1 col-form-label">d)</label>
+			<div class="col-sm-11">
+				<textarea class="form-control" id="point_d" rows="3" name="point_d" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_d', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_d', true ) : '' ); ?></textarea>
+			</div>
+		</div>
 
-                <fieldset>
-                    <legend>Fuel Additional Details</legend>
-                    <div class="mb-3">
+		<div class="mb-3 row">
+			<label for="point_e" class="col-sm-1 col-form-label">e)</label>
+			<div class="col-sm-11">
+				<textarea class="form-control" id="point_e" rows="3" name="point_e" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_e', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_e', true ) : '' ); ?></textarea>
+			</div>
+		</div>
+		<div class="mb-3 row">
+			<label for="point_f" class="col-sm-1 col-form-label">f)</label>
+			<div class="col-sm-11">
+				<textarea class="form-control" id="point_f" rows="3" name="point_f" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'point_f', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_post_meta( $_GET['id'], 'point_f', true ) : '' ); ?></textarea>
+			</div>
+		</div>
+	</fieldset>
 
-                        <div class="row">
-                            <div class="col-4">
+	<fieldset>
+		<legend>Fuel Additional Details</legend>
+		<div class="mb-3">
 
-                                <label for="fuel_additional_details_application_number" class="form-label">Application Number</label>
-                                <input type="text" class="form-control" id="fuel_additional_details_application_number" name="fuel_additional_details_application_number" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_additional_details_application_number', true ) : ''; ?>">
-                                
-                            </div>
-                            <div class="col-8">
-                                
-                                <label for="fuel_additional_details_linked_applications" class="form-label">Linked Applications</label>
-                                <input type="text" class="form-control" id="fuel_additional_details_linked_applications" name="fuel_additional_details_linked_applications" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_additional_details_linked_applications', true ) : ''; ?>">
+			<div class="row">
+				<div class="col-4">
 
-                            </div>
-                        </div>
+					<label for="fuel_additional_details_application_number" class="form-label">Application Number</label>
+					<input type="text" class="form-control" id="fuel_additional_details_application_number" name="fuel_additional_details_application_number" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_additional_details_application_number', true ) : ''; ?>">
 
-                        <div class="row">
-                            <div class="col-12">
+				</div>
+				<div class="col-8">
 
-                                <label for="fuel_additional_details_comments" class="form-label">Comments</label>
-                                <textarea class="form-control" id="fuel_additional_details_comments" name="fuel_additional_details_comments" rows="3" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_additional_details_comments', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_additional_details_comments', true ) : ''; ?></textarea>
-                                
-                            </div>
-                        </div>
+					<label for="fuel_additional_details_linked_applications" class="form-label">Linked Applications</label>
+					<input type="text" class="form-control" id="fuel_additional_details_linked_applications" name="fuel_additional_details_linked_applications" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_additional_details_linked_applications', true ) : ''; ?>">
 
-                    </div>
-                </fieldset>
+				</div>
+			</div>
 
+			<div class="row">
+				<div class="col-12">
 
-                <fieldset>
-                    <legend>Authorised Country and Statutory Instrument</legend>
-                    <div class="mb-3">
+					<label for="fuel_additional_details_comments" class="form-label">Comments</label>
+					<textarea class="form-control" id="fuel_additional_details_comments" name="fuel_additional_details_comments" rows="3" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_additional_details_comments', true ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_post_meta( $_GET['id'], 'fuel_additional_details_comments', true ) : ''; ?></textarea>
 
-                        <div class="row">
-                            <div class="col-2">
+				</div>
+			</div>
 
-                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_england_enabled" name="authorised_country_and_statutory_instrument_england_enabled" value="on" <?php echo esc_attr(isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_england_enabled', true ) == '1' ? 'checked' : '' ); ?>>
-                                <label class="form-check-label" for="authorised_country_and_statutory_instrument_england_enabled">
-                                    England
-                                </label>
-
-                            </div>
-                            <div class="col-8">
-
-                                <select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_england_si" name="authorised_country_and_statutory_instrument_england_si[]" multiple="multiple">
-                                    <option value="" disabled>Select</option>
-                                    <?php foreach($statutory_instrument_england as $k => $v) { ?>
-                                        <option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
-                                    <?php } ?>
-                                </select>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-
-                        <div class="row">
-                            <div class="col-2">
-
-                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_wales_enabled" name="authorised_country_and_statutory_instrument_wales_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_wales_enabled', true ) == '1' ? 'checked' : '' ); ?>>
-                                <label class="form-check-label" for="authorised_country_and_statutory_instrument_wales_enabled">
-                                    Wales
-                                </label>
-
-                            </div>
-                            <div class="col-8">
-
-                                <select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_wales_si" name="authorised_country_and_statutory_instrument_wales_si[]" multiple="multiple">
-                                    <option value="" disabled>Select</option>
-                                    <?php foreach($statutory_instrument_wales as $k => $v) { ?>
-                                        <option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
-                                    <?php } ?>
-                                </select>
-
-                            
-                            </div>
-                        </div>
+		</div>
+	</fieldset>
 
 
-                    </div>
-                    <div class="mb-3">
+	<fieldset>
+		<legend>Authorised Country and Statutory Instrument</legend>
+		<div class="mb-3">
 
-                        <div class="row">
-                            <div class="col-2">
+			<div class="row">
+				<div class="col-2">
 
-                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_scotland_enabled" name="authorised_country_and_statutory_instrument_scotland_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_scotland_enabled', true ) == '1' ? 'checked' : '' ); ?>>
-                                <label class="form-check-label" for="authorised_country_and_statutory_instrument_scotland_enabled">
-                                    Scotland
-                                </label>
+					<input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_england_enabled" name="authorised_country_and_statutory_instrument_england_enabled" value="on" <?php echo esc_attr(isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_england_enabled', true ) == '1' ? 'checked' : '' ); ?>>
+					<label class="form-check-label" for="authorised_country_and_statutory_instrument_england_enabled">
+						England
+					</label>
 
-                            </div>
-                            <div class="col-8">
+				</div>
+				<div class="col-8">
 
-                                <select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_scotland_si" name="authorised_country_and_statutory_instrument_scotland_si[]" multiple="multiple">
-                                    <option value="" disabled>Select</option>
-                                    <?php foreach($statutory_instrument_scotland as $k => $v) { ?>
-                                        <option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
-                                    <?php } ?>
-                                </select>
+					<select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_england_si" name="authorised_country_and_statutory_instrument_england_si[]" multiple="multiple">
+						<option value="" disabled>Select</option>
+						<?php foreach($statutory_instrument_england as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
+						<?php } ?>
+					</select>
 
-                            
-                            </div>
-                        </div>
+				</div>
+			</div>
+		</div>
 
-                    </div>
-                    <div class="mb-3">
+		<div class="mb-3">
 
-                        <div class="row">
-                            <div class="col-2">
+			<div class="row">
+				<div class="col-2">
 
-                                <input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_n_ireland_enabled" name="authorised_country_and_statutory_instrument_n_ireland_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_n_ireland_enabled', true ) == '1' ? 'checked' : '' ); ?>>
-                                <label class="form-check-label" for="authorised_country_and_statutory_instrument_n_ireland_enabled">
-                                    N. Ireland
-                                </label>
+					<input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_wales_enabled" name="authorised_country_and_statutory_instrument_wales_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_wales_enabled', true ) == '1' ? 'checked' : '' ); ?>>
+					<label class="form-check-label" for="authorised_country_and_statutory_instrument_wales_enabled">
+						Wales
+					</label>
 
-                            </div>
-                            <div class="col-8">
+				</div>
+				<div class="col-8">
 
-                                <select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_n_ireland_si" name="authorised_country_and_statutory_instrument_n_ireland_si[]" multiple="multiple">
-                                    <option value="" disabled>Select</option>	
-                                    <?php foreach($statutory_instrument_nireland as $k => $v) { ?>
-                                        <option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
-                                    <?php } ?>
-                                </select>
-
-                            
-                            </div>
-                        </div>
+					<select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_wales_si" name="authorised_country_and_statutory_instrument_wales_si[]" multiple="multiple">
+						<option value="" disabled>Select</option>
+						<?php foreach($statutory_instrument_wales as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
+						<?php } ?>
+					</select>
 
 
-                    </div>
-                </fieldset>
+				</div>
+			</div>
 
-                <fieldset>
-                    <legend>Comments to DEFRA / Devolved Administrations</legend>
-                    <div class="mb-3">
-                        <textarea class="form-control" id="??" rows="3" name="comment_to_da"></textarea>
-                    </div>
-                </fieldset>
 
-                <fieldset>
-                    <legend>User Comments</legend>
-                    <div class="mb-3">
-                        <textarea class="form-control" id="??" rows="3" name="user_comment"></textarea>
-                    </div>
-                </fieldset>
+		</div>
+		<div class="mb-3">
 
-                <input type="hidden" name="process" value="create-fuel">
-                <?php wp_nonce_field( 'create_nonce', 'create_nonce_field' ); ?>
+			<div class="row">
+				<div class="col-2">
 
-                <button type="submit" class="btn btn-primary mt-3 save-draft" name="submit-type" value="save-draft">Save as draft</button>
-                <button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and Send for Review</button>
+					<input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_scotland_enabled" name="authorised_country_and_statutory_instrument_scotland_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_scotland_enabled', true ) == '1' ? 'checked' : '' ); ?>>
+					<label class="form-check-label" for="authorised_country_and_statutory_instrument_scotland_enabled">
+						Scotland
+					</label>
 
-            </form>
+				</div>
+				<div class="col-8">
 
-        <?php } ?>
+					<select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_scotland_si" name="authorised_country_and_statutory_instrument_scotland_si[]" multiple="multiple">
+						<option value="" disabled>Select</option>
+						<?php foreach($statutory_instrument_scotland as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
+						<?php } ?>
+					</select>
 
-    <?php do_action('after_main_content'); ?>
+
+				</div>
+			</div>
+
+		</div>
+		<div class="mb-3">
+
+			<div class="row">
+				<div class="col-2">
+
+					<input class="form-check-input" type="checkbox" id="authorised_country_and_statutory_instrument_n_ireland_enabled" name="authorised_country_and_statutory_instrument_n_ireland_enabled" value="on" <?php echo esc_attr( isset($_GET['id']) && get_post_meta( $_GET['id'], 'authorised_country_and_statutory_instrument_n_ireland_enabled', true ) == '1' ? 'checked' : '' ); ?>>
+					<label class="form-check-label" for="authorised_country_and_statutory_instrument_n_ireland_enabled">
+						N. Ireland
+					</label>
+
+				</div>
+				<div class="col-8">
+
+					<select class="form-select js-multiple-si" id="authorised_country_and_statutory_instrument_n_ireland_si" name="authorised_country_and_statutory_instrument_n_ireland_si[]" multiple="multiple">
+						<option value="" disabled>Select</option>
+						<?php foreach($statutory_instrument_nireland as $k => $v) { ?>
+						<option value="<?php echo esc_attr( $v->ID ); ?>"><?php echo esc_attr( $v->post_title ); ?></option>
+						<?php } ?>
+					</select>
+
+
+				</div>
+			</div>
+
+
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>Comments to DEFRA / Devolved Administrations</legend>
+		<div class="mb-3">
+			<textarea class="form-control" id="??" rows="3" name="comment_to_da"></textarea>
+		</div>
+	</fieldset>
+
+	<fieldset>
+		<legend>User Comments</legend>
+		<div class="mb-3">
+			<textarea class="form-control" id="??" rows="3" name="user_comment"></textarea>
+		</div>
+	</fieldset>
+
+	<input type="hidden" name="process" value="create-fuel">
+	<?php wp_nonce_field( 'create_nonce', 'create_nonce_field' ); ?>
+
+	<button type="submit" class="btn btn-primary mt-3 save-draft" name="submit-type" value="save-draft">Save as draft</button>
+	<button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and Send for Review</button>
+
+</form>
+
+<?php } ?>
+
+<?php do_action('after_main_content'); ?>
 
 
 <?php get_footer(); ?>

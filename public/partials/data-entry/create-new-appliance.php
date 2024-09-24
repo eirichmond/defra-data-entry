@@ -65,6 +65,13 @@ get_header();
 	</fieldset>
 
 	<fieldset>
+		<legend>Appliance ID</legend>
+		<div class="mb-3">
+			<input type="text" class="form-control" id="appliance_id" name="appliance_id">
+		</div>
+	</fieldset>
+
+	<fieldset>
 		<legend>Appliance Name</legend>
 		<div class="mb-3">
 			<textarea class="form-control" id="appliance_name" rows="3" name="appliance_name" value="<?php echo esc_attr( isset($_GET['id']) && null != $_GET['id']) ? get_the_title( $_GET['id'] ) : ''; ?>"><?php echo esc_attr( isset($_GET['id']) && null != $_GET['id'] ? get_the_title( $_GET['id'] ) : '' ); ?></textarea>

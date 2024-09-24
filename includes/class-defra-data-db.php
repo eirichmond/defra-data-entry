@@ -1403,6 +1403,7 @@ class Defra_Data_DB_Requests {
 	public function fuel_metas() {
 		$fuel_metas = array(
 			'manufacturer_id',
+			'fuel_id',
 			'point_a',
 			'point_b',
 			'point_c',
@@ -1545,6 +1546,7 @@ class Defra_Data_DB_Requests {
 	public function appliance_metas() {
 		$appliance_metas = array(
 			'manufacturer_id',
+			'appliance_id',
 			'output_unit_output_unit_id',
 			'output_unit_output_value',
 			'instructions_instruction_manual_title',

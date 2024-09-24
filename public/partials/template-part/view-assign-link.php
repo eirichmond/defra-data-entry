@@ -16,22 +16,20 @@ if(isset($_GET) && !empty($_GET["revoked"])) {
 }
 ?>
 
-<?php if ( in_array('data_reviewer', $roles) && empty($reviewer_id) && $status != '10' || in_array('data_reviewer', $roles) && $revoked ) { ?>
+<?php if ( in_array('data_reviewer', $roles) && empty($reviewer_id) && $status != '10' && !empty($country_approver_key) || in_array('data_reviewer', $roles) && $revoked ) { ?>
 
-    <a href="<?php echo the_permalink(); ?>" class="defra-assign" data-revoked="<?php echo esc_attr( $revoked ); ?>" data-role="data_reviewer" data-nonce="<?php echo wp_create_nonce('defra-assign'); ?>" data-id="<?php echo esc_attr(get_the_ID()); ?>" data-user_id="<?php echo esc_attr( $user->ID ); ?>" title="Assign to me" ><i class="gg-lock"></i></a>
+<a href="<?php echo the_permalink(); ?>" class="defra-assign" data-revoked="<?php echo esc_attr( $revoked ); ?>" data-role="data_reviewer" data-nonce="<?php echo wp_create_nonce('defra-assign'); ?>" data-id="<?php echo esc_attr(get_the_ID()); ?>" data-user_id="<?php echo esc_attr( $user->ID ); ?>" title="Assign to me"><i class="gg-lock"></i></a>
 
 <?php } elseif ( in_array('data_approver', $roles) && empty($approver_id) ) { ?>
-    
-    <a href="<?php echo the_permalink(); ?>" class="defra-assign" data-role="data_approver" data-nonce="<?php echo wp_create_nonce('defra-assign'); ?>" data-id="<?php echo esc_attr(get_the_ID()); ?>" data-user_id="<?php echo esc_attr( $user->ID ); ?>" title="Assign to me" ><i class="gg-lock"></i></a>
-    
+
+<a href="<?php echo the_permalink(); ?>" class="defra-assign" data-role="data_approver" data-nonce="<?php echo wp_create_nonce('defra-assign'); ?>" data-id="<?php echo esc_attr(get_the_ID()); ?>" data-user_id="<?php echo esc_attr( $user->ID ); ?>" title="Assign to me"><i class="gg-lock"></i></a>
+
 <?php } elseif ( in_array('data_approver', $roles) && !empty($approver_id) && intval($approver_id) == $user->ID ) { ?>
 
-    <a href="<?php echo the_permalink(); ?>" title="Review"><i class="gg-eye"></i></a>
+<a href="<?php echo the_permalink(); ?>" title="Review"><i class="gg-eye"></i></a>
 
 <?php } else { ?>
 
-    <a href="<?php echo the_permalink(); ?>" title="Review"><i class="gg-eye"></i></a>
+<a href="<?php echo the_permalink(); ?>" title="Review"><i class="gg-eye"></i></a>
 
 <?php } ?>
-
-

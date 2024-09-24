@@ -2237,7 +2237,25 @@ class Defra_Data_Entry_Public {
 		}
 		$manufacturer_id = get_post_meta($post_id, 'manufacturer_id', true);
 		$post = get_post($manufacturer_id);
-		return $post->post_title;
+		$address = array();
+		$address[] = get_post_meta( $manufacturer_id, 'address_1', true );
+		$address[] = get_post_meta( $manufacturer_id, 'address_2', true );
+		$address[] = get_post_meta( $manufacturer_id, 'address_3', true );
+		$address[] = get_post_meta( $manufacturer_id, 'address_4', true );
+		$address[] = get_post_meta( $manufacturer_id, 'town__city', true );
+		$address[] = get_post_meta( $manufacturer_id, 'county', true );
+		$address[] = get_post_meta( $manufacturer_id, 'postcode', true );
+
+		$address = array_filter($address);
+		$address = join(', ', $address);
+
+		if(!empty($address)) {
+			$manufacturer_address = $post->post_title . ' ' . $address;
+		} else {
+			$manufacturer_address = $post->post_title;
+		}
+
+		return $manufacturer_address;
 	}
 
 	/**

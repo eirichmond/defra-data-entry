@@ -1127,6 +1127,29 @@ class Defra_Data_Entry_Public {
 	}
 
 	/**
+	 * Delete a post 
+	 *
+	 * @param [type] $post_id
+	 * @return void
+	 */
+	public function delete_post( $post_id ) {
+		$meta_keys = get_post_meta( $post_id ); // Retrieves all meta fields
+				
+		if (!empty($meta_keys)) {
+			foreach ($meta_keys as $meta_key => $meta_value) {
+				delete_post_meta( $post_id, $meta_key ); // Delete each post meta
+			}
+		}
+		
+		// Finally, delete the post itself
+		wp_delete_post( $post_id, true ); // 'true' forces permanent deletion (bypasses trash)
+
+		$url = home_url().'/data-entry/dashboard';
+		wp_redirect( $url );
+		exit;
+	}
+
+	/**
 	 * Create a new appliance WP
 	 *
 	 * @return void
@@ -1137,22 +1160,29 @@ class Defra_Data_Entry_Public {
 			wp_die('Sorry, security did not verify.');
 		} else {
 			// process form data
-			$current_user = wp_get_current_user();
-			$db = new Defra_Data_DB_Requests();
-			$audit = new Defra_Data_Audit_Log();
-			$post_id = $db->insert_new_appliance($_POST);
-			$comments = $this->create_comment_logic($post_id, $_POST);
-			
-			$audit->set_appliance_audit_data($current_user->ID, $post_id, $_POST);
-			// check and send to reviewer
-			if($_POST['submit-type'] == 'submit-review') {
-				$this->notify_data_review( $post_id, 'appliance' );
-			}
+			if ($_POST['submit-type'] == 'delete-post') {
 
-			// redirect with success
-			$url = home_url().'/data-entry/appliances/create-new-appliance/?post=success&id='.$post_id;
-			wp_redirect( $url );
-			exit;
+				$this->delete_post( $_POST["post_id"] );
+
+			} else {
+
+				$current_user = wp_get_current_user();
+				$db = new Defra_Data_DB_Requests();
+				$audit = new Defra_Data_Audit_Log();
+				$post_id = $db->insert_new_appliance($_POST);
+				$comments = $this->create_comment_logic($post_id, $_POST);
+				
+				$audit->set_appliance_audit_data($current_user->ID, $post_id, $_POST);
+				// check and send to reviewer
+				if($_POST['submit-type'] == 'submit-review') {
+					$this->notify_data_review( $post_id, 'appliance' );
+				}
+	
+				// redirect with success
+				$url = home_url().'/data-entry/appliances/create-new-appliance/?post=success&id='.$post_id;
+				wp_redirect( $url );
+				exit;
+			}
 
 		}
 	}
@@ -1168,23 +1198,30 @@ class Defra_Data_Entry_Public {
 			wp_die('Sorry, security did not verify.');
 		} else {
 			// process form data
-			$current_user = wp_get_current_user();
-			$db = new Defra_Data_DB_Requests();
-			$audit = new Defra_Data_Audit_Log();
-			$post_id = $db->insert_new_fuel($_POST);
-			$comments = $this->create_comment_logic($post_id, $_POST);
+			if ($_POST['submit-type'] == 'delete-post') {
 
-			$audit->set_appliance_audit_data($current_user->ID, $post_id, $_POST);
-			// check and send to reviewer
-			if($_POST['submit-type'] == 'submit-review') {
-				$this->notify_data_review( $post_id, 'fuel' );
+				$this->delete_post( $_POST["post_id"] );
+
+			} else {
+
+				$current_user = wp_get_current_user();
+				$db = new Defra_Data_DB_Requests();
+				$audit = new Defra_Data_Audit_Log();
+				$post_id = $db->insert_new_fuel($_POST);
+				$comments = $this->create_comment_logic($post_id, $_POST);
+
+				$audit->set_appliance_audit_data($current_user->ID, $post_id, $_POST);
+				// check and send to reviewer
+				if($_POST['submit-type'] == 'submit-review') {
+					$this->notify_data_review( $post_id, 'fuel' );
+				}
+
+				// redirect with success
+				$url = home_url().'/data-entry/fuels/create-new-fuel/?post=success&id='.$post_id;
+				wp_redirect( $url );
+				exit;
+
 			}
-
-			// redirect with success
-			$url = home_url().'/data-entry/fuels/create-new-fuel/?post=success&id='.$post_id;
-			wp_redirect( $url );
-			exit;
-
 		}
 	}
 
@@ -3119,6 +3156,7 @@ class Defra_Data_Entry_Public {
 					include plugin_dir_path( __FILE__ ) . 'partials/template-part/status-information.php';
 				}
 				if( in_array( '20', $status ) || in_array( '30', $status ) ) {
+				
 					include plugin_dir_path( __FILE__ ) . 'partials/template-part/reviewer-approve-reject.php';
 				}				
 

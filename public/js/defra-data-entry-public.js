@@ -126,6 +126,30 @@
 				allowClear: true,
 				placeholder: "Select a Statutory Instrument",
 			});
+
+			// const updateform = document.getElementById("update");
+			// const deletePost = document.getElementById("delete-post");
+			// if (deletePost) {
+			// 	// Add a submit event listener to the updateform
+			// 	updateform.addEventListener("submit", function (event) {
+			// 		// Prevent the updateform from submitting immediately
+			// 		event.preventDefault();
+
+			// 		// Ask for user confirmation
+			// 		const userConfirmed = confirm(
+			// 			"Do you really want to delete the data?"
+			// 		);
+
+			// 		// Continue with the updateform submission if the user confirms
+			// 		if (userConfirmed) {
+			// 			updateform.submit(); // Submit the updateform programmatically
+			// 		} else {
+			// 			alert("You chose to cancel!");
+			// 		}
+			// 	});
+			// } else {
+			// 	console.log("Submit button not found.");
+			// }
 		});
 	});
 })(jQuery);

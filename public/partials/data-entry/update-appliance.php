@@ -19,6 +19,9 @@ if(!empty($_GET['p'])) {
 	$set_appliance_types = wp_get_post_terms( $_GET['p'], 'appliance_types');
 	$set_permitted_fuels = wp_get_post_terms( $_GET['p'], 'permitted_fuels');
 	$manufacturer_id = get_post_meta( $_GET['p'], 'manufacturer_id', true );
+} else {
+	global $post;
+	$_GET['p'] = $post->ID;
 }
 
 function find_set_key($array, $value, $type) {
@@ -46,7 +49,7 @@ get_header();
 <?php } ?>
 
 
-<form class="w-full" action="/data-entry/form-process/" method="post">
+<form class="w-full" action="/data-entry/form-process/" method="post" id="update">
 
 
 	<!-- to insert duplication functionality -->
@@ -400,6 +403,7 @@ get_header();
 
 	<button type="submit" class="btn btn-primary mt-3 save-draft" name="submit-type" value="save-draft">Save as draft</button>
 	<button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and Send for Review</button>
+	<button type="submit" id="delete-post" class="btn btn-danger mt-3 delete-post" name="submit-type" value="delete-post">Delete</button>
 
 </form>
 

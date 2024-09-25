@@ -10,6 +10,9 @@ $statutory_instrument_nireland = defra_data_query_statutory_instrument('si_count
 
 if(!empty($_GET['p'])) {
 	$manufacturer_id = get_post_meta( $_GET['p'], 'manufacturer_id', true );
+} else {
+	global $post;
+	$_GET['p'] = $post->ID;
 }
 
 get_header(); ?>
@@ -260,6 +263,7 @@ get_header(); ?>
 
 	<button type="submit" class="btn btn-primary mt-3 save-draft" name="submit-type" value="save-draft">Save as draft</button>
 	<button type="submit" class="btn btn-primary mt-3 submit" name="submit-type" value="submit-review">Save and Send for Review</button>
+	<button type="submit" id="delete-post" class="btn btn-danger mt-3 delete-post" name="submit-type" value="delete-post">Delete</button>
 
 </form>
 

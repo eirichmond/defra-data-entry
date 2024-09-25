@@ -2597,25 +2597,25 @@ class Defra_Data_Entry_Public {
 
 		if($post["type"] != 'fuels') {
 			$phpWord->setValues([
-				'TodayDate' => $date,
-				'ApplicationNumber' => $application_number,
-				'Manufacturer' => $manufacturer->post_title,
-				'ApplianceName' => $post_obj->post_title,
-				'PermittedFuels' => $permitted_fuel,
-				'ManufacturerContact' => $manufacturer->post_title,
-				'DataEntryUser' => $data_entry,
-				'Instructions' => $instructions,
-				'ServiceInstallation' => $servicing_installation,
-				'Conditions' => $conditions
+				'TodayDate' => esc_attr( $date ),
+				'ApplicationNumber' => esc_attr( $application_number ),
+				'Manufacturer' => esc_attr( $manufacturer->post_title ),
+				'ApplianceName' => esc_attr( $post_obj->post_title ),
+				'PermittedFuels' => esc_attr( $permitted_fuel ),
+				'ManufacturerContact' => esc_attr( $manufacturer->post_title ),
+				'DataEntryUser' => esc_attr( $data_entry ),
+				'Instructions' => esc_attr( $instructions ),
+				'ServiceInstallation' => esc_attr( $servicing_installation ),
+				'Conditions' => esc_attr( $conditions )
 			]);
 		} else {
 			$phpWord->setValues([
 				'TodayDate' => $date,
-				'ApplicationNumber' => $application_number,
-				'Manufacturer' => $manufacturer->post_title,
+				'ApplicationNumber' => esc_attr( $application_number ),
+				'Manufacturer' => esc_attr( $manufacturer->post_title ),
 				'FuelName' => esc_attr( $post_obj->post_title ),
-				'FuelID' => $fuel_id,
-				'ManufacturerContact' => $manufacturer->post_title,
+				'FuelID' => esc_attr( $fuel_id ),
+				'ManufacturerContact' => esc_attr( $manufacturer->post_title ),
 			]);
 
 		}

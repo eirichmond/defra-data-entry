@@ -11,6 +11,18 @@ $public_class = new Defra_Data_Entry_Public('DEFRA_DATA_ENTRY','DEFRA_DATA_ENTRY
 $fuel_data_details = $public_class->fuel_data_details($post->ID);
 $footnote8 = get_post_meta( $post->ID, 'authorised_country_and_statutory_instrument_england_si_0_si_id', true );
 $guid = get_post_meta($post->ID, 'fuel_id', true);
+
+$exempt_england = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_si', true);
+$exempt_wales = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_si', true);
+$exempt_scotland = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_scotland_si', true);
+$exempt_ireland = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_si', true);
+
+$statutory_instruments_england = $public_class->statutory_instrument_assignment( $post->ID, 'england', 'fuel' );
+$statutory_instruments_wales = $public_class->statutory_instrument_assignment( $post->ID, 'wales', 'fuel'  );
+$statutory_instruments_scotland = $public_class->statutory_instrument_assignment( $post->ID, 'scotland', 'fuel'  );
+$statutory_instruments_n_ireland = $public_class->statutory_instrument_assignment( $post->ID, 'n_ireland', 'fuel'  );
+
+
 get_header();
 ?>
 
@@ -117,70 +129,122 @@ get_header();
 
 
 					<tr>
-						<td><strong>England Status<br>
-								Date first authorised</strong></td>
+						<td><strong>England Status<br>Date first authorised</strong></td>
 
-						<?php if(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_status', true ) == '600') { ?>
-						<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)
-							<br><?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_publish_date', true) ) ) ); ?>
-						</td>
+
+						<?php if ( $exempt_england ) { ?>
+
+						<?php foreach ($statutory_instruments_england as $si_england) { ?>
+
+						<?php if ( $si_england["revoke_status_id"] == '400' ) { ?>
+						<td>No n/a</td>
 						<?php } else { ?>
-						<td>No</td>
-						<td>n/a</td>
-						<?php }?>
+						<td>
+							<span>Authorised (<?php echo esc_html( $si_england["title"] ); ?>)</span>
+							<br />
+							<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_publish_date', true) ) ) ); ?>
+						</td>
+
+						<?php } ?>
+
+						<?php } ?>
+
+						<?php } else { ?>
+
+						<td>No n/a</td>
+
+						<?php } ?>
+
 
 
 					</tr>
 
 					<tr>
-						<td><strong>Wales Status<br>
-								Date first authorised</strong></td>
-						<?php if(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_status', true ) == '600') { ?>
-						<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_wales_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)
-							<br><?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_publish_date', true) ) ) ); ?>
-						</td>
+						<td><strong>Wales Status<br>Date first authorised</strong></td>
+
+
+						<?php if ( $exempt_wales ) { ?>
+
+						<?php foreach ($statutory_instruments_wales as $si_wales) { ?>
+
+						<?php if ( $si_wales["revoke_status_id"] == '400' ) { ?>
+						<td>No n/a</td>
 						<?php } else { ?>
 						<td>
-							No
-							<br>
-							n/a
+							<span>Authorised (<?php echo esc_html( $si_wales["title"] ); ?>)</span>
+							<br />
+							<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_publish_date', true) ) ) ); ?>
 						</td>
-						<?php }?>
+
+						<?php } ?>
+
+						<?php } ?>
+
+						<?php } else { ?>
+
+						<td>No n/a</td>
+
+						<?php } ?>
+
 
 					</tr>
 
 
 					<tr>
-						<td><strong>Scotland Status<br>
-								Date first authorised</strong></td>
-						<?php if(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_scotland_status', true ) == '600') { ?>
-						<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_scotland_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)
-							<br><?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_scotland_publish_date', true) ) ) ); ?>
-						</td>
+						<td><strong>Scotland Status<br> Date first authorised</strong></td>
+
+						<?php if ( $exempt_scotland ) { ?>
+
+						<?php foreach ($statutory_instruments_scotland as $si_scotland) { ?>
+
+						<?php if ( $si_scotland["revoke_status_id"] == '400' ) { ?>
+						<td>No n/a</td>
 						<?php } else { ?>
 						<td>
-							No
-							<br>
-							n/a
+							<span>Authorised (<?php echo esc_html( $si_scotland["title"] ); ?>)</span>
+							<br />
+							<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_scotland_publish_date', true) ) ) ); ?>
 						</td>
-						<?php }?>
+
+						<?php } ?>
+
+						<?php } ?>
+
+						<?php } else { ?>
+
+						<td>No n/a</td>
+
+						<?php } ?>
+
 					</tr>
 
 
 					<tr>
-						<td><strong>N. Ireland Status<br>
-								Date first authorised</strong></td>
-						<?php if(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_status', true ) == '600') { ?>
-						<td>Authorised (<a href="<?php echo get_the_content(get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_si', true)); ?>"><?php echo get_the_title(get_post_meta($post->ID, 'exempt-in_country_and_statutory_instrument_england_si', true)); ?></a>)
-							<br><?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_publish_date', true) ) ) ); ?>
-						</td>
+						<td><strong>N. Ireland Status<br> Date first authorised</strong></td>
+
+						<?php if ( $exempt_n_ireland ) { ?>
+
+						<?php foreach ($statutory_instruments_n_ireland as $si_n_ireland) { ?>
+
+						<?php if ( $si_n_ireland["revoke_status_id"] == '400' ) { ?>
+						<td>No n/a</td>
 						<?php } else { ?>
 						<td>
-							No
-							<br>
-							n/a
+							<span>Authorised (<?php echo esc_html( $si_n_ireland["title"] ); ?>)</span>
+							<br />
+							<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_publish_date', true) ) ) ); ?>
 						</td>
-						<?php }?>
+
+						<?php } ?>
+
+						<?php } ?>
+
+						<?php } else { ?>
+
+						<td>No n/a</td>
+
+						<?php } ?>
+
 					</tr>
 
 				</tbody>

@@ -1157,8 +1157,8 @@ class Defra_Data_DB_Requests {
 	 *
 	 * @return string $count
 	 */
-	public function count_fuel_submitted_to_da() {
-		$count = $this->get_post_country_status( 'fuels', '50' );
+	public function count_fuel_submitted_to_da($country) {
+		$count = $this->get_post_country_status( 'fuels', '50', $country );
 		return count($count);
 	}
 	

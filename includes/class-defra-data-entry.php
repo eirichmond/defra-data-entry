@@ -194,6 +194,9 @@ class Defra_Data_Entry {
 
 		$this->loader->add_filter( 'login_headerurl', $plugin_admin, 'defra_logo_url_link', 10, 1 );
   
+
+		$this->loader->add_action( 'admin_init', $plugin_admin, 'defra_payment_protection', 10 );
+
 	}
 
 	/**

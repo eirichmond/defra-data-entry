@@ -1349,6 +1349,8 @@ class Defra_Data_Entry_Public {
 		$type_label = $post->post_type == 'appliances' ? 'Appliance' : 'Fuel';
 		$type_slug = $post->post_type == 'appliances' ? 'appliances' : 'fuels';
 		$type_meta = $post->post_type == 'appliances' ? 'appliance' : 'fuel';
+		$guid_key = $post->post_type == 'appliances' ? 'appliance_id' : 'fuel_id';
+		$guid = get_post_meta( $post_id, $guid_key, true );
 
 		$admin = new Defra_Data_Entry_Admin('Admin','1,0');
 		$administrators = $admin->get_administrator_email_addresses();
@@ -1410,7 +1412,7 @@ class Defra_Data_Entry_Public {
 		}
 
 		$subject = $args['sub'];
-		$content = '<img src="https://smokecontrol-data-entry.hetas.co.uk/themes/scades/images/defra-logo.gif"><br /><br />'.$type_label . ' ID: ' . $post_id . '<br /><br />';
+		$content = '<img src="https://smokecontrol-data-entry.hetas.co.uk/themes/scades/images/defra-logo.gif"><br /><br />'.$type_label . ' ID: ' . $guid . '<br /><br />';
 		$content .= $args['msg'] . '<br />';
 		$content .= $args['url'];
 		$headers = array('Content-Type: text/html; charset=UTF-8');

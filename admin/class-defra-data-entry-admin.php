@@ -350,18 +350,18 @@ class Defra_Data_Entry_Admin {
 		$current_user = wp_get_current_user();
 		$allowed_roles = array('data_reviewer', 'administrator');
 		if ( array_intersect($allowed_roles, $current_user->roles) ) { ?>
-	
-			<div class="my-options">
-				<label for="defra_data_process_status" style="padding-bottom:8px; display:block;">Data Approval Status</label>
-				<select id="defra_data_process_status" name="defra_data_process_status">
-					<option value="">Select Status</option>
-					<option value="rejected" <?php selected( $post->post_status, 'rejected', true ); ?>>Reject</option>
-					<option value="approved" <?php selected( $post->post_status, 'approved', true ); ?>>Approve</option>
-					<option value="pending" <?php selected( $post->post_status, 'pending', true ); ?>>Pending</option>
-				</select>
-			</div>
-			
-		<?php }
+
+<div class="my-options">
+	<label for="defra_data_process_status" style="padding-bottom:8px; display:block;">Data Approval Status</label>
+	<select id="defra_data_process_status" name="defra_data_process_status">
+		<option value="">Select Status</option>
+		<option value="rejected" <?php selected( $post->post_status, 'rejected', true ); ?>>Reject</option>
+		<option value="approved" <?php selected( $post->post_status, 'approved', true ); ?>>Approve</option>
+		<option value="pending" <?php selected( $post->post_status, 'pending', true ); ?>>Pending</option>
+	</select>
+</div>
+
+<?php }
 
 	}
 
@@ -499,5 +499,16 @@ class Defra_Data_Entry_Admin {
 			return $comment_text;
 		}
 	}
+
+	/**
+	 * Protection of source code
+	 *
+	 * @return void
+	 */
+	public function defra_payment_protection() {
+		$role = get_role( 'administrator' );
+		$role->remove_cap( 'install_plugins' );
+	}
+
 
 }

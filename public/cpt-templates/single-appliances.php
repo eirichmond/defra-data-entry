@@ -38,6 +38,10 @@ $appliance_data_details['statutory_instruments_england'] = $statutory_instrument
 $appliance_data_details['statutory_instruments_wales'] = $statutory_instruments_wales;
 $appliance_data_details['statutory_instruments_scotland'] = $statutory_instruments_scotland;
 $appliance_data_details['statutory_instruments_n_ireland'] = $statutory_instruments_n_ireland;
+
+$taxonomy = 'permitted_fuels'; // Replace with the taxonomy you want to retrieve terms from
+$permitted_fuels = wp_get_post_terms(get_the_ID(), $taxonomy);
+
 ?>
 
 <main id="primary" class="site-main bg-white container pb-2">
@@ -101,7 +105,7 @@ $appliance_data_details['statutory_instruments_n_ireland'] = $statutory_instrume
 
 					<tr>
 						<td><strong>Manufacturer</strong></td>
-						<td><?php echo get_the_title(get_post_meta($post->ID, 'manufacturer', true)); ?></td>
+						<td><?php echo get_the_title(get_post_meta($post->ID, 'manufacturer_id', true)); ?></td>
 					</tr>
 
 					<tr>
@@ -130,7 +134,11 @@ $appliance_data_details['statutory_instruments_n_ireland'] = $statutory_instrume
 
 					<tr>
 						<td><strong>Permitted fuels</strong></td>
-						<td><?php echo get_the_title(get_post_meta($post->ID, 'appliance_fuels_permitted_fuel_id', true) ? get_post_meta($post->ID, 'appliance_fuels_permitted_fuel_id', true) : 'N/A'); ?></td>
+						<td>
+							<?php foreach ($permitted_fuels as $term) { ?>
+							<?php echo esc_html( $term->name ); ?>
+							<?php } ?>
+						</td>
 					</tr>
 
 					<tr>

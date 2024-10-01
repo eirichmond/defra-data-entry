@@ -29,7 +29,7 @@ get_header();
 	<h2>Appliance Fuels</h2>
 	<small>Permitted Fuels (other than authorised fuels)</small><br>
 	<?php foreach ($permitted_fuels as $term) { ?>
-	<div><?php echo esc_html( $term->name ); ?> <?php echo esc_html( $term->description ); ?></div>
+	<div><?php echo esc_html( $term->name ); ?></div>
 	<?php } ?>
 </figure>
 

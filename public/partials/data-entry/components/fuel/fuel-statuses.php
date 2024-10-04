@@ -6,63 +6,63 @@
 	<div class="mb-2">
 		<div class="row">
 			<?php if ( array_intersect( $data_entry_review_users, $user->roles ) ) { ?>
-			<div class="col">
-				<div class="card">
-					<div class="card-header bg-primary text-white">
-						Draft
-					</div>
-					<div class="card-body">
-						<a href="/data-entry/fuels/?status=10" class="">View (<?php echo esc_html( $db->count_fuel_draft() ); ?>)</a>
+				<div class="col">
+					<div class="card">
+						<div class="card-header bg-primary text-white">
+							Draft
+						</div>
+						<div class="card-body">
+							<a href="/data-entry/fuels/?status=10" class="">View (<?php echo esc_html( $db->count_fuel_draft() ); ?>)</a>
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="col">
-				<div class="card">
-					<div class="card-header bg-info text-white">
-						Awaiting Review
-					</div>
-					<div class="card-body">
-						<a href="/data-entry/fuels/?status=20" class="">View (<?php echo esc_html( $db->count_fuel_awaiting_review() ); ?>)</a>
+				<div class="col">
+					<div class="card">
+						<div class="card-header bg-info text-white">
+							Awaiting Review
+						</div>
+						<div class="card-body">
+							<a href="/data-entry/fuels/?status=20" class="">View (<?php echo esc_html( $db->count_fuel_awaiting_review() ); ?>)</a>
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="col">
-				<div class="card">
-					<div class="card-header bg-secondary-subtle">
-						Being Reviewed
-					</div>
-					<div class="card-body">
-						<a href="/data-entry/fuels/?status=30" class="">View (<?php echo esc_html( $db->count_fuel_being_reviewed() ); ?>)</a>
-					</div>
-				</div>
-			</div>
-			<div class="col">
-				<div class="card">
-					<div class="card-header bg-danger text-white">
-						Reviewer Rejected
-					</div>
-					<div class="card-body">
-						<a href="/data-entry/fuels/?status=40" class="">View (<?php echo esc_html( $db->count_fuel_reviewer_rejected() ); ?>)</a>
+				<div class="col">
+					<div class="card">
+						<div class="card-header bg-secondary-subtle">
+							Being Reviewed
+						</div>
+						<div class="card-body">
+							<a href="/data-entry/fuels/?status=30" class="">View (<?php echo esc_html( $db->count_fuel_being_reviewed() ); ?>)</a>
+						</div>
 					</div>
 				</div>
-			</div>
+				<div class="col">
+					<div class="card">
+						<div class="card-header bg-danger text-white">
+							Reviewer Rejected
+						</div>
+						<div class="card-body">
+							<a href="/data-entry/fuels/?status=40" class="">View (<?php echo esc_html( $db->count_fuel_reviewer_rejected() ); ?>)</a>
+						</div>
+					</div>
+				</div>
 
 			<?php } ?>
 			<?php if ( array_intersect( $all_users, $user->roles ) ) { ?>
-			<div class="col">
-				<div class="card">
-					<div class="card-header bg-success-subtle">
-						Submitted to DA
-					</div>
-					<div class="card-body">
-						<?php if( $db->count_fuel_submitted_to_da($country) > 0 ) { ?>
-						<a href="/data-entry/fuels/?status=50" class="">View (<?php echo esc_html( $db->count_fuel_submitted_to_da($country) ); ?>)</a>
-						<?php } ?>
+				<div class="col">
+					<div class="card">
+						<div class="card-header bg-success-subtle">
+							Submitted to DA
+						</div>
+						<div class="card-body">
+							<?php if( $db->count_fuel_submitted_to_da($country) > 0 ) { ?>
+							<a href="/data-entry/fuels/?status=50" class="">View (<?php echo esc_html( $db->count_fuel_submitted_to_da($country) ); ?>)</a>
+							<?php } ?>
+						</div>
 					</div>
 				</div>
-			</div>
 			<?php } ?>
 		</div>
 	</div>

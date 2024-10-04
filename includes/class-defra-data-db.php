@@ -110,19 +110,38 @@ class Defra_Data_DB_Requests {
 	 * @return array $results
 	 */
     public function get_post_country_status( $post_type, $status = null, $country = null ) {
-
-		$countries = array(
-			'1' => 'exempt-in_country_and_statutory_instrument_england_enabled',
-			'2' => 'exempt-in_country_and_statutory_instrument_wales_enabled',
-			'3' => 'exempt-in_country_and_statutory_instrument_scotland_enabled',
-			'4' => 'exempt-in_country_and_statutory_instrument_n_ireland_enabled',
-		);
-		$statuses = array(
-			'1' => 'exempt-in_country_and_statutory_instrument_england_status',
-			'2' => 'exempt-in_country_and_statutory_instrument_wales_status',
-			'3' => 'exempt-in_country_and_statutory_instrument_scotland_status',
-			'4' => 'exempt-in_country_and_statutory_instrument_n_ireland_status',
-		);
+		
+		switch ($post_type) {
+			case 'appliances':
+				$countries = array(
+					'1' => 'exempt-in_country_and_statutory_instrument_england_enabled',
+					'2' => 'exempt-in_country_and_statutory_instrument_wales_enabled',
+					'3' => 'exempt-in_country_and_statutory_instrument_scotland_enabled',
+					'4' => 'exempt-in_country_and_statutory_instrument_n_ireland_enabled',
+				);
+				$statuses = array(
+					'1' => 'exempt-in_country_and_statutory_instrument_england_status',
+					'2' => 'exempt-in_country_and_statutory_instrument_wales_status',
+					'3' => 'exempt-in_country_and_statutory_instrument_scotland_status',
+					'4' => 'exempt-in_country_and_statutory_instrument_n_ireland_status',
+				);
+				break;
+			case 'fuels':
+				$countries = array(
+					'1' => 'authorised_country_and_statutory_instrument_england_enabled',
+					'2' => 'authorised_country_and_statutory_instrument_wales_enabled',
+					'3' => 'authorised_country_and_statutory_instrument_scotland_enabled',
+					'4' => 'authorised_country_and_statutory_instrument_n_ireland_enabled',
+				);
+				$statuses = array(
+					'1' => 'authorised_country_and_statutory_instrument_england_status',
+					'2' => 'authorised_country_and_statutory_instrument_wales_status',
+					'3' => 'authorised_country_and_statutory_instrument_scotland_status',
+					'4' => 'authorised_country_and_statutory_instrument_n_ireland_status',
+				);
+				break;
+		}
+		
 
         global $wpdb;
 		if(empty($country) && !empty($status)) {

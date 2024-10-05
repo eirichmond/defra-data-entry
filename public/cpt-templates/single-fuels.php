@@ -15,7 +15,7 @@ $guid = get_post_meta($post->ID, 'fuel_id', true);
 $exempt_england = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_si', true);
 $exempt_wales = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_si', true);
 $exempt_scotland = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_scotland_si', true);
-$exempt_ireland = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_si', true);
+$exempt_n_ireland = get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_si', true);
 
 $statutory_instruments_england = $public_class->statutory_instrument_assignment( $post->ID, 'england', 'fuel' );
 $statutory_instruments_wales = $public_class->statutory_instrument_assignment( $post->ID, 'wales', 'fuel'  );
@@ -224,24 +224,27 @@ get_header();
 
 						<?php if ( $exempt_n_ireland ) { ?>
 
-						<?php foreach ($statutory_instruments_n_ireland as $si_n_ireland) { ?>
+							<?php foreach ($statutory_instruments_n_ireland as $si_n_ireland) { ?>
 
-						<?php if ( $si_n_ireland["revoke_status_id"] == '400' ) { ?>
-						<td>No n/a</td>
+								<?php if ( $si_n_ireland["revoke_status_id"] == '400' ) { ?>
+									
+									<td>No n/a</td>
+
+								<?php } else { ?>
+
+									<td>
+										<span>Authorised (<?php echo esc_html( $si_n_ireland["title"] ); ?>)</span>
+										<br />
+										<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_publish_date', true) ) ) ); ?>
+									</td>
+
+								<?php } ?>
+
+							<?php } ?>
+
 						<?php } else { ?>
-						<td>
-							<span>Authorised (<?php echo esc_html( $si_n_ireland["title"] ); ?>)</span>
-							<br />
-							<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_n_ireland_publish_date', true) ) ) ); ?>
-						</td>
 
-						<?php } ?>
-
-						<?php } ?>
-
-						<?php } else { ?>
-
-						<td>No n/a</td>
+							<td>No n/a</td>
 
 						<?php } ?>
 

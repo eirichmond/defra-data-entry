@@ -187,7 +187,17 @@ class Defra_Data_DB_Requests {
 	 * @return array $results
 	 */
     public function get_fuels_country_status($status = null) {
-        global $wpdb;
+        $current_user = wp_get_current_user();
+		$country = get_user_meta( $current_user->ID, 'approver_country_id', true );
+		$key = array(
+			'1' => 'authorised_country_and_statutory_instrument_england_status',
+			'2' => 'authorised_country_and_statutory_instrument_wales_status',
+			'3' => 'authorised_country_and_statutory_instrument_scotland_status',
+			'4' => 'authorised_country_and_statutory_instrument_n_ireland_status'
+		);
+		// authorised_country_and_statutory_instrument_n_ireland_status
+		global $wpdb;
+		
 		if(empty($status)) {
 			$results = $wpdb->get_results(
 				$wpdb->prepare(
@@ -208,7 +218,7 @@ class Defra_Data_DB_Requests {
 					WHERE pm.meta_key LIKE %s
 					AND pm.meta_value = %d
 					AND p.post_type = 'fuels'",
-					array('%_status',$status)
+					array( $key[$country], $status )
 				)
 			);
 		}

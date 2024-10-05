@@ -34,6 +34,7 @@ function find_set_key($array, $value, $type) {
 }
 
 
+
 get_header();
 ?>
 
@@ -89,7 +90,7 @@ get_header();
 			<label for="permitted_fuels" class="form-label">Permitted Fuels <small>(other than authorised fuels)</small></label>
 			<select class="form-select js-multiple" id="permitted_fuel_id" name="permitted_fuel_id[]" multiple="multiple">
 				<?php foreach($permitted_fuels as $k => $v) {
-					$key = find_set_key( $set_permitted_fuels, $k, 'slug' ); ?>
+					$key = find_set_key( $set_permitted_fuels, $k, 'term_id' ); ?>
 
 				<option value="<?php echo esc_attr( $k ); ?>" <?php echo esc_attr( false != $key ? 'selected' : '' ); ?>><?php echo esc_attr( $v["permitted_fuel_name"] ); ?></option>
 				<?php } ?>

@@ -131,31 +131,28 @@ get_header();
 					<tr>
 						<td><strong>England Status<br>Date first authorised</strong></td>
 
+							<?php if ( $exempt_england ) { ?>
 
-						<?php if ( $exempt_england ) { ?>
+								<?php foreach ($statutory_instruments_england as $si_england) { ?>
 
-						<?php foreach ($statutory_instruments_england as $si_england) { ?>
+									<?php if ( $si_england["revoke_status_id"] == '400' || $si_england["publish_status"] != '600' ) { ?>
+										<td>No n/a</td>
+									<?php } else { ?>
+										<td>
+											<span>Authorised (<?php echo esc_html( $si_england["title"] ); ?>)</span>
+											<br />
+											<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_publish_date', true) ) ) ); ?>
+										</td>
 
-						<?php if ( $si_england["revoke_status_id"] == '400' ) { ?>
-						<td>No n/a</td>
-						<?php } else { ?>
-						<td>
-							<span>Authorised (<?php echo esc_html( $si_england["title"] ); ?>)</span>
-							<br />
-							<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_england_publish_date', true) ) ) ); ?>
-						</td>
+									<?php } ?>
 
-						<?php } ?>
+								<?php } ?>
 
-						<?php } ?>
+							<?php } else { ?>
 
-						<?php } else { ?>
+								<td>No n/a</td>
 
-						<td>No n/a</td>
-
-						<?php } ?>
-
-
+							<?php } ?>
 
 					</tr>
 
@@ -165,24 +162,24 @@ get_header();
 
 						<?php if ( $exempt_wales ) { ?>
 
-						<?php foreach ($statutory_instruments_wales as $si_wales) { ?>
+							<?php foreach ($statutory_instruments_wales as $si_wales) { ?>
 
-						<?php if ( $si_wales["revoke_status_id"] == '400' ) { ?>
-						<td>No n/a</td>
+								<?php if ( $si_wales["revoke_status_id"] == '400' || $si_wales["publish_status"] != '600' ) { ?>
+									<td>No n/a</td>
+								<?php } else { ?>
+									<td>
+										<span>Authorised (<?php echo esc_html( $si_wales["title"] ); ?>)</span>
+										<br />
+										<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_publish_date', true) ) ) ); ?>
+									</td>
+
+								<?php } ?>
+
+							<?php } ?>
+
 						<?php } else { ?>
-						<td>
-							<span>Authorised (<?php echo esc_html( $si_wales["title"] ); ?>)</span>
-							<br />
-							<?php echo esc_html( date('d/m/Y', strtotime( get_post_meta($post->ID, 'authorised_country_and_statutory_instrument_wales_publish_date', true) ) ) ); ?>
-						</td>
 
-						<?php } ?>
-
-						<?php } ?>
-
-						<?php } else { ?>
-
-						<td>No n/a</td>
+							<td>No n/a</td>
 
 						<?php } ?>
 
@@ -197,7 +194,7 @@ get_header();
 
 						<?php foreach ($statutory_instruments_scotland as $si_scotland) { ?>
 
-						<?php if ( $si_scotland["revoke_status_id"] == '400' ) { ?>
+						<?php if ( $si_scotland["revoke_status_id"] == '400' || $si_scotland["publish_status"] != '600' ) { ?>
 						<td>No n/a</td>
 						<?php } else { ?>
 						<td>
@@ -226,7 +223,7 @@ get_header();
 
 							<?php foreach ($statutory_instruments_n_ireland as $si_n_ireland) { ?>
 
-								<?php if ( $si_n_ireland["revoke_status_id"] == '400' ) { ?>
+								<?php if ( $si_n_ireland["revoke_status_id"] == '400' || $si_n_ireland["publish_status"] != '600' ) { ?>
 									
 									<td>No n/a</td>
 

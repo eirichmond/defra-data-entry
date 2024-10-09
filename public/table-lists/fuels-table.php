@@ -18,7 +18,7 @@
 			<td><?php echo esc_html( $v->post_title ); ?></td>
 			<td><?php echo esc_html( $v->manufacturer_name ); ?></td>
 
-			<?php foreach ( $args['countries'] as $k => $country ) { ?>
+			<?php foreach ( $args['countries'] as $k => $country ) {  ?>
 				<td>
 					<?php $si_assignment = $public_class->statutory_instrument_assignment( $v->ID, $k, 'fuel' ); 
 

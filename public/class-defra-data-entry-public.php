@@ -2567,7 +2567,8 @@ class Defra_Data_Entry_Public {
 
 		$data_entry = $user->first_name .' '. $user->last_name; // appliance
 
-		$manufacturer = get_post(get_post_meta($post_obj->ID,'manufacturer_id', true)); // fuel & appliance
+		$manufacturer = get_post(get_post_meta($post_obj->ID,'manufacturer_id', true )); // fuel & appliance
+		$manufacturerContact = $this->get_manufacturer_title_by_id( $post_obj->ID );
 
 		if($post["type"] != 'fuels') {
 			$application_number = get_post_meta($post_obj->ID,'appliance_additional_details_application_number', true); // appliance
@@ -2604,7 +2605,7 @@ class Defra_Data_Entry_Public {
 				'Manufacturer' => esc_attr( $manufacturer->post_title ),
 				'ApplianceName' => esc_attr( $post_obj->post_title ),
 				'PermittedFuels' => esc_attr( $permitted_fuel ),
-				'ManufacturerContact' => esc_attr( $manufacturer->post_title ),
+				'ManufacturerContact' => esc_attr( $manufacturerContact ),
 				'DataEntryUser' => esc_attr( $data_entry ),
 				'Instructions' => esc_attr( $instructions ),
 				'ServiceInstallation' => esc_attr( $servicing_installation ),
@@ -2617,7 +2618,7 @@ class Defra_Data_Entry_Public {
 				'Manufacturer' => esc_attr( $manufacturer->post_title ),
 				'FuelName' => esc_attr( $post_obj->post_title ),
 				'FuelID' => esc_attr( $fuel_id ),
-				'ManufacturerContact' => esc_attr( $manufacturer->post_title ),
+				'ManufacturerContact' => esc_attr( $manufacturerContact ),
 			]);
 
 		}

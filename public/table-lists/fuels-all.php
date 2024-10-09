@@ -10,6 +10,12 @@ $args = array(
 	),
 	'fuel_meta_key' => 'fuel_id',
 	'manufacturer_meta_key' => 'manufacturer_id',
+	'countries' => array(
+		'england' => 'England',
+		'wales' => 'Wales',
+		'scotland' => 'Scotland',
+		'n_ireland' => 'Northern Ireland',
+	)
 );
 $fuels = $public_class->get_table_list($args);
 
